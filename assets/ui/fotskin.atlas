@@ -1,0 +1,38 @@
+
+fotskin.png
+size: 512, 512
+format: RGBA8888
+filter: Linear, Linear
+repeat: none
+DotGothic16-Regular
+  rotate: false
+  xy: 1, 426
+  size: 506, 79
+  orig: 506, 79
+  offset: 0, 0
+  index: -1
+PressStart2P-Regular
+  rotate: false
+  xy: 1, 304
+  size: 506, 120
+  orig: 506, 120
+  offset: 0, 0
+  index: -1
+wood_button_down
+  rotate: false
+  xy: 1, 266
+  size: 15, 17
+  split: 5, 5, 7, 7
+  pad: 4, 4, 6, 6
+  orig: 15, 17
+  offset: 0, 0
+  index: -1
+wood_button_up
+  rotate: false
+  xy: 1, 285
+  size: 15, 17
+  split: 6, 6, 6, 8
+  pad: 4, 4, 5, 7
+  orig: 15, 17
+  offset: 0, 0
+  index: -1

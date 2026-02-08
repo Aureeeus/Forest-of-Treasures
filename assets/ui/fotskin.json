@@ -1,0 +1,31 @@
+{
+com.badlogic.gdx.graphics.g2d.BitmapFont: {
+	font-white-regular: {
+		file: DotGothic16-Regular.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+	font-white-bold: {
+		file: PressStart2P-Regular.fnt
+		scaledSize: -1
+		markupEnabled: false
+		flip: false
+	}
+}
+com.badlogic.gdx.graphics.Color: {
+	white: {
+		r: 1
+		g: 1
+		b: 1
+		a: 1
+	}
+}
+com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
+	wood-bold-text-button: {
+		font: font-white-bold
+		up: wood_button_up
+		down: wood_button_down
+	}
+}
+}
