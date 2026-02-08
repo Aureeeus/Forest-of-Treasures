@@ -21,10 +21,16 @@ import io.github.fourlastor.construo.Target
 sourceSets.main.resources.srcDirs += [ rootProject.file('assets').path ]
 application.mainClass = 'edu.tip.forestoftreasures.lwjgl3.Lwjgl3Launcher'
 eclipse.project.name = appName + '-lwjgl3'
-java.sourceCompatibility = 21
-java.targetCompatibility = 21
-if (JavaVersion.current().isJava9Compatible()) {
-        compileJava.options.release.set(21)
+// java.sourceCompatibility = 21
+// java.targetCompatibility = 21
+// if (JavaVersion.current().isJava9Compatible()) {
+//         compileJava.options.release.set(21)
+// }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
 }
 
 dependencies {
