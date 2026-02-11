@@ -1,19 +1,25 @@
 {
 com.badlogic.gdx.graphics.g2d.BitmapFont: {
-	font-bold: {
-		file: PressStart2P-Regular.fnt
+	DotGothic16-Medium: {
+		file: DotGothic16-Medium.fnt
 		scaledSize: -1
 		markupEnabled: false
 		flip: false
 	}
-	font-normal: {
-		file: DotGothic16-Regular.fnt
+	PressStart2P-Medium: {
+		file: PressStart2P-Medium.fnt
 		scaledSize: -1
 		markupEnabled: false
 		flip: false
 	}
 }
 com.badlogic.gdx.graphics.Color: {
+	black: {
+		r: 0
+		g: 0
+		b: 0
+		a: 1
+	}
 	white: {
 		r: 1
 		g: 1
@@ -22,8 +28,8 @@ com.badlogic.gdx.graphics.Color: {
 	}
 }
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
-	wood-bold-text-button: {
-		font: font-bold
+	main-menu-text-button: {
+		font: PressStart2P-Medium
 		up: wood_button_up
 		down: wood_button_down
 	}
