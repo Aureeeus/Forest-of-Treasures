@@ -4,35 +4,34 @@ size: 512, 512
 format: RGBA8888
 filter: Linear, Linear
 repeat: none
+wood_button_up
+  rotate: false
+  xy: 1, 309
+  size: 15, 17
+  split: 5, 5, 4, 7
+  pad: 4, 4, 4, 6
+  orig: 15, 17
+  offset: 0, 0
+  index: -1
 DotGothic16-Regular
   rotate: false
-  xy: 1, 426
-  size: 506, 79
-  orig: 506, 79
+  xy: 1, 442
+  size: 506, 63
+  orig: 506, 63
   offset: 0, 0
   index: -1
 PressStart2P-Regular
   rotate: false
-  xy: 1, 304
-  size: 506, 120
-  orig: 506, 120
+  xy: 1, 347
+  size: 505, 93
+  orig: 505, 93
   offset: 0, 0
   index: -1
 wood_button_down
   rotate: false
-  xy: 1, 266
+  xy: 1, 328
   size: 15, 17
-  split: 5, 5, 7, 7
-  pad: 4, 4, 6, 6
-  orig: 15, 17
-  offset: 0, 0
-  index: -1
-wood_button_up
-  rotate: false
-  xy: 1, 285
-  size: 15, 17
-  split: 6, 6, 6, 8
-  pad: 4, 4, 5, 7
+  split: 4, 4, 5, 5
   orig: 15, 17
   offset: 0, 0
   index: -1
