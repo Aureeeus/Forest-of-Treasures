@@ -8,8 +8,8 @@ import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.View.Day1Screen;
+// import edu.tip.forestoftreasures.View.Day1Screen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
-
 
 public class IntroductionGameController {
   private final GameLauncher game;
@@ -18,7 +18,7 @@ public class IntroductionGameController {
   private final TypingLabel typingLabel;
 
   public IntroductionGameController(GameLauncher game, IntroductionGameScreen screen) {
-    this.game = game; 
+    this.game = game;
     this.screen = screen;
     this.stage = screen.getStage();
     this.typingLabel = screen.getTypingLabel();

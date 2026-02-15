@@ -16,7 +16,10 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.MainMenuController;
-/** First screen of the application. Displayed after the application is created. */
+
+/**
+ * First screen of the application. Displayed after the application is created.
+ */
 public class MainMenuScreen implements Screen {
   private Stage stage;
   private Table table;
@@ -29,13 +32,14 @@ public class MainMenuScreen implements Screen {
   private TextButton achievementsButton;
   private TextButton settingsButton;
   private TextButton quitButton;
+  private TextButton testButton;
 
   private float musicVolume;
 
   public MainMenuScreen(GameLauncher game) {
     this.game = game;
   }
-  
+
   @Override
   public void show() {
     // Prepare your screen here.
@@ -80,6 +84,9 @@ public class MainMenuScreen implements Screen {
     table.add(quitButton);
     table.row();
 
+    testButton = new TextButton("maze testing", skin, "main-menu-text-button");
+    table.add(testButton);
+    table.row();
     new MainMenuController(game, this);
   }
 
@@ -94,9 +101,12 @@ public class MainMenuScreen implements Screen {
 
   @Override
   public void resize(int width, int height) {
-    // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-    // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-    if(width <= 0 || height <= 0) return;
+    // If the window is minimized on a desktop (LWJGL3) platform, width and height
+    // are 0, which causes problems.
+    // In that case, we don't resize anything, and wait for the window to be a
+    // normal size before updating.
+    if (width <= 0 || height <= 0)
+      return;
 
     // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
@@ -145,5 +155,9 @@ public class MainMenuScreen implements Screen {
 
   public TextButton getQuitButton() {
     return quitButton;
+  }
+
+  public TextButton getTestButton() {
+    return testButton;
   }
 }

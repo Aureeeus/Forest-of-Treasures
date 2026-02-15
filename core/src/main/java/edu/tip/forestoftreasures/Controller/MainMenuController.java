@@ -5,11 +5,13 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener.ChangeEvent;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
+import edu.tip.forestoftreasures.View.mazeBossScreen;
 
 public class MainMenuController {
   private final GameLauncher game;
@@ -68,6 +70,15 @@ public class MainMenuController {
         selectSound.play(sfxVolume);
         handleQuit();
       }
+    });
+
+    screen.getTestButton().addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent event, Actor actor) {
+        selectSound.play(sfxVolume);
+        game.setScreen(new mazeBossScreen(game));
+      }
+
     });
   }
 
