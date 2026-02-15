@@ -30,115 +30,117 @@ public class MainMenuScreen implements Screen {
   private TextButton settingsButton;
   private TextButton quitButton;
 
-  public MainMenuScreen(GameLauncher game, Skin skin) {
+  public MainMenuScreen(GameLauncher game) {
     this.game = game;
-    this.skin = skin;
+  }
+  
+  @Override
+  public void show() {
+    // Prepare your screen here.
+    this.skin = game.assets.get("ui/fotskin.json", Skin.class);
+
+    stage = new Stage(new ScreenViewport());
+    Gdx.input.setInputProcessor(stage);
+
+    // Set background music
+    backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/main_menu_bg_music.mp3"));
+    backgroundMusic.setLooping(true);
+    backgroundMusic.setVolume(1f);
+    backgroundMusic.play();
+
+    table = new Table();
+    table.defaults().size(380, 60).spaceBottom(20f);
+    table.setFillParent(true);
+    stage.addActor(table);
+
+    backgroundTexture = new Texture(Gdx.files.internal("images/background.png"));
+
+    Image backgroundImage = new Image(backgroundTexture);
+    backgroundImage.setScaling(Scaling.fill);
+
+    table.setBackground(backgroundImage.getDrawable());
+
+    // Adding UI elements to the table
+    startButton = new TextButton("START GAME", skin, "main-menu-text-button");
+    table.add(startButton);
+    table.row();
+
+    achievementsButton = new TextButton("ACHIEVEMENTS", skin, "main-menu-text-button");
+    table.add(achievementsButton);
+    table.row();
+
+    settingsButton = new TextButton("SETTINGS", skin, "main-menu-text-button");
+    table.add(settingsButton);
+    table.row();
+
+    quitButton = new TextButton("QUIT", skin, "main-menu-text-button");
+    table.add(quitButton);
+    table.row();
+
+    new MainMenuController(game, this);
   }
 
-    @Override
-    public void show() {
-        // Prepare your screen here.
-        stage = new Stage(new ScreenViewport());
-        Gdx.input.setInputProcessor(stage);
+  @Override
+  public void render(float delta) {
+    // Draw your screen here. "delta" is the time since last render in seconds.
+    ScreenUtils.clear(Color.BLACK);
 
-        // Set background music
-        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/main_menu_bg_music.mp3"));
-        backgroundMusic.setLooping(true);
-        backgroundMusic.setVolume(1f);
-        backgroundMusic.play();
+    stage.act(delta);
+    stage.draw();
+  }
 
-        table = new Table();
-        table.defaults().size(380, 60).spaceBottom(20f);
-        table.setFillParent(true);
-        stage.addActor(table);
+  @Override
+  public void resize(int width, int height) {
+    // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
+    // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
+    if(width <= 0 || height <= 0) return;
 
-        backgroundTexture = new Texture(Gdx.files.internal("images/background.png"));
+    // Resize your screen here. The parameters represent the new window size.
+    stage.getViewport().update(width, height, true);
+  }
 
-        Image backgroundImage = new Image(backgroundTexture);
-        backgroundImage.setScaling(Scaling.fill);
-
-        table.setBackground(backgroundImage.getDrawable());
-
-        // Adding UI elements to the table
-        startButton = new TextButton("START GAME", skin, "main-menu-text-button");
-        table.add(startButton);
-        table.row();
-
-        achievementsButton = new TextButton("ACHIEVEMENTS", skin, "main-menu-text-button");
-        table.add(achievementsButton);
-        table.row();
-
-        settingsButton = new TextButton("SETTINGS", skin, "main-menu-text-button");
-        table.add(settingsButton);
-        table.row();
-
-        quitButton = new TextButton("QUIT", skin, "main-menu-text-button");
-        table.add(quitButton);
-        table.row();
-
-        new MainMenuController(game, this);
+  @Override
+  public void pause() {
+    // Invoked when your application is paused.
+    if (backgroundMusic.isPlaying()) {
+      backgroundMusic.pause();
     }
+  }
 
-    @Override
-    public void render(float delta) {
-        // Draw your screen here. "delta" is the time since last render in seconds.
-        ScreenUtils.clear(Color.BLACK);
+  @Override
+  public void resume() {
+    // Invoked when your application is resumed after pause.
+    backgroundMusic.play();
+  }
 
-        stage.act(delta);
-        stage.draw();
-    }
+  @Override
+  public void hide() {
+    // This method is called when another screen replaces this one.
+    Gdx.input.setInputProcessor(null);
+  }
 
-    @Override
-    public void resize(int width, int height) {
-        // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-        // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-        if(width <= 0 || height <= 0) return;
+  @Override
+  public void dispose() {
+    // Destroy screen's assets here.
+    stage.dispose();
+    backgroundTexture.dispose();
+    skin.dispose();
+    backgroundMusic.dispose();
+  }
 
-        // Resize your screen here. The parameters represent the new window size.
-        stage.getViewport().update(width, height, true);
-    }
+  public TextButton getStartButton() {
+    return startButton;
+  }
 
-    @Override
-    public void pause() {
-        // Invoked when your application is paused.
-        if (backgroundMusic.isPlaying()) {
-          backgroundMusic.pause();
-        }
-    }
+  public TextButton getAchievementsButton() {
+    return achievementsButton;
+  }
 
-    @Override
-    public void resume() {
-        // Invoked when your application is resumed after pause.
-        backgroundMusic.play();
-    }
+  public TextButton getSettingsButton() {
+    return settingsButton;
+  }
 
-    @Override
-    public void hide() {
-        // This method is called when another screen replaces this one.
-    }
-
-    @Override
-    public void dispose() {
-        // Destroy screen's assets here.
-        stage.dispose();
-        backgroundTexture.dispose();
-        skin.dispose();
-        backgroundMusic.dispose();
-    }
-
-    public TextButton getStartButton() {
-        return startButton;
-    }
-
-    public TextButton getAchievementsButton() {
-        return achievementsButton;
-    }
-
-    public TextButton getSettingsButton() {
-        return settingsButton;
-    }
-
-    public TextButton getQuitButton() {
-        return quitButton;
-    }
+  public TextButton getQuitButton() {
+    return quitButton;
+  }
 }

@@ -1,7 +1,7 @@
 package edu.tip.forestoftreasures;
 
 import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -12,21 +12,22 @@ import edu.tip.forestoftreasures.View.MainMenuScreen;
  * platforms.
  */
 public class GameLauncher extends Game {
-  public Skin skin;
+  public AssetManager assets;
 
   @Override
   public void create() {
-    skin = new Skin(Gdx.files.internal("ui/fotskin.json"), new TextureAtlas("ui/fotskin.atlas"));
-    this.setScreen(new MainMenuScreen(this, skin));
+      assets = new AssetManager();
+      assets.load("ui/fotskin.json", Skin.class);
+      assets.load("ui/fotskin.atlas", TextureAtlas.class);
+      assets.finishLoading();
+
+      this.setScreen(new MainMenuScreen(this));
   }
+
 
   @Override
   public void dispose() {
     super.dispose();
-    skin.dispose();
-  }
-
-  public Skin getSkin() {
-    return skin;
+    assets.dispose();
   }
 }

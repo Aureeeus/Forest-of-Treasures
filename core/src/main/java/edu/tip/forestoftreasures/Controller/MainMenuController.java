@@ -3,14 +3,18 @@ package edu.tip.forestoftreasures.Controller;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
+import edu.tip.forestoftreasures.View.SettingsScreen;
 
 public class MainMenuController {
   private final GameLauncher game;
   private final MainMenuScreen screen;
+  private Skin skin;
 
   private Sound startSound;
   private Sound selectSound;
@@ -18,6 +22,7 @@ public class MainMenuController {
   public MainMenuController(GameLauncher game, MainMenuScreen screen) {
     this.game = game;
     this.screen = screen;
+    this.skin = game.assets.get("ui/fotskin.json", Skin.class);
 
     this.startSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_start_sound.wav"));
     this.selectSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_select_sound.wav"));
@@ -32,7 +37,8 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         startSound.play(1f);
-        System.out.println("Start Game button clicked!");
+        game.setScreen(new IntroductionGameScreen(game));
+        screen.dispose();
       }
     });
 
@@ -48,7 +54,7 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(1f);
-        System.out.println("Settings button clicked!");
+        game.setScreen(new SettingsScreen(game, skin));
       }
     });
 
