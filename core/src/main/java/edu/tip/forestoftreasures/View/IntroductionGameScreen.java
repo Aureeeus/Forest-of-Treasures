@@ -70,7 +70,7 @@ public class IntroductionGameScreen implements Screen {
       .width(Gdx.graphics.getWidth() / 2f)
       .pad(20f);
 
-    new IntroductionGameController(game, stage, typingLabel);
+    new IntroductionGameController(game, this);
   }
 
   @Override
@@ -112,6 +112,18 @@ public class IntroductionGameScreen implements Screen {
   public void dispose() {
     // Dispose of assets when no longer needed.
     stage.dispose();
+  }
+
+  public Stage getStage() {
+    return stage;
+  }
+
+  public TypingLabel getTypingLabel() {
+    return typingLabel;
+  }
+
+  public TextraLabel getInstructionLabel() {
+    return instructionLabel;
   }
 
 }

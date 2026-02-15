@@ -7,20 +7,21 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.View.Day1Screen;
+import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 
 
 public class IntroductionGameController {
   private final GameLauncher game;
   private final Stage stage;
+  private final IntroductionGameScreen screen;
   private final TypingLabel typingLabel;
 
-  public IntroductionGameController(
-    GameLauncher game,  
-    Stage stage,
-    TypingLabel typingLabel) {
+  public IntroductionGameController(GameLauncher game, IntroductionGameScreen screen) {
     this.game = game; 
-    this.stage = stage;
-    this.typingLabel = typingLabel;
+    this.screen = screen;
+    this.stage = screen.getStage();
+    this.typingLabel = screen.getTypingLabel();
 
     addListeners();
   }
@@ -42,7 +43,8 @@ public class IntroductionGameController {
           if (!typingLabel.hasEnded()) {
             typingLabel.skipToTheEnd();
           } else {
-            System.out.println("Space key pressed, transitioning to the next screen...");
+            game.setScreen(new Day1Screen(game));
+            screen.dispose();
           }
           return true;
         }
