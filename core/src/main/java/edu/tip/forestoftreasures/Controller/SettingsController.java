@@ -57,6 +57,6 @@ public class SettingsController {
 
   private void handleBack() {
     screen.dispose();
-    game.setScreen(new MainMenuScreen(game, game.getSkin()));
+    game.setScreen(new MainMenuScreen(game));
   }
 }

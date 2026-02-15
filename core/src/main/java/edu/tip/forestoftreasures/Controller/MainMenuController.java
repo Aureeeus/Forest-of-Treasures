@@ -19,6 +19,8 @@ public class MainMenuController {
   private Sound startSound;
   private Sound selectSound;
 
+  private float sfxVolume;
+
   public MainMenuController(GameLauncher game, MainMenuScreen screen) {
     this.game = game;
     this.screen = screen;
@@ -26,6 +28,8 @@ public class MainMenuController {
 
     this.startSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_start_sound.wav"));
     this.selectSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_select_sound.wav"));
+
+    sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
 
     addListeners();
   }
@@ -36,7 +40,7 @@ public class MainMenuController {
     screen.getStartButton().addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        startSound.play(1f);
+        startSound.play(sfxVolume);
         game.setScreen(new IntroductionGameScreen(game));
         screen.dispose();
       }
@@ -45,7 +49,7 @@ public class MainMenuController {
     screen.getAchievementsButton().addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        selectSound.play(1f);
+        selectSound.play(sfxVolume);
         System.out.println("Achievements button clicked!");
       }
     });
@@ -53,7 +57,7 @@ public class MainMenuController {
     screen.getSettingsButton().addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        selectSound.play(1f);
+        selectSound.play(sfxVolume);
         game.setScreen(new SettingsScreen(game, skin));
       }
     });
@@ -61,7 +65,7 @@ public class MainMenuController {
     screen.getQuitButton().addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
-        selectSound.play(1f);
+        selectSound.play(sfxVolume);
         handleQuit();
       }
     });

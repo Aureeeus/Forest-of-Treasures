@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
+import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 
 /**
@@ -13,6 +14,7 @@ import edu.tip.forestoftreasures.View.MainMenuScreen;
  */
 public class GameLauncher extends Game {
   public AssetManager assets;
+  public SettingsConfiguration settingsConfig;
 
   @Override
   public void create() {
@@ -20,6 +22,8 @@ public class GameLauncher extends Game {
       assets.load("ui/fotskin.json", Skin.class);
       assets.load("ui/fotskin.atlas", TextureAtlas.class);
       assets.finishLoading();
+
+      settingsConfig = new SettingsConfiguration();
 
       this.setScreen(new MainMenuScreen(this));
   }

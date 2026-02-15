@@ -30,6 +30,8 @@ public class MainMenuScreen implements Screen {
   private TextButton settingsButton;
   private TextButton quitButton;
 
+  private float musicVolume;
+
   public MainMenuScreen(GameLauncher game) {
     this.game = game;
   }
@@ -38,6 +40,7 @@ public class MainMenuScreen implements Screen {
   public void show() {
     // Prepare your screen here.
     this.skin = game.assets.get("ui/fotskin.json", Skin.class);
+    musicVolume = game.settingsConfig.getGameSettings().musicVolume();
 
     stage = new Stage(new ScreenViewport());
     Gdx.input.setInputProcessor(stage);
@@ -45,7 +48,7 @@ public class MainMenuScreen implements Screen {
     // Set background music
     backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/main_menu_bg_music.mp3"));
     backgroundMusic.setLooping(true);
-    backgroundMusic.setVolume(1f);
+    backgroundMusic.setVolume(musicVolume);
     backgroundMusic.play();
 
     table = new Table();
