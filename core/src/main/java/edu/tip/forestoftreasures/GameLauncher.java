@@ -2,7 +2,7 @@ package edu.tip.forestoftreasures;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
@@ -19,8 +19,9 @@ public class GameLauncher extends Game {
   @Override
   public void create() {
       assets = new AssetManager();
-      assets.load("ui/fotskin.json", Skin.class);
-      assets.load("ui/fotskin.atlas", TextureAtlas.class);
+
+      SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("ui/fotskin.atlas");
+      assets.load("ui/fotskin.json", Skin.class, params);
       assets.finishLoading();
 
       settingsConfig = new SettingsConfiguration();

@@ -43,7 +43,7 @@ public class MainMenuScreen implements Screen {
   @Override
   public void show() {
     // Prepare your screen here.
-    this.skin = game.assets.get("ui/fotskin.json", Skin.class);
+    skin = game.assets.get("ui/fotskin.json", Skin.class);
     musicVolume = game.settingsConfig.getGameSettings().musicVolume();
 
     stage = new Stage(new ScreenViewport());
