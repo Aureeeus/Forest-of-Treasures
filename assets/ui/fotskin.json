@@ -27,6 +27,12 @@ com.badlogic.gdx.graphics.Color: {
 		a: 1
 	}
 }
+com.badlogic.gdx.scenes.scene2d.ui.Label$LabelStyle: {
+	text-white-regular-medium: {
+		font: DotGothic16-Medium
+		fontColor: white
+	}
+}
 com.badlogic.gdx.scenes.scene2d.ui.TextButton$TextButtonStyle: {
 	main-menu-text-button: {
 		font: PressStart2P-Medium
