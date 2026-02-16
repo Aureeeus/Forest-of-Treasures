@@ -4,8 +4,12 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -24,6 +28,10 @@ public class mazeBossScreen implements Screen {
   private SpriteBatch batch;
   private Texture playerTexture;
 
+  private TiledMap mazeMap;
+  private OrthogonalTiledMapRenderer mapRenderer;
+  private OrthographicCamera camera;
+
   public mazeBossScreen(GameLauncher game) {
     this.game = game;
     this.controller = new edu.tip.forestoftreasures.Controller.mazeBossController();
@@ -39,6 +47,19 @@ public class mazeBossScreen implements Screen {
 
     controller = new mazeBossController();
 
+    mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
+    mapRenderer = new OrthogonalTiledMapRenderer(mazeMap);
+
+    int mapWidth = mazeMap.getProperties().get("width", Integer.class)
+        * mazeMap.getProperties().get("tilewidth", Integer.class);
+    int mapHeight = mazeMap.getProperties().get("height", Integer.class)
+        * mazeMap.getProperties().get("tileheight", Integer.class);
+    camera = new OrthographicCamera();
+    camera.setToOrtho(false, mapWidth, mapHeight);
+
+    camera.position.set(mapWidth / 2f, mapHeight / 2f, 0);
+    camera.update();
+
     Gdx.input.setInputProcessor(stage);
 
     // Add actor to stage
@@ -47,15 +68,27 @@ public class mazeBossScreen implements Screen {
     stage.addActor(table);
 
     table.setDebug(true);
+
+    float mapW = mazeMap.getProperties().get("width", Integer.class);
+    float mapH = mazeMap.getProperties().get("height", Integer.class);
+    float tileW = mazeMap.getProperties().get("tilewidth", Integer.class);
+
+    System.out.println("Map Size: " + mapW + "x" + mapH + " tiles");
+    System.out.println("Tile Size: " + tileW + "px");
   }
 
   @Override
   public void render(float delta) {
     // Update and draw your screen here.
 
-    controller.movement(delta);
+    controller.movement(delta, mazeMap);
 
     ScreenUtils.clear(Color.BLACK);
+
+    camera.update();
+    mapRenderer.setView(camera);
+    mapRenderer.render();
+
     batch.setProjectionMatrix(stage.getViewport().getCamera().combined);
     batch.begin();
     batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y);
