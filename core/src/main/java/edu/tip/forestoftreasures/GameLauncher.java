@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
+import edu.tip.forestoftreasures.utils.DrawableMaker;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
@@ -34,5 +35,6 @@ public class GameLauncher extends Game {
   public void dispose() {
     super.dispose();
     assets.dispose();
+    DrawableMaker.dispose();
   }
 }
