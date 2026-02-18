@@ -63,7 +63,7 @@ public class MainMenuScreen implements Screen {
     backgroundTexture = new Texture(Gdx.files.internal("images/background.png"));
 
     Image backgroundImage = new Image(backgroundTexture);
-    backgroundImage.setScaling(Scaling.fill);
+    backgroundImage.setScaling(Scaling.fit);
 
     table.setBackground(backgroundImage.getDrawable());
 
