@@ -74,7 +74,7 @@ public class IntroductionGameScreen implements Screen {
   @Override
   public void render(float delta) {
     // Update and draw your screen here.
-    ScreenUtils.clear(Color.BLACK);
+    ScreenUtils.clear(Color.valueOf("#121315"));
 
     stage.act(delta);
     stage.draw();
