@@ -1,0 +1,5 @@
+Font sizes:
+1. Regular = 16px
+2. Dialogue = 20px
+3. Medium = 24px
+4. Large = 30+px
