@@ -20,7 +20,7 @@ import edu.tip.forestoftreasures.utils.DrawableMaker;
 public class Day1Screen implements Screen {
   private final Stage stage;
   private final GameLauncher game;
-  
+
   // Assets managed by this screen
   private final Texture settingsTexture;
 
@@ -70,15 +70,15 @@ public class Day1Screen implements Screen {
     Table rightBorderTable = new Table();
     rightBorderTable.setBackground(rightBorderBg);
     rightBorderTable.add(rightContentTable).grow().pad(3f);
-    
+
     // Adding UI elements to the right content table
     settingsIcon = new Image(settingsTexture);
     rightContentTable.add(settingsIcon)
-      .size(70f)
-      .expand()
-      .top()
-      .right()
-      .pad(20f);
+        .size(70f)
+        .expand()
+        .top()
+        .right()
+        .pad(20f);
 
     // Create a subtable for game image scenario and text dialogue box
     // Define left table background and content drawables
@@ -97,11 +97,11 @@ public class Day1Screen implements Screen {
     leftDialogueContentTable = new Table();
     leftDialogueContentTable.setBackground(leftContentBg);
     leftDialogueContentTable.pad(15f);
-    
+
     // Split dialogueContentTable into for text space and interactable widgets.
     topDialogueContentTable = new Table();
     topDialogueContentTable.setBackground(leftContentBg);
-    topDialogueContentTable.align(Align.bottomLeft);  // align cells to bottom left of table
+    topDialogueContentTable.align(Align.bottomLeft); // align cells to bottom left of table
     topDialogueContentTable.pad(0f, 10f, 0f, 10f);
 
     bottomDialogueContentTable = new Table();
@@ -109,11 +109,10 @@ public class Day1Screen implements Screen {
 
     // Adding top and bottom spaces to the dialogueContentTable
     leftDialogueContentTable.add(topDialogueContentTable)
-      .grow()
-      .row();
+        .grow()
+        .row();
     leftDialogueContentTable.add(bottomDialogueContentTable)
-      .grow();
-    topDialogueContentTable.setDebug(true);
+        .grow();
 
     Table leftDialogueBorderTable = new Table();
     leftDialogueBorderTable.setBackground(leftBorderBg);
@@ -124,22 +123,22 @@ public class Day1Screen implements Screen {
     leftContainer.pad(100f);
 
     leftContainer.add(leftScenarioBorderTable)
-      .size(500f, 500f)
-      .padBottom(50f)
-      .row();
+        .size(500f, 500f)
+        .padBottom(50f)
+        .row();
     leftContainer.add(leftDialogueBorderTable)
-      .growX()
-      .height(Value.percentHeight(0.4f, leftContainer));
-    
+        .growX()
+        .height(Value.percentHeight(0.4f, leftContainer));
+
     // Add left table and right table to the main table layout
     table.add(leftContainer)
-      .expand()
-      .fill()
-      .width(Value.percentWidth(0.7f, table));
+        .expand()
+        .fill()
+        .width(Value.percentWidth(0.7f, table));
     table.add(rightBorderTable)
-      .expand()
-      .fill()
-      .width(Value.percentWidth(0.3f, table));
+        .expand()
+        .fill()
+        .width(Value.percentWidth(0.3f, table));
 
     // Create controller and pass the screen to it
     new Day1Controller(game, this);
@@ -157,9 +156,12 @@ public class Day1Screen implements Screen {
   @Override
   public void resize(int width, int height) {
     // Handle screen resizing here.
-    // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-    // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
-    if(width <= 0 || height <= 0) return;
+    // If the window is minimized on a desktop (LWJGL3) platform, width and height
+    // are 0, which causes problems.
+    // In that case, we don't resize anything, and wait for the window to be a
+    // normal size before updating.
+    if (width <= 0 || height <= 0)
+      return;
 
     // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);

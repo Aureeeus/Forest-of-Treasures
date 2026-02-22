@@ -15,6 +15,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.ExtendViewport;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
@@ -40,7 +42,7 @@ public class mazeBossScreen implements Screen {
   @Override
   public void show() {
     // Prepare your screen here.
-    stage = new Stage(new ScreenViewport());
+    stage = new Stage(new FitViewport(3840, 2176));
 
     batch = new SpriteBatch();
     playerTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
@@ -91,7 +93,7 @@ public class mazeBossScreen implements Screen {
 
     batch.setProjectionMatrix(stage.getViewport().getCamera().combined);
     batch.begin();
-    batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y);
+    batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y, 128, 128);
     batch.end();
 
     stage.act(delta);

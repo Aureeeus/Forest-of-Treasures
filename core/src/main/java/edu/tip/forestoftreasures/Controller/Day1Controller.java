@@ -39,7 +39,7 @@ public class Day1Controller {
 
   public Day1Controller(GameLauncher game, Day1Screen screen) {
     this.game = game;
-    this.screen = screen; 
+    this.screen = screen;
 
     this.scenarioContentTable = screen.getScenarioContentTable();
     this.textDialogueTable = screen.getTextDialogueTable();
@@ -47,7 +47,6 @@ public class Day1Controller {
     this.settingsIcon = screen.getSettingsIcon();
 
     // Convert BitmapFont to TextraTypist Font
-    BitmapFont baseFont = this.game.assets.get("fonts/DotGothic16-Dialogue.fnt", BitmapFont.class);
     this.textFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
 
     addListeners();
@@ -60,7 +59,7 @@ public class Day1Controller {
     screen.getSettingsIcon().addListener(new ClickListener() {
       // Event handler for when the settings icon is clicked
       @Override
-      public void clicked(InputEvent event, float x, float y)  {
+      public void clicked(InputEvent event, float x, float y) {
         Gdx.app.log("Day1Controller", "Settings icon clicked!");
       }
 
@@ -106,14 +105,18 @@ public class Day1Controller {
     scenarioContentTable.add(scenarioImage).expand().fill();
 
     // Load initial story lines to the dialogue box
-    addDialogue("The forest seems normal. Goblins, bugs, and fairies roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because its high noon and the trees, so far, are normal.");
-    addDialogue("{WAIT=1}\nA sprite lands on my shoulder. Rumors say these sprites have been blessed, and their touch can grant blessings or take them away from me. Should I shoo it away?");
+    addDialogue(
+        "The forest seems normal. Goblins, bugs, and fairies roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because its high noon and the trees, so far, are normal.");
+    addDialogue(
+        "{WAIT=1}\nA sprite lands on my shoulder. Rumors say these sprites have been blessed, and their touch can grant blessings or take them away from me. Should I shoo it away?");
+    addDialogue("bisaya talaga ako tangina {WAIT=5} hahahaha niggas");
   }
 
   // Adds text dialogue to textDialogueTable
   private void addDialogue(String text) {
     dialogueQueue.add(text);
-    if (!isTyping) showNextDialogue();
+    if (!isTyping)
+      showNextDialogue();
   }
 
   private void showNextDialogue() {
@@ -139,12 +142,12 @@ public class Day1Controller {
 
     // Add to dialogue table
     textDialogueTable.add(typingLabel)
-      .growX()
-      .bottom()
-      .left()
-      .padBottom(5f)
-      .row();
-    
+        .growX()
+        .bottom()
+        .left()
+        .padBottom(5f)
+        .row();
+
     textDialogueTable.invalidateHierarchy();
     textDialogueTable.layout();
   }

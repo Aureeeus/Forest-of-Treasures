@@ -8,11 +8,11 @@ import com.badlogic.gdx.math.Vector2;
 
 public class mazeBossController {
   public Vector2 playerPosition;
-  public float playerSpeed = 400f;
+  public float playerSpeed = 800f;
   private int tileWidth = 64;
 
   public mazeBossController() {
-    playerPosition = new Vector2(100, 100); // Initial position
+    playerPosition = new Vector2(2000, 2000); // Initial position
   }
 
   public void movement(float deltaTime, TiledMap map) {
@@ -51,8 +51,8 @@ public class mazeBossController {
 
     // Check the center point of your player
     // Based on your 64px tiles, we check 32 pixels in
-    int cellX = (int) ((x + 32) / 64);
-    int cellY = (int) ((y + 32) / 64);
+    int cellX = (int) (x);
+    int cellY = (int) (y);
 
     // Safety check to stay inside the map boundaries
     if (cellX < 0 || cellX >= layer.getWidth() || cellY < 0 || cellY >= layer.getHeight()) {
