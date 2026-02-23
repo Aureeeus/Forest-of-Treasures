@@ -3,10 +3,12 @@ package edu.tip.forestoftreasures.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -33,6 +35,11 @@ public class mazeBossScreen implements Screen {
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
   private OrthographicCamera camera;
+  private ShapeRenderer shapeRenderer;
+
+  private Music mazeMusic;
+  private Sound enterSound;
+  private boolean hasPlayedEnter = false;
 
   public mazeBossScreen(GameLauncher game) {
     this.game = game;
@@ -42,60 +49,62 @@ public class mazeBossScreen implements Screen {
   @Override
   public void show() {
     // Prepare your screen here.
-    stage = new Stage(new FitViewport(3840, 2176));
+    stage = new Stage(new FitViewport(1920, 1080));
+
+    enterSound = Gdx.audio.newSound(Gdx.files.internal("audio/maze_enter.mp3"));
+    // mazeMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/maze_music.mp3"));
+    // mazeMusic.setLooping(true);
+    // mazeMusic.setVolume(0.5f); // Adjust volume as needed
 
     batch = new SpriteBatch();
     playerTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
+    shapeRenderer = new ShapeRenderer();
 
     controller = new mazeBossController();
 
     mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
-    mapRenderer = new OrthogonalTiledMapRenderer(mazeMap);
+    mapRenderer = new OrthogonalTiledMapRenderer(mazeMap, 0.6f);
 
-    int mapWidth = mazeMap.getProperties().get("width", Integer.class)
-        * mazeMap.getProperties().get("tilewidth", Integer.class);
-    int mapHeight = mazeMap.getProperties().get("height", Integer.class)
-        * mazeMap.getProperties().get("tileheight", Integer.class);
     camera = new OrthographicCamera();
-    camera.setToOrtho(false, mapWidth, mapHeight);
+    camera.setToOrtho(false, 1920, 1080);
 
-    camera.position.set(mapWidth / 2f, mapHeight / 2f, 0);
+    camera.position.set(576, 540, 0);
     camera.update();
 
     Gdx.input.setInputProcessor(stage);
 
-    // Add actor to stage
-    table = new Table();
-    table.setFillParent(true);
-    stage.addActor(table);
-
-    table.setDebug(true);
-
-    float mapW = mazeMap.getProperties().get("width", Integer.class);
-    float mapH = mazeMap.getProperties().get("height", Integer.class);
-    float tileW = mazeMap.getProperties().get("tilewidth", Integer.class);
-
-    System.out.println("Map Size: " + mapW + "x" + mapH + " tiles");
-    System.out.println("Tile Size: " + tileW + "px");
   }
 
   @Override
   public void render(float delta) {
-    // Update and draw your screen here.
-
     controller.movement(delta, mazeMap);
-
     ScreenUtils.clear(Color.BLACK);
 
     camera.update();
+
+    // Draw the White Combat Box (The Border)
+    // We do this BEFORE the batch to keep layers clean
+    Gdx.gl.glLineWidth(4); // Set border thickness
+    shapeRenderer.setProjectionMatrix(camera.combined);
+    shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+    shapeRenderer.setColor(Color.WHITE);
+
+    // Based on your 30x20 map (1920x1280 pixels)
+    // If you want it to be a box at the bottom:
+    shapeRenderer.rect(0, 0, 1152, 768);
+    shapeRenderer.end();
+
+    // Draw the Maze
     mapRenderer.setView(camera);
     mapRenderer.render();
 
-    batch.setProjectionMatrix(stage.getViewport().getCamera().combined);
+    // Draw the Player
+    batch.setProjectionMatrix(camera.combined);
     batch.begin();
-    batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y, 128, 128);
+    batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y, 48, 48);
     batch.end();
 
+    // Draw UI/Stage (Buttons like FIGHT, ACT, etc.)
     stage.act(delta);
     stage.draw();
   }

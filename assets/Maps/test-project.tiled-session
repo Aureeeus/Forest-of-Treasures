@@ -1,0 +1,31 @@
+{
+    "activeFile": "testmap.tmx",
+    "expandedProjectPaths": [
+        "."
+    ],
+    "file.lastUsedOpenFilter": "All Files (*)",
+    "fileStates": {
+        "": {
+            "scaleInDock": 1
+        },
+        "testmap.tmx": {
+            "scale": 1.5,
+            "selectedLayer": 1,
+            "viewCenter": {
+                "x": 331,
+                "y": 542.3333333333333
+            }
+        },
+        "testmap.tmx#Test": {
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        }
+    },
+    "openFiles": [
+        "testmap.tmx"
+    ],
+    "project": "",
+    "recentFiles": [
+        "testmap.tmx"
+    ]
+}
