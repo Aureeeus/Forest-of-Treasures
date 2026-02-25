@@ -3,11 +3,12 @@ package edu.tip.forestoftreasures;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
-import edu.tip.forestoftreasures.utils.DrawableMaker;
+import edu.tip.forestoftreasures.utils.DrawableFactory;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
@@ -23,6 +24,21 @@ public class GameLauncher extends Game {
 
       SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("ui/fotskin.atlas");
       assets.load("ui/fotskin.json", Skin.class, params);
+
+      // --- Player Stats and Movesets UI ---
+      assets.load("icons/stats_icons.png", Texture.class);
+      assets.load("icons/Gear.png", Texture.class);
+      assets.load("icons/dex_icon.png", Texture.class);
+      assets.load("icons/skill1_icon.png", Texture.class);
+      assets.load("icons/skill2_icon.png", Texture.class);
+      assets.load("icons/skill3_icon.png", Texture.class);
+
+      // --- Spritesheet icons ---
+      assets.load("icons/dialogue_ui_sheet.png", Texture.class);
+      
+      // --- Day 1 UI ---
+      assets.load("scenarios/day1/forest_intro.png", Texture.class);
+      assets.load("scenarios/day1/fairy_sprite.png", Texture.class);
       assets.finishLoading();
 
       settingsConfig = new SettingsConfiguration();
@@ -35,6 +51,6 @@ public class GameLauncher extends Game {
   public void dispose() {
     super.dispose();
     assets.dispose();
-    DrawableMaker.dispose();
+    DrawableFactory.dispose();
   }
 }

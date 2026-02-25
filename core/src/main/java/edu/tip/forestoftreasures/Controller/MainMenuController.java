@@ -17,6 +17,7 @@ public class MainMenuController {
   private final MainMenuScreen screen;
   private Skin skin;
 
+  // Game sounds (disposable)
   private Sound startSound;
   private Sound selectSound;
 
@@ -84,5 +85,10 @@ public class MainMenuController {
   private void handleQuit() {
     game.getScreen().dispose();
     Gdx.app.exit();
+  }
+
+  public void dispose() {
+    startSound.dispose();
+    selectSound.dispose();
   }
 }

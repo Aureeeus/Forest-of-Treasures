@@ -23,10 +23,14 @@ import edu.tip.forestoftreasures.Controller.MainMenuController;
 public class MainMenuScreen implements Screen {
   private Stage stage;
   private Table table;
+  private final GameLauncher game;
+  private MainMenuController controller;
+
+  // Game designs and sounds (disposable)
   private Skin skin;
   private Texture backgroundTexture;
   private Music backgroundMusic;
-  private final GameLauncher game;
+  
 
   private TextButton startButton;
   private TextButton achievementsButton;
@@ -87,7 +91,7 @@ public class MainMenuScreen implements Screen {
     testButton = new TextButton("maze testing", skin, "main-menu-text-button");
     table.add(testButton);
     table.row();
-    new MainMenuController(game, this);
+    controller = new MainMenuController(game, this);
   }
 
   @Override
@@ -137,8 +141,8 @@ public class MainMenuScreen implements Screen {
     // Destroy screen's assets here.
     stage.dispose();
     backgroundTexture.dispose();
-    skin.dispose();
     backgroundMusic.dispose();
+    controller.dispose();
   }
 
   public TextButton getStartButton() {
