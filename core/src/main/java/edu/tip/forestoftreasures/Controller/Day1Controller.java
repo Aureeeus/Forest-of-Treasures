@@ -1,42 +1,79 @@
 package edu.tip.forestoftreasures.Controller;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.List;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
+import com.badlogic.gdx.scenes.scene2d.InputListener;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Align;
+
 import com.github.tommyettinger.textra.Font;
+import com.github.tommyettinger.textra.TextraLabel;
 import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.Model.Achievement;
+import edu.tip.forestoftreasures.Model.AchievementVerifier;
+import edu.tip.forestoftreasures.Model.ChoiceNode;
+import edu.tip.forestoftreasures.Model.DialogueLoader;
+import edu.tip.forestoftreasures.Model.DialogueLoader.DayData;
+import edu.tip.forestoftreasures.Model.DialogueNode;
+import edu.tip.forestoftreasures.Model.DialogueRunner;
+import edu.tip.forestoftreasures.Model.LineNode;
 import edu.tip.forestoftreasures.View.Day1Screen;
 
-public class Day1Controller {
+public class Day1Controller implements DialogueRunner.DisplayHandler {
+  // Data of thee Dialogue depening on the day
+  private static final String STORY_FILE = "dialogue/story_schema.json";
+  private static final String DAY_KEY    = "day1";
+
   private final GameLauncher game;
   private final Day1Screen screen;
 
-  // Important game-related variables
-  private final Queue<String> dialogueQueue = new LinkedList<>();
-  private boolean isTyping = false; // flag to check for dialogue box
+  // --- Dialogue system ---
+  private final DialogueRunner runner;
+  private final AchievementVerifier achievementVerifier;
+  private DialogueNode storyRoot;          // kept for BFS validation in AchievementVerifier
+  private List<Achievement> achievements;  // loaded from JSON
 
-  // UI resources
+  // --- Choice UI state ---
+  private int selectedRow = 0;
+  private ChoiceNode activeChoiceNode; // the currently displayed choice, null when not choosing
+
+  // UI references
   private Image settingsIcon;
+  private final Image selectChoiceIcon;
+
   private final Table scenarioContentTable;
   private final Table textDialogueTable;
   private final Table dialogueWidgetTable;
 
-  // Textures and Fonts
-  private Texture scenarioTexture;
-  private final Font textFont;
+  private Container<Actor> dialogueCell0 = new Container<>(null);
+  private Container<Actor> dialogueCell1 = new Container<>(null).align(Align.left | Align.center);
+  private Container<Actor> dialogueCell2 = new Container<>(null);
+  private Container<Actor> dialogueCell3 = new Container<>(null).align(Align.left | Align.center);
 
+  // --- Fonts (disposable) ---
+  private final Font dialogueFont;
+  private final Font selectChoiceFont;
+
+  /**
+   * Constructs the Day1Controller, wires up UI references, loads the day
+   * from JSON, and starts the runner from the loaded root node.
+   *
+   * @param game   The main game launcher holding the asset manager.
+   * @param screen The Day1Screen holding all LibGDX stage and table references.
+   */
   public Day1Controller(GameLauncher game, Day1Screen screen) {
     this.game = game;
     this.screen = screen;
@@ -45,115 +82,346 @@ public class Day1Controller {
     this.textDialogueTable = screen.getTextDialogueTable();
     this.dialogueWidgetTable = screen.getDialogueWidgetTable();
     this.settingsIcon = screen.getSettingsIcon();
+    
+    Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
+    TextureRegion selectChoiceTexture = new TextureRegion(selectIconSheet, 448, 384, 64, 64);
+    this.selectChoiceIcon = new Image(selectChoiceTexture);
 
-    // Convert BitmapFont to TextraTypist Font
-    this.textFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
+    this.dialogueFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
+    dialogueFont.adjustLineHeight(1.3f);
+    this.selectChoiceFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
+
+    // Pass this controller as the DisplayHandler — runner calls back into showLine() etc.
+    this.runner = new DialogueRunner(this);
+    this.achievementVerifier = new AchievementVerifier();
 
     addListeners();
-    playScenario();
+    loadAndStartDay();
   }
 
-  // Function to add listener for widgets
+  /**
+   * Loads the day1 data from story.json via DialogueLoader and starts the runner.
+   *
+   * DialogueLoader reads the JSON and returns a DayData record containing:
+   *   - rootNode    : the first node to pass into runner.start()
+   *   - achievements: the list of achievements defined for this day
+   *
+   * Both are stored so they are available when onDialogueEnd() fires.
+   *
+   * NOTE: All textures referenced in story.json must already be loaded by
+   * AssetManager before this method is called — typically in your LoadingScreen.
+   */
+  private void loadAndStartDay() {
+    DayData day = DialogueLoader.load(STORY_FILE, DAY_KEY);
+
+    this.storyRoot    = day.rootNode();
+    this.achievements = day.achievements();
+
+    runner.start(storyRoot);
+  }
+
+  /**
+   * Called by DialogueRunner when the next node is a LineNode.
+   *
+   * Resolves the node's texture path via game.assets.get() — this is safe
+   * because AssetManager already holds the texture from the loading screen.
+   * Then creates a TypingLabel. When typing ends, runner.onLineFinished()
+   * is called to advance the graph automatically.
+   *
+   * @param node The LineNode containing the text and texture path to display.
+   */
+  @Override
+  public void showLine(LineNode node) {
+    // Resolve texture path → Texture via AssetManager (already pre-loaded)
+    if (node.texturePath != null) {
+      Texture texture = game.assets.get(node.texturePath, Texture.class);
+      showImageScenario(texture);
+    }
+
+    TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
+    typingLabel.setWrap(true);
+
+    // ! Developer condition to skip lines
+    if (!typingLabel.hasEnded()) typingLabel.skipToTheEnd();
+
+    // Notify the runner when the typing animation finishes so the graph advances
+    typingLabel.setTypingListener(new TypingAdapter() {
+      @Override
+      public void end() {
+        runner.onLineFinished();
+      }
+    });
+
+    textDialogueTable.add(typingLabel)
+      .growX()
+      .bottom()
+      .left()
+      .padBottom(5f)
+      .row();
+
+    textDialogueTable.invalidateHierarchy();
+    textDialogueTable.layout();
+
+    trimDialogueOverflow();
+  }
+  
+  /**
+   * Removes the oldest dialogue lines from textDialogueTable when the total
+   * height of its children exceeds the table's own height.
+   *
+   * Called after every new line is added and layout is recalculated, so
+   * cell heights are accurate when we measure them.
+   *
+   * getCells() returns cells in insertion order — index 0 is always
+   * the oldest line, so we remove from the front until the content fits.
+   */
+  private void trimDialogueOverflow() {
+    // Keep removing the oldest line (index 0) until content fits
+    while (textDialogueTable.getCells().size > 1 
+      && textDialogueTable.getPrefHeight() > textDialogueTable.getHeight()) {
+      textDialogueTable.getCells().removeIndex(0);  // remove oldest cell from the array
+      textDialogueTable.getChildren().removeIndex(0); // remove its actor from the stage tree
+      textDialogueTable.invalidateHierarchy();
+      textDialogueTable.layout();
+    }
+  }
+
+  /**
+   * Called by DialogueRunner when the next node is a ChoiceNode.
+   *
+   * Stores the active choice node so the input listener knows which node to
+   * resolve on confirmation. Renders choices into the widget table and transfers
+   * keyboard focus. The runner is paused here — it will not advance until
+   * onChoiceSelected() is called by the input listener.
+   *
+   * @param node The ChoiceNode containing the list of choices to display.
+   */
+  @Override
+  public void showChoices(ChoiceNode node) {
+    activeChoiceNode = node;
+    selectedRow      = 0; // reset cursor to first option each time
+
+    renderChoiceWidgets(node);
+    screen.getStage().setKeyboardFocus(dialogueWidgetTable);
+  }
+
+  /**
+   * Called by DialogueRunner when the last node in the graph is reached.
+   *
+   * Triggers end-of-day logic: runs achievement verification and logs results.
+   * Replace log statements with your actual unlock UI or save system.
+   */
+  @Override
+  public void onDialogueEnd() {
+    Gdx.app.log("Day1Controller", "Day complete. Checking achievements...");
+    checkAchievements();
+  }
+
+  /**
+   * Renders the choices from a ChoiceNode into the dialogue widget table.
+   *
+   * Currently supports up to 2 choices using fixed cell containers.
+   * If you need more than 2 in the future, refactor to build cells
+   * dynamically from node.choices.size().
+   *
+   * @param node The ChoiceNode whose choices should be rendered.
+   */
+  private void renderChoiceWidgets(ChoiceNode node) {
+    // Row 0
+    TextraLabel choice0Label = new TextraLabel(node.choices.get(0).label(), selectChoiceFont);
+    choice0Label.setAlignment(Align.left);
+    dialogueCell0.setActor(selectChoiceIcon);
+    dialogueCell1.setActor(choice0Label);
+    dialogueCell1.fill();
+    tintCell(dialogueCell1, true);
+
+    dialogueWidgetTable.add(dialogueCell0).size(30f).padRight(20f).padBottom(20f);
+    dialogueWidgetTable.add(dialogueCell1).growX().align(Align.left | Align.center).padBottom(20f).row();
+
+    // Row 1
+    TextraLabel choice1Label = new TextraLabel(node.choices.get(1).label(), selectChoiceFont);
+    choice1Label.setAlignment(Align.left);
+    dialogueCell3.setActor(choice1Label);
+    dialogueCell3.fill();
+    tintCell(dialogueCell3, false);
+
+    dialogueWidgetTable.add(dialogueCell2).size(30f).padRight(20f);
+    dialogueWidgetTable.add(dialogueCell3).growX().align(Align.left | Align.center);
+  }
+
+  /**
+   * Removes all choice widgets from the dialogue widget table and resets state.
+   * Called immediately before forwarding the confirmed choice to the runner.
+   */
+  private void clearChoiceWidgets() {
+    dialogueWidgetTable.clearChildren();
+    dialogueCell0.setActor(null);
+    dialogueCell1.setActor(null);
+    dialogueCell2.setActor(null);
+    dialogueCell3.setActor(null);
+    activeChoiceNode = null;
+  }
+
+  /**
+   * Updates the visual selection state of both rows based on selectedRow.
+   * Moves the arrow icon to the selected row and applies color tinting.
+   */
+  private void refreshSelection() {
+    if (selectedRow == 0) {
+      dialogueCell0.setActor(selectChoiceIcon);
+      dialogueCell2.setActor(null);
+      tintCell(dialogueCell1, true);
+      tintCell(dialogueCell3, false);
+    } else {
+      dialogueCell0.setActor(null);
+      dialogueCell2.setActor(selectChoiceIcon);
+      tintCell(dialogueCell3, true);
+      tintCell(dialogueCell1, false);
+    }
+  }
+
+  /**
+   * Applies a yellow highlight to the selected cell or resets it to white.
+   *
+   * @param cell       The container whose actor should be tinted.
+   * @param isSelected True to highlight, false to reset to white.
+   */
+  private void tintCell(Container<?> cell, boolean isSelected) {
+    if (cell.getActor() == null) return;
+    cell.getActor().setColor(isSelected ? Color.valueOf("#FFDB51") : Color.WHITE);
+  }
+
+    /**
+   * Checks all achievements loaded from JSON against the player's recorded path.
+   *
+   * AchievementVerifier runs BFS on the graph first to validate each achievement
+   * is reachable before checking the player's path. Invalid achievements are
+   * skipped with a warning log so one broken definition doesn't affect the rest.
+   */
+  private void checkAchievements() {
+    List<Achievement> unlocked = achievementVerifier.getUnlockedAchievements(
+      achievements,
+      runner.getPlayerPath(),
+      storyRoot
+    );
+
+    if (unlocked.isEmpty()) {
+      Gdx.app.log("Day1Controller", "No achievements unlocked.");
+      return;
+    }
+
+    for (Achievement achievement : unlocked) {
+      Gdx.app.log("Day1Controller", "Unlocked: ["
+        + achievement.id + "] " + achievement.description);
+    }
+  }
+
+  /**
+   * Registers all input listeners for the settings icon and choice widget.
+   */
   private void addListeners() {
-    // Event listener for settings icon
+    addSettingsIconListener();
+    addChoiceInputListener();
+  }
+
+  /**
+   * Adds hover and click color feedback to the settings icon.
+   */
+  private void addSettingsIconListener() {
     screen.getSettingsIcon().addListener(new ClickListener() {
-      // Event handler for when the settings icon is clicked
       @Override
       public void clicked(InputEvent event, float x, float y) {
-        Gdx.app.log("Day1Controller", "Settings icon clicked!");
+        Gdx.app.log("Day1Controller", "Settings clicked!");
       }
 
-      // Event handler for when the settings icon is pressed down
       @Override
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         settingsIcon.setColor(Color.valueOf("#808080"));
         return super.touchDown(event, x, y, pointer, button);
       }
 
-      // Event handler for when the settings icon is released
       @Override
       public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
         settingsIcon.setColor(Color.WHITE);
         super.touchUp(event, x, y, pointer, button);
       }
 
-      // Event handler for when the mouse cursor enters the settings icon area
       @Override
       public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-        if (pointer == -1) {
-          settingsIcon.setColor(Color.valueOf("#c7c7c7"));
-        }
+        if (pointer == -1) settingsIcon.setColor(Color.valueOf("#c7c7c7"));
         super.enter(event, x, y, pointer, fromActor);
       }
 
-      // Event handler for when the mouse cursor exits the settings icon area
       @Override
       public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        if (pointer == -1) {
-          settingsIcon.setColor(Color.WHITE);
-        }
+        if (pointer == -1) settingsIcon.setColor(Color.WHITE);
         super.exit(event, x, y, pointer, toActor);
       }
     });
   }
 
-  // Scenario initializer when game starts
-  private void playScenario() {
-    // Load intial image to the scenario box
-    scenarioTexture = new Texture(Gdx.files.internal("scenarios/day1/forest_intro.png"));
-    Image scenarioImage = new Image(scenarioTexture);
-    scenarioContentTable.add(scenarioImage).expand().fill();
-
-    // Load initial story lines to the dialogue box
-    addDialogue(
-        "The forest seems normal. Goblins, bugs, and fairies roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because its high noon and the trees, so far, are normal.");
-    addDialogue(
-        "{WAIT=1}\nA sprite lands on my shoulder. Rumors say these sprites have been blessed, and their touch can grant blessings or take them away from me. Should I shoo it away?");
-    addDialogue("bisaya talaga ako tangina {WAIT=5} hahahaha niggas");
-  }
-
-  // Adds text dialogue to textDialogueTable
-  private void addDialogue(String text) {
-    dialogueQueue.add(text);
-    if (!isTyping)
-      showNextDialogue();
-  }
-
-  private void showNextDialogue() {
-    // Check if there is no queued text to display
-    if (dialogueQueue.isEmpty()) {
-      isTyping = false;
-      return;
-    }
-
-    isTyping = true;
-    String text = dialogueQueue.poll();
-
-    TypingLabel typingLabel = new TypingLabel(text, textFont);
-    typingLabel.setWrap(true);
-
-    // (IMPORTANT) listener to trigger to the next line
-    typingLabel.setTypingListener(new TypingAdapter() {
+   /**
+   * Adds keyboard navigation and confirmation to the dialogue widget table.
+   *
+   * UP/DOWN moves the cursor between choice rows.
+   * ENTER or SPACE confirms the highlighted choice:
+   *   1. Clears the choice UI from the screen.
+   *   2. Calls runner.onChoiceSelected(selectedRow) which records the decision
+   *      in PlayerPathTracker and advances the graph to the chosen branch.
+   *
+   * Input is only processed when activeChoiceNode is not null, ensuring
+   * keyboard events during normal dialogue lines are safely ignored.
+   */
+  private void addChoiceInputListener() {
+    dialogueWidgetTable.addListener(new InputListener() {
       @Override
-      public void end() {
-        showNextDialogue(); // Recursive call to show consequent lines.
+      public boolean keyDown(InputEvent event, int keycode) {
+        if (keycode == Input.Keys.UP) {
+          selectedRow = Math.max(0, selectedRow - 1);
+          refreshSelection();
+          return true;
+        }
+
+        if (keycode == Input.Keys.DOWN) {
+          selectedRow = Math.min(1, selectedRow + 1);
+          refreshSelection();
+          return true;
+        }
+
+        if ((keycode == Input.Keys.ENTER)
+            && activeChoiceNode != null) {
+          clearChoiceWidgets();
+          runner.onChoiceSelected(selectedRow);
+          return true;
+        }
+
+        return false;
       }
     });
-
-    // Add to dialogue table
-    textDialogueTable.add(typingLabel)
-        .growX()
-        .bottom()
-        .left()
-        .padBottom(5f)
-        .row();
-
-    textDialogueTable.invalidateHierarchy();
-    textDialogueTable.layout();
   }
 
-  // Dispose memory resources once day1 is done
-  private void dispose() {
-    scenarioTexture.dispose();
+  /**
+   * Replaces the current background image with a new texture.
+   * Clears any existing image in the scenario table first to prevent stacking.
+   *
+   * @param scenarioTexture The new background texture to display.
+   */
+  private void showImageScenario(Texture scenarioTexture) {
+    if (scenarioContentTable.getCells().size > 0) {
+      scenarioContentTable.clearChildren();
+    }
+    scenarioContentTable.add(new Image(scenarioTexture)).grow();
+  }
+
+  /**
+   * Disposes of all font resources held by this controller.
+   *
+   * Must be called from Day1Screen.dispose() to prevent memory leaks.
+   * Fonts are not managed by AssetManager so they require manual disposal.
+   * Textures are NOT disposed here — AssetManager owns and manages them.
+   */
+  public void dispose() {
+    dialogueFont.dispose();
+    selectChoiceFont.dispose();
   }
 }

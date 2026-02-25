@@ -3,3 +3,7 @@ Font sizes:
 2. Dialogue = 20px
 3. Medium = 24px
 4. Large = 30+px
+
+Dialogue CHOICE Indicator:
+1. Green = GOOD
+2. RED = BAD
