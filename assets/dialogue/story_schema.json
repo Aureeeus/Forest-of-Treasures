@@ -6,6 +6,11 @@
         "id": "Blessing of the Sprite",
         "description": "You welcomed the sprite and received its blessing.",
         "requiredChoiceSequence": [1]
+      },
+      {
+        "id": "Lovely Labyrinth",
+        "description": "You navigated the twisting corridors of the Great Maze and emerged on the other side with your wits-and your sneakers-intact. Not even a dead end could stop you.",
+        "requiredChoiceSequence": [-1, 0]
       }
     ],
     "nodes": [
@@ -20,7 +25,7 @@
         "id": "d1_line2",
         "type": "line",
         "text": "{WAIT=1}\nA sprite lands on my shoulder. Rumors say these sprites have been blessed, and their touch can grant blessings or take them away from me. {COLOR=#FFDB51}Should I shoo it away?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day1/forest_sprite.png",
         "next": "d1_sprite_choice"
       },
       {
@@ -41,22 +46,22 @@
       {
         "id": "d1_sprite_choice_line1",
         "type": "line",
-        "text": "\n{COLOR=#D3D3D3}The sprite left. Seemingly unagitated by my skeptical attitude towards it.{ENDCOLOR}",
-        "texture": null,
+        "text": "\nThe sprite left. Seemingly unagitated by my skeptical attitude towards it.",
+        "texture": "scenarios/day1/deep_in_forest.png",
         "next": "d1_line3"
       },
       {
         "id": "d1_sprite_choice_line2",
         "type": "line",
         "text": "\n{COLOR=#66FF00}I checked my stats with an appraisal to find out that my Mana regenerates by 1-20% after each battle.{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day1/deep_in_forest.png",
         "next": "d1_line3"
       },
       {
         "id": "d1_line3",
         "type": "line",
         "text": "\nI've been documenting the species I've come across, and so far, these life forms can be relocated to a nearby ecosystem outside the forest. The forest was indeed teeming with life. A few meters after the sprite encounter, I saw {COLOR=RED}a bloodied hobgoblin{ENDCOLOR}. Hobgoblins are considered the bottom of the food chain. However, its left hand was cut off - not with a bite mark, but a sweeping cut, seemingly of a sword. {COLOR=#FFDB51}Should I help him?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day1/hobgoblin_hurt.png",
         "next": "d1_hobgoblin_battle_choice"
       },
       {
@@ -79,13 +84,33 @@
         "type": "line",
         "text": "\n{COLOR=#66FF00}I battle the goblin's seeming perpetrator. I won and aided the goblin. I used one of my potions to heal it.{ENDCOLOR}\n{COLOR=RED}[[-1 Potion]{ENDCOLOR}",
         "texture": null,
-        "next": null
+        "next": "d1_line4"
       },
       {
         "id": "d1_hobgoblin_battle_choice_line2",
         "type": "line",
-        "text": "\n{COLOR=#D3D3D3}I dont think this is part of my job. I dont want the hobgoblins perpetrators to be after me. I turned a blind eye to the creature and continued venturing.{ENDCOLOR}",
+        "text": "\nI dont think this is part of my job. I dont want the hobgoblins perpetrators to be after me. I turned a blind eye to the creature and continued venturing.",
         "texture": null,
+        "next": "d1_line4"
+      },
+      {
+        "id": "d1_line4",
+        "type": "line",
+        "text": "\nAs I ventured further, all of a sudden, I felt a tree branch stop me in my tracks. I thought I stumbled on a branch, but I couldn't lift my foot as the branch completely wrapped around my foot. I looked back and saw a tree with a pattern of a face. {COLOR=#FFDB51}Is this what they call a Treant?{ENDCOLOR}{WAIT=1}",
+        "texture": "scenarios/day1/forest_treant.png",
+        "next": "d1_maze_minigame"
+      },
+      {
+        "id": "d1_maze_minigame",
+        "type": "minigame",
+        "screenKey": "maze_minigame",
+        "next": "d1_line5"
+      },
+      {
+        "id": "d1_line5",
+        "type": "line",
+        "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues. ",
+        "texture": "scenarios/day1/day1_end.png",
         "next": null
       }
     ]
