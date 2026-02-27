@@ -17,6 +17,10 @@ public class AchievementVerifier {
    */
   private record BfsState(DialogueNode node, List<Integer> choicePath) {}
 
+  // --- Static Variables ---
+  // Wildcard value in requiredChoiceSequence — matches any player choice at this position.
+  private static final int WILDCARD = -1; 
+
   private List<List<Integer>> bfsAllPaths(DialogueNode root) {
     List<List<Integer>> completePaths = new ArrayList<>();
     Queue<BfsState> queue = new ArrayDeque<>();
@@ -46,6 +50,9 @@ public class AchievementVerifier {
           branchedPath.add(i);
           queue.add(new BfsState(choice.choices.get(i).next(), branchedPath));
         }
+      } else if (current instanceof MinigameNode minigame) {
+        // No branching — follow the chain with the same path unchanged
+        queue.add(new BfsState(minigame.getNext(), currentPath));
       }
     }
 
@@ -67,6 +74,9 @@ public class AchievementVerifier {
     if (target.size() < required.size()) return false;
 
     for (int i = 0; i < required.size(); i++) {
+      // Ignore wildcards
+      if (required.get(i).intValue() == WILDCARD) continue;
+
       if (!required.get(i).equals(target.get(i))) return false;
     }
 

@@ -26,6 +26,14 @@ public class DialogueRunner {
     public void showChoices(ChoiceNode node);
 
     /**
+     * Launches the minigame screen and pauses the dialogue graph.
+     * The graph resumes only after onMinigameFinished() is called.
+     *
+     * @param node The MinigameNode containing the screenKey to launch.
+     */
+    void showMinigame(MinigameNode node);
+
+    /**
      * Called when the entire dialogue graph has been fully traversed.
      * Use this to trigger end-of-chapter logic.
      */
@@ -54,9 +62,14 @@ public class DialogueRunner {
 
   /**
    * Inspects the current node and dispatches it to the appropriate display method.
-   * 
-   * <p>Adding a new node type (e.g. CutsceneNode) only requires adding
-   * a new branch here — nothing else changes.</p>
+   *
+   * Core routing logic:
+   *   - null          → dialogue is over, notify the handler.
+   *   - LineNode      → display the text line.
+   *   - ChoiceNode    → display the choice UI and pause.
+   *   - MinigameNode  → launch the minigame screen and pause.
+   *
+   * Adding a new node type only requires a new branch here.
    */
   private void step() {
     if (current == null) {
@@ -68,6 +81,8 @@ public class DialogueRunner {
       displayHandler.showLine(line);
     } else if (current instanceof ChoiceNode choice) {
       displayHandler.showChoices(choice);
+    } else if (current instanceof MinigameNode minigame) {
+      displayHandler.showMinigame(minigame);
     }
   }
 
@@ -98,5 +113,16 @@ public class DialogueRunner {
 
   public List<PlayerDecision> getPlayerPath() {
     return pathTracker.getPath();
+  }
+
+  /**
+   * Advances the graph after the player successfully passes a minigame.
+   *
+   * Called by the minigame screen once the win condition is met.
+   * Transitions to the node linked via MinigameNode.then().
+   */
+  public void onMinigameFinished() {
+    current = current.getNext();
+    step();
   }
 }

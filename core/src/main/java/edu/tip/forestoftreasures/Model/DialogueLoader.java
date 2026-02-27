@@ -66,8 +66,8 @@ public class DialogueLoader {
     // Pass 2a: link ChoiceNodes FIRST so they are rebuilt in the map
     linkChoiceNodes(nodesJson, nodeMap, dayKey);
 
-    // Pass 2b: link LineNodes AFTER so they reference the rebuilt ChoiceNodes
-    linkLineNodes(nodesJson, nodeMap, dayKey);
+    // Pass 2b: link LineNodes and MinigameNodes after ChoiceNodes are rebuilt
+    linkLineAndMinigameNodes(nodesJson, nodeMap, dayKey);
 
     List<Achievement> achievements = parseAchievements(achievementsJson);
 
@@ -87,11 +87,11 @@ public class DialogueLoader {
 
   /**
    * Pass 1: Reads every node object from the JSON array and instantiates it
-   * as a LineNode or ChoiceNode based on its "type" field.
+   * as a LineNode, ChoiceNode, or MinigameNode based on its "type" field.
    *
    * Nodes are stored in a HashMap keyed by their "id" string.
    * At this point, nodes are NOT linked — "next" references are not resolved yet.
-   * ChoiceNode choices are also not linked — that happens in Pass 2.
+   * ChoiceNode choices and MinigameNode minigames are also not linked — that happens in Pass 2.
    *
    * @param nodesJson The JsonValue representing the "nodes" array.
    * @param dayKey    Used for error messages only.
@@ -108,6 +108,7 @@ public class DialogueLoader {
       DialogueNode node = switch (type) {
         case "line"   -> createLineNode(nodeJson);
         case "choice" -> createChoiceNode(nodeJson);
+        case "minigame" -> createMinigameNode(nodeJson);
         default -> throw new RuntimeException(
             "[DialogueLoader] Unknown node type '" + type + "' on id '" + id + "' in " + dayKey
         );
@@ -158,6 +159,22 @@ public class DialogueLoader {
   }
 
   /**
+   * Creates an unlinked MinigameNode from a JSON node object.
+   * The "next" reference is null until Pass 2b.
+   *
+   * @param nodeJson The JsonValue for this node.
+   * @return An unlinked MinigameNode.
+   */
+  private static MinigameNode createMinigameNode(JsonValue nodeJson) {
+    String screenKey = nodeJson.getString("screenKey");
+    return new MinigameNode(screenKey);
+  }
+
+  // ---------------------------------------------------------------------------
+  // PASS 2a — CHOICE NODE LINKING
+  // ---------------------------------------------------------------------------
+
+  /**
    * Pass 2a: Rebuilds all ChoiceNodes with fully resolved next references
    * and replaces them in the map BEFORE LineNodes are linked.
    */
@@ -173,20 +190,33 @@ public class DialogueLoader {
     }
   }
 
+  // ---------------------------------------------------------------------------
+  // PASS 2b — LINE AND MINIGAME NODE LINKING
+  // ---------------------------------------------------------------------------
+
   /**
-   * Pass 2b: Links all LineNodes to their next nodes.
+   * Pass 2b: Links all LineNodes and MinigameNodes to their next nodes.
    *
    * Runs after linkChoiceNodes() so all ChoiceNodes in the map are already
-   * fully rebuilt with resolved choices before LineNodes reference them.
+   * fully rebuilt before LineNodes and MinigameNodes reference them.
+   *
+   * @param nodesJson The "nodes" JsonValue array.
+   * @param nodeMap   The map with all nodes including rebuilt ChoiceNodes.
+   * @param dayKey    Used for error messages.
    */
-  private static void linkLineNodes(
+  private static void linkLineAndMinigameNodes(
     JsonValue nodesJson,
     Map<String, DialogueNode> nodeMap,
     String dayKey
   ) {
     for (JsonValue nodeJson = nodesJson.child; nodeJson != null; nodeJson = nodeJson.next) {
-      if (nodeJson.getString("type").equals("line")) {
-        linkLineNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
+      String type = nodeJson.getString("type");
+      String id   = nodeJson.getString("id");
+
+      if (type.equals("line")) {
+        linkLineNode(nodeJson, id, nodeMap, dayKey);
+      } else if (type.equals("minigame")) {
+        linkMinigameNode(nodeJson, id, nodeMap, dayKey);
       }
     }
   }
@@ -213,6 +243,28 @@ public class DialogueLoader {
 
     LineNode lineNode = (LineNode) nodeMap.get(id);
     lineNode.then(resolveNode(nextId, nodeMap, id, dayKey));
+  }
+
+  /**
+   * Links a MinigameNode to its next node by resolving the "next" id string.
+   * If "next" is null, the node remains terminal and triggers onDialogueEnd().
+   *
+   * @param nodeJson The JsonValue for this node.
+   * @param id       The id of this node.
+   * @param nodeMap  The map to resolve the next id against.
+   * @param dayKey   Used for error messages.
+   */
+  private static void linkMinigameNode(
+    JsonValue nodeJson,
+    String id,
+    Map<String, DialogueNode> nodeMap,
+    String dayKey
+  ) {
+    String nextId = nodeJson.getString("next", null);
+    if (nextId == null) return;
+
+    MinigameNode minigameNode = (MinigameNode) nodeMap.get(id);
+    minigameNode.then(resolveNode(nextId, nodeMap, id, dayKey));
   }
 
   /**
@@ -291,8 +343,13 @@ public class DialogueLoader {
 
       JsonValue sequenceJson = achJson.get("requiredChoiceSequence");
       List<Integer> sequence = new ArrayList<>();
-      for (JsonValue index = sequenceJson.child; index != null; index = index.next) {
-        sequence.add(index.asInt());
+      if (sequenceJson != null) {
+        for (JsonValue index = sequenceJson.child; index != null; index = index.next) {
+          sequence.add(index.asInt());
+        }
+      } else {
+        Gdx.app.error(TAG, "WARNING: Achievement '" + id
+          + "' is missing requiredChoiceSequence. Skipping.");
       }
 
       achievements.add(new Achievement(id, description, sequence));

@@ -1,6 +1,11 @@
 package edu.tip.forestoftreasures.Model;
 
 public abstract class DialogueNode {
+
+  public abstract DialogueNode getNext();
+}
+
+
   /**
    * Returns the next node to transition to after this node is done.
    *
@@ -10,5 +15,3 @@ public abstract class DialogueNode {
    *
    * @return The next DialogueNode, or null if this is a terminal/choice node.
    */
-  public abstract DialogueNode getNext();
-}
