@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -15,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
-
+import com.badlogic.gdx.utils.Scaling;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
 import com.github.tommyettinger.textra.TypingAdapter;
@@ -30,7 +31,9 @@ import edu.tip.forestoftreasures.Model.DialogueLoader.DayData;
 import edu.tip.forestoftreasures.Model.DialogueNode;
 import edu.tip.forestoftreasures.Model.DialogueRunner;
 import edu.tip.forestoftreasures.Model.LineNode;
+import edu.tip.forestoftreasures.Model.MinigameNode;
 import edu.tip.forestoftreasures.View.Day1Screen;
+import edu.tip.forestoftreasures.View.MazeBossScreen;
 
 public class Day1Controller implements DialogueRunner.DisplayHandler {
   // Data of thee Dialogue depening on the day
@@ -45,6 +48,8 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
   private final AchievementVerifier achievementVerifier;
   private DialogueNode storyRoot;          // kept for BFS validation in AchievementVerifier
   private List<Achievement> achievements;  // loaded from JSON
+
+  private boolean pendingOverflowTrim = false;
 
   // --- Choice UI state ---
   private int selectedRow = 0;
@@ -142,7 +147,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     typingLabel.setWrap(true);
 
     // ! Developer condition to skip lines
-    if (!typingLabel.hasEnded()) typingLabel.skipToTheEnd();
+    // if (!typingLabel.hasEnded()) typingLabel.skipToTheEnd();
 
     // Notify the runner when the typing animation finishes so the graph advances
     typingLabel.setTypingListener(new TypingAdapter() {
@@ -160,30 +165,64 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
       .row();
 
     textDialogueTable.invalidateHierarchy();
-    textDialogueTable.layout();
 
-    trimDialogueOverflow();
+    Gdx.app.postRunnable(this::trimDialogueOverflow);
   }
   
   /**
-   * Removes the oldest dialogue lines from textDialogueTable when the total
-   * height of its children exceeds the table's own height.
-   *
-   * Called after every new line is added and layout is recalculated, so
-   * cell heights are accurate when we measure them.
-   *
-   * getCells() returns cells in insertion order — index 0 is always
-   * the oldest line, so we remove from the front until the content fits.
+   * Removes old dialogue lines from the top until all content fits inside the table.
    */
   private void trimDialogueOverflow() {
-    // Keep removing the oldest line (index 0) until content fits
-    while (textDialogueTable.getCells().size > 1 
-      && textDialogueTable.getPrefHeight() > textDialogueTable.getHeight()) {
-      textDialogueTable.getCells().removeIndex(0);  // remove oldest cell from the array
-      textDialogueTable.getChildren().removeIndex(0); // remove its actor from the stage tree
-      textDialogueTable.invalidateHierarchy();
-      textDialogueTable.layout();
+    textDialogueTable.validate();
+
+    float tableHeight = textDialogueTable.getHeight();
+    if (tableHeight <= 0) {
+      pendingOverflowTrim = true; // layout not ready yet, retry next frame //
+      return;
     }
+
+    // Check if any cell actor height is still unresolved — layout not fully settled
+    for (var cell : textDialogueTable.getCells()) {
+      if (cell.getActorHeight() <= 0) {
+        pendingOverflowTrim = true; // defer until all actors are properly measured
+        return;
+      }
+    }
+
+    pendingOverflowTrim = false;
+
+    while (textDialogueTable.getChildren().size > 1) {
+      float contentHeight = textDialogueTable.getPadTop() + textDialogueTable.getPadBottom();
+
+      for (var cell : textDialogueTable.getCells()) {
+        contentHeight += cell.getActorHeight() + cell.getPadTop() + cell.getPadBottom();
+      }
+
+      if (contentHeight <= tableHeight) break; // fits, stop trimming 
+
+      textDialogueTable.removeActorAt(0, true); // remove oldest line
+      textDialogueTable.invalidateHierarchy();
+      textDialogueTable.validate();
+    }
+  }
+
+  /**
+   * Retries a deferred overflow trim if the table height wasn't ready
+   * on the frame the minigame returned. Clears the flag once trim runs.
+   */
+  public void update() {
+    if (pendingOverflowTrim) {
+      trimDialogueOverflow();
+    }
+  }
+
+  /**
+   * Allows external triggers (e.g. resize, minigame return) to re-queue a trim
+   * 
+   * @param value New flag value to be set for possible trimming.
+   */
+  public void setPendingOverflowTrim(boolean value) {
+    pendingOverflowTrim = value;
   }
 
   /**
@@ -206,6 +245,20 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
   }
 
   /**
+   * Called by DialogueRunner when the next node is a MinigameNode.
+   *
+   * Switches to the appropriate minigame screen via game.setScreen().
+   * Day1Screen is hidden but NOT disposed — all dialogue state is preserved.
+   * The graph resumes when the minigame screen calls runner.onMinigameFinished().
+   *
+   * @param node The MinigameNode containing the screenKey to launch.
+   */
+  @Override
+  public void showMinigame(MinigameNode node) {
+    game.setScreen(resolveMinigameScreen(node.screenKey));
+  }
+
+  /**
    * Called by DialogueRunner when the last node in the graph is reached.
    *
    * Triggers end-of-day logic: runs achievement verification and logs results.
@@ -215,6 +268,39 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
   public void onDialogueEnd() {
     Gdx.app.log("Day1Controller", "Day complete. Checking achievements...");
     checkAchievements();
+  }
+
+  // ---------------------------------------------------------------------------
+  // MINIGAME SCREEN RESOLUTION
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Maps a screenKey string from story.json to its actual minigame Screen.
+   *
+   * The minigame screen receives a Runnable callback instead of a direct
+   * runner reference — it calls onComplete.run() when the player passes,
+   * which returns to Day1Screen and resumes the dialogue graph.
+   *
+   * To add a new minigame: add a new case here and create its Screen class.
+   *
+   * @param screenKey The key defined in the MinigameNode's JSON.
+   * @return The minigame Screen to transition to.
+   */
+  private Screen resolveMinigameScreen(String screenKey) {
+    Runnable onComplete = () -> {
+      game.setScreen(screen); // return to Day1Screen — state is preserved
+      setPendingOverflowTrim(true);
+      runner.onMinigameFinished(); // resume dialogue graph from next node
+    };
+
+    // TODO: Fix label overflowing
+    return switch (screenKey) {
+      // Add new minigame screens here as cases
+      case "maze_minigame" -> new MazeBossScreen(game, onComplete);
+      default -> throw new RuntimeException(
+        "[Day1Controller] Unknown minigame screenKey: '" + screenKey + "'"
+      );
+    };
   }
 
   /**
@@ -410,7 +496,11 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     if (scenarioContentTable.getCells().size > 0) {
       scenarioContentTable.clearChildren();
     }
-    scenarioContentTable.add(new Image(scenarioTexture)).grow();
+
+    Image image = new Image(scenarioTexture);
+    image.setScaling(Scaling.fit);
+
+    scenarioContentTable.add(image).grow();
   }
 
   /**

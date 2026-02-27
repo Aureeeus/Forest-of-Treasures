@@ -25,6 +25,7 @@ import edu.tip.forestoftreasures.utils.FontFactory;
 public class Day1Screen implements Screen {
   private final Stage stage;
   private final GameLauncher game;
+  private boolean isInitialized = false;
   
   // Assets managed by this screen (disposable)
   private final Texture sheet;
@@ -52,6 +53,7 @@ public class Day1Screen implements Screen {
   private Table leftDialogueContentTable;
   private Table topDialogueContentTable;
   private Table bottomDialogueContentTable;
+  private Day1Controller controller;
 
   // --- Right Panel Color Configuration ---
   Color rightBorderColor = Color.valueOf("#2a2a2a");
@@ -86,7 +88,7 @@ public class Day1Screen implements Screen {
     this.skill2Texture = game.assets.get("icons/skill2_icon.png", Texture.class);
     this.skill3Texture = game.assets.get("icons/skill3_icon.png", Texture.class);
     
-    stage = new Stage(new ScreenViewport());
+    this.stage = new Stage(new ScreenViewport());
   }
 
   @Override
@@ -94,216 +96,220 @@ public class Day1Screen implements Screen {
     // Prepare your screen here.
     Gdx.input.setInputProcessor(stage);
 
-    // Add actor to stage
-    table = new Table();
-    table.setFillParent(true);
-    stage.addActor(table);
+    if (!isInitialized) {
+      isInitialized = true; // Ensures initialization is done only once
 
-    // Create a subtable for player stats, skills, and settings of the game
-    // Define right table background and content drawables
-    Drawable rightBorderBg = DrawableFactory.getColoredDrawable(rightBorderColor);
-    Drawable rightContentBg = DrawableFactory.getColoredDrawable(rightContentColor);
+      // Add actor to stage
+      table = new Table();
+      table.setFillParent(true);
+      stage.addActor(table);
+  
+      // Create a subtable for player stats, skills, and settings of the game
+      // Define right table background and content drawables
+      Drawable rightBorderBg = DrawableFactory.getColoredDrawable(rightBorderColor);
+      Drawable rightContentBg = DrawableFactory.getColoredDrawable(rightContentColor);
+  
+      // Right Content table
+      Table rightContentTable = new Table();
+      rightContentTable.setBackground(rightContentBg);
+      rightContentTable.align(Align.top); // Starting position of cell insertions
+      rightContentTable.pad(40f, 20f, 40f, 20f); // Table content padding
+  
+      // Right Border table
+      Table rightBorderTable = new Table();
+      rightBorderTable.setBackground(rightBorderBg);
+      rightBorderTable.add(rightContentTable).grow().pad(0f, 3f, 0f, 0f);
+      
+      // Adding UI elements to the right content table
+      settingsIcon = new Image(settingsTexture);
+      rightContentTable.add(settingsIcon)
+        .colspan(2)
+        .size(100f)
+        .top()
+        .right()
+        .row();
+  
+      // Divider
+      Image horizontalLineTop = DrawableFactory.createDivider(Color.WHITE);
+      rightContentTable.add(horizontalLineTop)
+        .colspan(2)
+        .growX()
+        .height(5f)
+        .pad(20f, 0f, 20f, 0f)
+        .row();
+  
+      // Player Stats UI
+      TextraLabel playerStatsLabel = new TextraLabel("PLAYER STATS:", playerStatsTitleFont);
+      rightContentTable.add(playerStatsLabel)
+        .colspan(2)
+        .center()
+        .padBottom(10f)
+        .row();
+  
+      Image hpIcon = new Image(heartTexture);
+      TextraLabel hpLabel = new TextraLabel(String.format(": %.0f", player.getHp()), playerStatsTextFont);
+      rightContentTable.add(hpIcon)
+        .size(90f)
+        .left()
+        .padRight(10f);
+      rightContentTable.add(hpLabel)
+        .growX()
+        .left()
+        .row();
+  
+      Image strengthIcon = new Image(strengthTexture);
+      TextraLabel strengthLabel = new TextraLabel(String.format(": %.0f", player.getStrength()), playerStatsTextFont);
+      rightContentTable.add(strengthIcon)
+        .size(90f)
+        .left();
+      rightContentTable.add(strengthLabel)
+        .growX()
+        .left()
+        .row();
+  
+      Image intelligenceIcon = new Image(intelligenceTexture);
+      TextraLabel intelligenceLabel = new TextraLabel(String.format(": %.0f", player.getIntelligence()), playerStatsTextFont);
+      rightContentTable.add(intelligenceIcon)
+        .size(90f)
+        .left();
+      rightContentTable.add(intelligenceLabel)
+        .growX()
+        .left()
+        .row();
+      
+      Image dexterityIcon = new Image(dexterityTexture);
+      TextraLabel dexterityLabel = new TextraLabel(String.format(": %.0f", player.getDexterity()), playerStatsTextFont);
+      rightContentTable.add(dexterityIcon)
+        .size(90f)
+        .left();
+      rightContentTable.add(dexterityLabel)
+        .growX()
+        .left()
+        .row();
+  
+      Image charismaIcon = new Image(charismateTexture);
+      TextraLabel charismaLabel = new TextraLabel(String.format(": %.0f", player.getCharisma()), playerStatsTextFont);
+      rightContentTable.add(charismaIcon)
+        .size(90f)
+        .left();
+      rightContentTable.add(charismaLabel)
+        .growX()
+        .left()
+        .row();
+      
+      // Divider
+      Image horizontalLineBottom = DrawableFactory.createDivider(Color.WHITE);
+      rightContentTable.add(horizontalLineBottom)
+        .colspan(2)
+        .growX()
+        .height(5f)
+        .pad(20f, 0f, 20f, 0f)
+        .row();
+  
+      // Player Movesets UI
+      TextraLabel playerMovesetsLabel = new TextraLabel("MOVESETS:", playerStatsTitleFont);
+      rightContentTable.add(playerMovesetsLabel)
+        .colspan(2)
+        .center()
+        .padBottom(10f)
+        .row();
+  
+      Image skill1Icon = new Image(skill1Texture);
+      TextraLabel skill1Label = new TextraLabel(": Cry of Misery", playerStatsTextFont);
+      rightContentTable.add(skill1Icon)
+        .size(90f)
+        .left()
+        .padBottom(20f);
+      rightContentTable.add(skill1Label)
+        .growX()
+        .left()
+        .row();
+  
+      Image skill2Icon = new Image(skill2Texture);
+      TextraLabel skill2Label = new TextraLabel(": Intense Aura", playerStatsTextFont);
+      rightContentTable.add(skill2Icon)
+        .size(90f)
+        .left()
+        .padBottom(20f);
+        rightContentTable.add(skill2Label)
+        .growX()
+        .left()
+        .row();
+  
+      Image skill3Icon = new Image(skill3Texture);
+      TextraLabel skill3Label = new TextraLabel(": Lullaby of\n   Obedience", playerStatsTextFont);
+      skill3Label.setWrap(true);
+      rightContentTable.add(skill3Icon)
+        .size(90f)
+        .left();
+      rightContentTable.add(skill3Label)
+        .growX()
+        .left()
+        .row();
+      
+      // Create a subtable for game image scenario and text dialogue box
+      // Define left table background and content drawables
+      Drawable leftContentBg = DrawableFactory.getColoredDrawable(leftContentColor);
+      Drawable leftBorderBg = DrawableFactory.getColoredDrawable(leftBorderColor);
+  
+      // Table for game image scenario
+      leftScenarioContentTable = new Table();
+      leftScenarioContentTable.setBackground(leftContentBg);
+  
+      Table leftScenarioBorderTable = new Table();
+      leftScenarioBorderTable.setBackground(leftBorderBg);
+      leftScenarioBorderTable.add(leftScenarioContentTable).grow().pad(5f);
+  
+      // Table for text dialogue box
+      leftDialogueContentTable = new Table();
+      leftDialogueContentTable.setBackground(leftContentBg);
+      leftDialogueContentTable.pad(15f);
+  
+      // Split dialogueContentTable into for text space and interactable widgets.
+      topDialogueContentTable = new Table();
+      topDialogueContentTable.setBackground(leftContentBg);
+      topDialogueContentTable.align(Align.bottomLeft); // align cells to bottom left of table
+      topDialogueContentTable.pad(0f, 10f, 0f, 10f);
+      topDialogueContentTable.setClip(true);
+  
+      // Space for widgets (player choices)
+      bottomDialogueContentTable = new Table();
+      bottomDialogueContentTable.setBackground(leftContentBg);
+  
+      // Adding top and bottom spaces to the dialogueContentTable
+      leftDialogueContentTable.add(topDialogueContentTable)
+        .height(Value.percentHeight(0.7f, leftDialogueContentTable))
+        .growX()
+        .row();
+      leftDialogueContentTable.add(bottomDialogueContentTable)
+        .grow();
+  
+      Table leftDialogueBorderTable = new Table();
+      leftDialogueBorderTable.setBackground(leftBorderBg);
+      leftDialogueBorderTable.add(leftDialogueContentTable).grow().pad(3f);
+  
+      // Table for left panel
+      Table leftContainer = new Table();
+      leftContainer.pad(50f);
+  
+      leftContainer.add(leftScenarioBorderTable)
+        .size(500f, 500f)
+        .padBottom(50f)
+        .row();
+      leftContainer.add(leftDialogueBorderTable)    
+        .grow();
+      
+      // Add left table and right table to the main table layout
+      table.add(leftContainer)
+        .growY()
+        .width(Value.percentWidth(0.7f, table));
+      table.add(rightBorderTable)
+        .growY()
+        .width(Value.percentWidth(0.3f, table));
 
-    // Right Content table
-    Table rightContentTable = new Table();
-    rightContentTable.setBackground(rightContentBg);
-    rightContentTable.align(Align.top); // Starting position of cell insertions
-    rightContentTable.pad(40f, 20f, 40f, 20f); // Table content padding
-
-    // Right Border table
-    Table rightBorderTable = new Table();
-    rightBorderTable.setBackground(rightBorderBg);
-    rightBorderTable.add(rightContentTable).grow().pad(0f, 3f, 0f, 0f);
-    
-    // Adding UI elements to the right content table
-    settingsIcon = new Image(settingsTexture);
-    rightContentTable.add(settingsIcon)
-      .colspan(2)
-      .size(100f)
-      .top()
-      .right()
-      .row();
-
-    // Divider
-    Image horizontalLineTop = DrawableFactory.createDivider(Color.WHITE);
-    rightContentTable.add(horizontalLineTop)
-      .colspan(2)
-      .growX()
-      .height(5f)
-      .pad(20f, 0f, 20f, 0f)
-      .row();
-
-    // Player Stats UI
-    TextraLabel playerStatsLabel = new TextraLabel("PLAYER STATS:", playerStatsTitleFont);
-    rightContentTable.add(playerStatsLabel)
-      .colspan(2)
-      .center()
-      .padBottom(10f)
-      .row();
-
-    Image hpIcon = new Image(heartTexture);
-    TextraLabel hpLabel = new TextraLabel(String.format(": %.0f", player.getHp()), playerStatsTextFont);
-    rightContentTable.add(hpIcon)
-      .size(90f)
-      .left()
-      .padRight(10f);
-    rightContentTable.add(hpLabel)
-      .growX()
-      .left()
-      .row();
-
-    Image strengthIcon = new Image(strengthTexture);
-    TextraLabel strengthLabel = new TextraLabel(String.format(": %.0f", player.getStrength()), playerStatsTextFont);
-    rightContentTable.add(strengthIcon)
-      .size(90f)
-      .left();
-    rightContentTable.add(strengthLabel)
-      .growX()
-      .left()
-      .row();
-
-    Image intelligenceIcon = new Image(intelligenceTexture);
-    TextraLabel intelligenceLabel = new TextraLabel(String.format(": %.0f", player.getIntelligence()), playerStatsTextFont);
-    rightContentTable.add(intelligenceIcon)
-      .size(90f)
-      .left();
-    rightContentTable.add(intelligenceLabel)
-      .growX()
-      .left()
-      .row();
-    
-    Image dexterityIcon = new Image(dexterityTexture);
-    TextraLabel dexterityLabel = new TextraLabel(String.format(": %.0f", player.getDexterity()), playerStatsTextFont);
-    rightContentTable.add(dexterityIcon)
-      .size(90f)
-      .left();
-    rightContentTable.add(dexterityLabel)
-      .growX()
-      .left()
-      .row();
-
-    Image charismaIcon = new Image(charismateTexture);
-    TextraLabel charismaLabel = new TextraLabel(String.format(": %.0f", player.getCharisma()), playerStatsTextFont);
-    rightContentTable.add(charismaIcon)
-      .size(90f)
-      .left();
-    rightContentTable.add(charismaLabel)
-      .growX()
-      .left()
-      .row();
-    
-    // Divider
-    Image horizontalLineBottom = DrawableFactory.createDivider(Color.WHITE);
-    rightContentTable.add(horizontalLineBottom)
-      .colspan(2)
-      .growX()
-      .height(5f)
-      .pad(20f, 0f, 20f, 0f)
-      .row();
-
-    // Player Movesets UI
-    TextraLabel playerMovesetsLabel = new TextraLabel("MOVESETS:", playerStatsTitleFont);
-    rightContentTable.add(playerMovesetsLabel)
-      .colspan(2)
-      .center()
-      .padBottom(10f)
-      .row();
-
-    Image skill1Icon = new Image(skill1Texture);
-    TextraLabel skill1Label = new TextraLabel(": Cry of Misery", playerStatsTextFont);
-    rightContentTable.add(skill1Icon)
-      .size(90f)
-      .left()
-      .padBottom(20f);
-    rightContentTable.add(skill1Label)
-      .growX()
-      .left()
-      .row();
-
-    Image skill2Icon = new Image(skill2Texture);
-    TextraLabel skill2Label = new TextraLabel(": Intense Aura", playerStatsTextFont);
-    rightContentTable.add(skill2Icon)
-      .size(90f)
-      .left()
-      .padBottom(20f);
-      rightContentTable.add(skill2Label)
-      .growX()
-      .left()
-      .row();
-
-    Image skill3Icon = new Image(skill3Texture);
-    TextraLabel skill3Label = new TextraLabel(": Lullaby of\n   Obedience", playerStatsTextFont);
-    skill3Label.setWrap(true);
-    rightContentTable.add(skill3Icon)
-      .size(90f)
-      .left();
-    rightContentTable.add(skill3Label)
-      .growX()
-      .left()
-      .row();
-    
-    // Create a subtable for game image scenario and text dialogue box
-    // Define left table background and content drawables
-    Drawable leftContentBg = DrawableFactory.getColoredDrawable(leftContentColor);
-    Drawable leftBorderBg = DrawableFactory.getColoredDrawable(leftBorderColor);
-
-    // Table for game image scenario
-    leftScenarioContentTable = new Table();
-    leftScenarioContentTable.setBackground(leftContentBg);
-
-    Table leftScenarioBorderTable = new Table();
-    leftScenarioBorderTable.setBackground(leftBorderBg);
-    leftScenarioBorderTable.add(leftScenarioContentTable).grow().pad(5f);
-
-    // Table for text dialogue box
-    leftDialogueContentTable = new Table();
-    leftDialogueContentTable.setBackground(leftContentBg);
-    leftDialogueContentTable.pad(15f);
-
-    // Split dialogueContentTable into for text space and interactable widgets.
-    topDialogueContentTable = new Table();
-    topDialogueContentTable.setBackground(leftContentBg);
-    topDialogueContentTable.align(Align.bottomLeft); // align cells to bottom left of table
-    topDialogueContentTable.pad(0f, 10f, 0f, 10f);
-
-    // Space for widgets (player choices)
-    bottomDialogueContentTable = new Table();
-    bottomDialogueContentTable.setBackground(leftContentBg);
-    bottomDialogueContentTable.setDebug(true);
-
-    // Adding top and bottom spaces to the dialogueContentTable
-    leftDialogueContentTable.add(topDialogueContentTable)
-      .height(Value.percentHeight(0.7f, leftDialogueContentTable))
-      .growX()
-      .row();
-    leftDialogueContentTable.add(bottomDialogueContentTable)
-      .grow();
-
-    Table leftDialogueBorderTable = new Table();
-    leftDialogueBorderTable.setBackground(leftBorderBg);
-    leftDialogueBorderTable.add(leftDialogueContentTable).grow().pad(3f);
-
-    // Table for left panel
-    Table leftContainer = new Table();
-    leftContainer.pad(50f);
-
-    leftContainer.add(leftScenarioBorderTable)
-      .size(500f, 500f)
-      .padBottom(50f)
-      .row();
-    leftContainer.add(leftDialogueBorderTable)    
-      .grow();
-    
-    // Add left table and right table to the main table layout
-    table.add(leftContainer)
-      .growY()
-      .width(Value.percentWidth(0.7f, table));
-    table.add(rightBorderTable)
-      .growY()
-      .width(Value.percentWidth(0.3f, table));
-
-    // Create controller and pass the screen to it
-    new Day1Controller(game, this);
+      // Load controller to this screen
+      controller = new Day1Controller(game, this);
+    }
   }
 
   @Override
@@ -313,6 +319,10 @@ public class Day1Screen implements Screen {
 
     stage.act(delta);
     stage.draw();
+    
+    if (controller != null) {
+      controller.update();
+    }
   }
 
   @Override
@@ -327,6 +337,11 @@ public class Day1Screen implements Screen {
 
     // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
+
+    // Re-queue the overflow trim since viewport update invalidates all layouts
+    if (controller != null) {
+      controller.setPendingOverflowTrim(true);
+    }
   }
 
   @Override
@@ -351,6 +366,7 @@ public class Day1Screen implements Screen {
     stage.dispose();
     playerStatsTitleFont.dispose();
     playerStatsTextFont.dispose();
+    controller.dispose();
   }
 
   public Image getSettingsIcon() {
