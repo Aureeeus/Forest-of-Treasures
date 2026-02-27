@@ -23,11 +23,28 @@ allprojects {
       testOutputDir = file('build/classes/java/test')
     }
   }
+
+  // Force Eclipse to use the default JRE container instead of a version-specific one.
+  // This prevents "Unbound classpath container" errors when the IDE doesn't recognize
+  // a specific JavaSE-XX execution environment.
+  eclipse {
+    classpath {
+      file {
+        whenMerged { classpath ->
+          classpath.entries.each { entry ->
+            if (entry.hasProperty('path') && entry.path?.contains('JRE_CONTAINER')) {
+              entry.path = 'org.eclipse.jdt.launching.JRE_CONTAINER'
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 configure(subprojects) {
   apply plugin: 'java-library'
-  java.sourceCompatibility = 21
+  java.sourceCompatibility = 17
 
   // From https://lyze.dev/2021/04/29/libGDX-Internal-Assets-List/
   // The article can be helpful when using assets.txt in your project.
