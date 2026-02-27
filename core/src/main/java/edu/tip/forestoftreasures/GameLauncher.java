@@ -38,7 +38,11 @@ public class GameLauncher extends Game {
       
       // --- Day 1 UI ---
       assets.load("scenarios/day1/forest_intro.png", Texture.class);
-      assets.load("scenarios/day1/fairy_sprite.png", Texture.class);
+      assets.load("scenarios/day1/forest_sprite.png", Texture.class);
+      assets.load("scenarios/day1/deep_in_forest.png", Texture.class);
+      assets.load("scenarios/day1/hobgoblin_hurt.png", Texture.class);
+      assets.load("scenarios/day1/forest_treant.png", Texture.class);
+      assets.load("scenarios/day1/day1_end.png", Texture.class);
       assets.finishLoading();
 
       settingsConfig = new SettingsConfiguration();

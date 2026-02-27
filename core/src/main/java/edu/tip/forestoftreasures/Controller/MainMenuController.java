@@ -7,10 +7,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
-import edu.tip.forestoftreasures.View.mazeBossScreen;
+import edu.tip.forestoftreasures.View.MazeBossScreen;
 
 public class MainMenuController {
   private final GameLauncher game;
@@ -52,7 +53,8 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
-        System.out.println("Achievements button clicked!");
+        game.setScreen(new EntityBattleScreen(game));
+        screen.dispose();
       }
     });
 
@@ -76,9 +78,8 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
-        game.setScreen(new mazeBossScreen(game));
+        game.setScreen(new MazeBossScreen(game, null));
       }
-
     });
   }
 

@@ -5,5 +5,5 @@ Font sizes:
 4. Large = 30+px
 
 Dialogue CHOICE Indicator:
-1. Green = GOOD
-2. RED = BAD
+1. Green (#66FF00) = GOOD
+2. Red = BAD
