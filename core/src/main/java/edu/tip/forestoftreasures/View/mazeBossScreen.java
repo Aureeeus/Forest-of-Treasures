@@ -22,13 +22,13 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.Controller.mazeBossController;
+import edu.tip.forestoftreasures.Controller.MazeBossController;
 
-public class mazeBossScreen implements Screen {
+public class MazeBossScreen implements Screen {
   private Stage stage;
   private Table table;
   private final GameLauncher game;
-  private mazeBossController controller;
+  private MazeBossController controller;
   private SpriteBatch batch;
   private Texture playerTexture;
 
@@ -41,9 +41,12 @@ public class mazeBossScreen implements Screen {
   private Sound enterSound;
   private boolean hasPlayedEnter = false;
 
-  public mazeBossScreen(GameLauncher game) {
+  private final Runnable onComplete;
+
+  public MazeBossScreen(GameLauncher game, Runnable onComplete) {
     this.game = game;
-    this.controller = new edu.tip.forestoftreasures.Controller.mazeBossController();
+    this.onComplete = onComplete;
+    this.controller = new MazeBossController();
   }
 
   @Override
@@ -59,8 +62,6 @@ public class mazeBossScreen implements Screen {
     batch = new SpriteBatch();
     playerTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
     shapeRenderer = new ShapeRenderer();
-
-    controller = new mazeBossController();
 
     mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
     mapRenderer = new OrthogonalTiledMapRenderer(mazeMap, 0.6f);
@@ -78,8 +79,14 @@ public class mazeBossScreen implements Screen {
   @Override
   public void render(float delta) {
     controller.movement(delta, mazeMap);
-    ScreenUtils.clear(Color.BLACK);
 
+    // Check exit BEFORE rendering — no point drawing if we're switching screens
+    if (controller.isOnExit(mazeMap)) {
+      onComplete.run();
+      return;
+    }
+
+    ScreenUtils.clear(Color.BLACK);
     camera.update();
 
     // Draw the White Combat Box (The Border)

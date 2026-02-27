@@ -6,14 +6,14 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
-public class mazeBossController {
+public class MazeBossController {
   public Vector2 playerPosition;
   public float playerSpeed = 125f;
   // 32px (Original Tile) * 0.6f (Scale) = 19.2f
   private final float TILE_SIZE = 19.2f;
   private final float PLAYER_SIZE = 48f;
 
-  public mazeBossController() {
+  public MazeBossController() {
     // Start position (Adjust as needed)
     playerPosition = new Vector2(40, 700);
   }
@@ -86,5 +86,35 @@ public class mazeBossController {
 
     // If a tile exists here on the "Walls" layer, block it
     return (cell != null);
+  }
+
+  /**
+   * Checks if the player's current position overlaps any tile on the Exit layer.
+   *
+   * Uses the same center-point check as isColliding() for consistency.
+   * Returns true the moment the player steps on an exit tile.
+   *
+   * @param map The TiledMap containing the Exit layer.
+   * @return true if the player is standing on an exit tile.
+   */
+  public boolean isOnExit(TiledMap map) {
+    TiledMapTileLayer exitLayer = (TiledMapTileLayer) map.getLayers().get("Exit");
+    if (exitLayer == null) return false;
+
+    // Use the center of the player sprite for exit detection
+    // so the player must clearly step into the exit — not just brush it
+    float centerX = playerPosition.x + PLAYER_SIZE / 2f;
+    float centerY = playerPosition.y + PLAYER_SIZE / 2f;
+
+    int cellX = (int) (centerX / TILE_SIZE);
+    int cellY = (int) (centerY / TILE_SIZE);
+
+    if (cellX < 0 || cellX >= exitLayer.getWidth()
+        || cellY < 0 || cellY >= exitLayer.getHeight()) {
+      return false;
+    }
+
+    TiledMapTileLayer.Cell cell = exitLayer.getCell(cellX, cellY);
+    return cell != null;
   }
 }
