@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Queue;
 import java.util.stream.Collectors;
 
+import edu.tip.forestoftreasures.Model.dialogue.ChoiceNode;
+import edu.tip.forestoftreasures.Model.dialogue.DialogueNode;
+import edu.tip.forestoftreasures.Model.dialogue.LineNode;
+import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.Model.PlayerPathTracker.PlayerDecision;
 
 public class AchievementVerifier {

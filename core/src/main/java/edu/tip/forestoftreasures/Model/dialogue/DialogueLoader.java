@@ -1,4 +1,4 @@
-package edu.tip.forestoftreasures.Model;
+package edu.tip.forestoftreasures.Model.dialogue;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +8,8 @@ import java.util.Map;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+
+import edu.tip.forestoftreasures.Model.Achievement;
 
 
 public class DialogueLoader {

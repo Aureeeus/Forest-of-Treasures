@@ -1,4 +1,4 @@
-package edu.tip.forestoftreasures.Model;
+package edu.tip.forestoftreasures.Model.dialogue;
 
 public class MinigameNode extends DialogueNode {
   /**

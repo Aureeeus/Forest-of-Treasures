@@ -1,7 +1,8 @@
-package edu.tip.forestoftreasures.Model;
+package edu.tip.forestoftreasures.Model.dialogue;
 
 import java.util.List;
 
+import edu.tip.forestoftreasures.Model.PlayerPathTracker;
 import edu.tip.forestoftreasures.Model.PlayerPathTracker.PlayerDecision;
 
 public class DialogueRunner {

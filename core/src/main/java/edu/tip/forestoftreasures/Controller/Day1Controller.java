@@ -25,13 +25,13 @@ import com.github.tommyettinger.textra.TypingLabel;
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Model.Achievement;
 import edu.tip.forestoftreasures.Model.AchievementVerifier;
-import edu.tip.forestoftreasures.Model.ChoiceNode;
-import edu.tip.forestoftreasures.Model.DialogueLoader;
-import edu.tip.forestoftreasures.Model.DialogueLoader.DayData;
-import edu.tip.forestoftreasures.Model.DialogueNode;
-import edu.tip.forestoftreasures.Model.DialogueRunner;
-import edu.tip.forestoftreasures.Model.LineNode;
-import edu.tip.forestoftreasures.Model.MinigameNode;
+import edu.tip.forestoftreasures.Model.dialogue.ChoiceNode;
+import edu.tip.forestoftreasures.Model.dialogue.DialogueLoader;
+import edu.tip.forestoftreasures.Model.dialogue.DialogueLoader.DayData;
+import edu.tip.forestoftreasures.Model.dialogue.DialogueNode;
+import edu.tip.forestoftreasures.Model.dialogue.DialogueRunner;
+import edu.tip.forestoftreasures.Model.dialogue.LineNode;
+import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.View.Day1Screen;
 import edu.tip.forestoftreasures.View.MazeBossScreen;
 
@@ -450,7 +450,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    * Adds keyboard navigation and confirmation to the dialogue widget table.
    *
    * UP/DOWN moves the cursor between choice rows.
-   * ENTER or SPACE confirms the highlighted choice:
+   * ENTER confirms the highlighted choice:
    *   1. Clears the choice UI from the screen.
    *   2. Calls runner.onChoiceSelected(selectedRow) which records the decision
    *      in PlayerPathTracker and advances the graph to the chosen branch.
