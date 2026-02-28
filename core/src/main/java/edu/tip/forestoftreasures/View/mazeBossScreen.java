@@ -150,5 +150,9 @@ public class MazeBossScreen implements Screen {
     stage.dispose();
     batch.dispose();
     playerTexture.dispose();
+    mazeMap.dispose();
+    mapRenderer.dispose();
+    shapeRenderer.dispose();
+    enterSound.dispose();
   }
 }

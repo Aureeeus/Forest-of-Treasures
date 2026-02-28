@@ -63,6 +63,7 @@ public class MainMenuController {
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
         game.setScreen(new SettingsScreen(game, skin));
+        screen.dispose();
       }
     });
 
@@ -79,6 +80,7 @@ public class MainMenuController {
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
         game.setScreen(new MazeBossScreen(game, null));
+        screen.dispose();
       }
     });
   }

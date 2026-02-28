@@ -21,6 +21,7 @@ public class IntroductionGameScreen implements Screen {
   private Table table;
   private TypingLabel typingLabel;
   private TextraLabel instructionLabel;
+  private Font textraFont;
 
   private final GameLauncher game;
 
@@ -38,7 +39,7 @@ public class IntroductionGameScreen implements Screen {
     table.setFillParent(true);
     stage.addActor(table);
 
-    Font textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
+    textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
 
     String dialogue = "I have been an unemployed location research mage for some time now until a budding kingdom hired me. I've received a letter asking me to explore this forest 5 kilometers out of their west gate, as they plan to expand their capital. Local rumors have told me that this forest is teeming with life and treasures. I don't know if it was the adventure that enticed me or the treasure, {COLOR=#FFD700}but I digress.{CLEARCOLOR} After preparing 2 weeks' worth of food and materials, I've set out on a journey to this forest. Drakeswood gave me a mana transmitter and a map to help me navigate through this forest.";
     typingLabel = new TypingLabel(dialogue, textraFont);
@@ -113,6 +114,7 @@ public class IntroductionGameScreen implements Screen {
   public void dispose() {
     // Dispose of assets when no longer needed.
     stage.dispose();
+    textraFont.dispose();
   }
 
   public Stage getStage() {

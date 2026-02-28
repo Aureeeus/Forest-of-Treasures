@@ -137,7 +137,6 @@ public class SettingsScreen implements Screen {
     // Destroy screen's assets here.
     stage.dispose();
     backgroundTexture.dispose();
-    skin.dispose();
     backgroundMusic.dispose();
   }
 
