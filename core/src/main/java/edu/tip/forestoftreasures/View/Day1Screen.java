@@ -18,7 +18,7 @@ import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.Day1Controller;
-import edu.tip.forestoftreasures.Model.Player;
+import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 
@@ -68,7 +68,7 @@ public class Day1Screen implements Screen {
     this.sheet = game.assets.get("icons/stats_icons.png", Texture.class);
     sheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-    this.player = new Player(48f, 10f, 15f, 12f, 12f);
+    this.player = new Player(48f, 10f, 0f, 15f, 12f, 12f);
 
     this.playerStatsTitleFont = FontFactory
       .generateFont("fonts/PressStart2P-Regular.ttf", 30, Color.valueOf("#FFDB51"));
