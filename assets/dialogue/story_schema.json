@@ -71,13 +71,19 @@
         "choices": [
           {
             "label": "YES",
-            "next": "d1_hobgoblin_battle_choice_line1"
+            "next": "d1_bandit_battle_minigame"
           },
           {
             "label": "NO",
             "next": "d1_hobgoblin_battle_choice_line2"
           }
         ]
+      },
+      {
+        "id": "d1_bandit_battle_minigame",
+        "type": "minigame",
+        "screenKey": "bandit_battle_minigame",
+        "next": "d1_hobgoblin_battle_choice_line1"
       },
       {
         "id": "d1_hobgoblin_battle_choice_line1",

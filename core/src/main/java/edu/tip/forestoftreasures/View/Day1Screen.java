@@ -364,8 +364,6 @@ public class Day1Screen implements Screen {
   public void dispose() {
     // Dispose of assets when no longer needed.
     stage.dispose();
-    playerStatsTitleFont.dispose();
-    playerStatsTextFont.dispose();
     controller.dispose();
   }
 
@@ -387,5 +385,9 @@ public class Day1Screen implements Screen {
 
   public Stage getStage() {
     return stage;
+  }
+
+  public Player getPlayer() {
+    return player;
   }
 }

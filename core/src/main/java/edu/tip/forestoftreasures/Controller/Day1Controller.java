@@ -33,6 +33,7 @@ import edu.tip.forestoftreasures.Model.dialogue.DialogueRunner;
 import edu.tip.forestoftreasures.Model.dialogue.LineNode;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.View.Day1Screen;
+import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.MazeBossScreen;
 
 public class Day1Controller implements DialogueRunner.DisplayHandler {
@@ -293,10 +294,10 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
       runner.onMinigameFinished(); // resume dialogue graph from next node
     };
 
-    // TODO: Fix label overflowing
     return switch (screenKey) {
       // Add new minigame screens here as cases
       case "maze_minigame" -> new MazeBossScreen(game, onComplete);
+      case "bandit_battle_minigame" -> new EntityBattleScreen(game, screenKey, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
         "[Day1Controller] Unknown minigame screenKey: '" + screenKey + "'"
       );
