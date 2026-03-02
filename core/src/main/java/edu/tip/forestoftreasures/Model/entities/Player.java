@@ -1,5 +1,7 @@
 package edu.tip.forestoftreasures.Model.entities;
 
+import com.badlogic.gdx.graphics.Texture;
+
 /**
  * Represents the player character in the game.
  * Extends {@link Entity} with RPG stats (intelligence, dexterity, charisma)
@@ -67,9 +69,123 @@ public class Player extends Entity {
     this.initiative = initiative;
   }
 
+  /**
+   * Not used by Player — the Player attacks via skill methods
+   * (e.g., {@link #useCryOfMisery(Entity)}).
+   * This override exists only to satisfy the abstract contract from {@link Entity},
+   * which is intended for enemy subclasses.
+   */
   @Override
   public float attack(Entity target) {
-    // TODO: Implement player attack logic
-    return 0;
+    throw new UnsupportedOperationException("Player attacks via skill methods, not attack().");
+  }
+
+  /**
+   * Executes the Cry of Misery skill against a target.
+   * Rolls the dice to determine damage tier, applies damage based on intelligence,
+   * and returns a result with tier-appropriate narrative flavor text.
+   *
+   * @param target the entity being attacked
+   * @return an {@link AttackResult} containing dice roll, tier, damage, and flavor text
+   */
+  public AttackResult useCryOfMisery(Entity target) {
+    int roll = Dice.roll();
+    DamageTier tier = DamageTier.fromDiceRoll(roll);
+    float damage = intelligence * tier.multiplier;
+    target.takeDamage(damage);
+
+    String flavorText = switch (tier) {
+      case MISS          -> "Your throat tightens; the Cry dies in your chest. They scoff at your silence. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A faint wail escapes your lips. They flinch, but their resolve holds. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "Your shriek echoes through the gloom, rattling the bones of those nearby! {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A soul-piercing scream erupts! The darkness itself recoils from your agony. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} A catastrophic rift of sorrow shatters the minds of them! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+    };
+
+    return new AttackResult(roll, tier, damage, flavorText);
+  }
+
+  /**
+   * Executes the Lullaby of Obedience skill against a target.
+   * Rolls the dice to determine damage tier, applies damage based on intelligence,
+   * and returns a result with tier-appropriate narrative flavor text.
+   *
+   * @param target the entity being attacked
+   * @return an {@link AttackResult} containing dice roll, tier, damage, and flavor text
+   */
+  public AttackResult useLullabyOfObedience(Entity target) {
+    int roll = Dice.roll();
+    DamageTier tier = DamageTier.fromDiceRoll(roll);
+    float damage = intelligence * tier.multiplier;
+    target.takeDamage(damage);
+
+    String flavorText = switch (tier) {
+      case MISS          -> "Your voice cracks. They laughed at your feeble attempt at control. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "They dazed for a moment, but shakes off the rhythm with a growl. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "Your song weaves around their mind, dulling their senses. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "Their eyes go vacant. They begin to sway to your dark melody. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} They fall to their knees, a puppet to your every word! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+    };
+
+    return new AttackResult(roll, tier, damage, flavorText);
+  }
+
+  /**
+   * Executes the Intense Aura skill, attempting to apply a randomized
+   * status effect (Burn, Poison, or Sleep) to the target.
+   *
+   * Pre-conditions checked before rolling:
+   * <ul>
+   *   <li>If the target already has a status effect, the skill fails immediately
+   *       with a sarcastic message (randomly chosen from two variants).</li>
+   * </ul>
+   *
+   * Dice resolution: 1 = failed, 2–20 = success.
+   *
+   * @param target the entity to afflict
+   * @return a {@link SkillResult} containing the dice roll, success flag, effect, and flavor text
+   */
+  public SkillResult useIntenseAura(Entity target) {
+    // If the target already has a status effect, fail immediately
+    if (target.hasStatusEffect()) {
+      String existingStatus = target.getActiveStatus().name().toLowerCase();
+
+      // Randomly pick one of two "already afflicted" lines
+      String flavorText = (Dice.roll() <= 10)
+        ? String.format("The target is already busy dying of %s. Perhaps let them finish one agony before starting the next?", existingStatus)
+        : "Your mana fizzes out. Apparently, even the laws of magic have a \"one-catastrophe-at-a-time\" policy.";
+
+      return new SkillResult(0, false, null, flavorText);
+    }
+
+    // Randomize which status effect to attempt
+    StatusEffect effect = StatusEffect.random();
+
+    // Roll dice: 1 = failed, 2-20 = success
+    int roll = Dice.roll();
+    boolean success = roll >= 2;
+
+    String flavorText = switch (effect) {
+      case BURN -> success
+        ? "The atmosphere combusts! They scream as invisible embers sear their flesh. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        : "A flickering spark dies against their skin. The air remains cold. {COLOR=RED}[[Failed]{ENDCOLOR}";
+      case POISON -> success
+        ? "A thick, violet rot chokes the air. They stagger, veins turning black with bile. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        : "A thin, sickly vapor rises but dissipates before they can inhale. {COLOR=RED}[[Failed]{ENDCOLOR}";
+      case SLEEP -> success
+        ? "The weight of a thousand nights falls upon them. They collapse into a hollow trance. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        : "They blink against a momentary drowsiness, but their eyes snap back open. {COLOR=RED}[[Failed]{ENDCOLOR}";
+    };
+
+    if (success) {
+      target.applyStatusEffect(effect);
+    }
+
+    return new SkillResult(roll, success, effect, flavorText);
+  }
+
+  @Override
+  public Texture getTexture() {
+    return null; // Player doesn't have a texture on the battle screen
   }
 }

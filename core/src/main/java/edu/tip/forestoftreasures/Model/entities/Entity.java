@@ -1,5 +1,7 @@
 package edu.tip.forestoftreasures.Model.entities;
 
+import com.badlogic.gdx.graphics.Texture;
+
 /**
  * Abstract base class for all living entities in the game (player, enemies, etc.).
  * Holds shared combat stats and provides common battle behavior such as
@@ -11,6 +13,7 @@ public abstract class Entity {
   protected float maxHp;
   protected float strength;
   protected float initiative;
+  private StatusEffect activeStatus;
 
   /**
    * @param hp        starting and maximum hit points
@@ -65,4 +68,39 @@ public abstract class Entity {
   public float getInitiative() {
     return this.initiative;
   }
+
+  /**
+   * @return the currently active status effect, or {@code null} if none
+   */
+  public StatusEffect getActiveStatus() {
+    return this.activeStatus;
+  }
+
+  /**
+   * @return {@code true} if this entity is afflicted by a status effect
+   */
+  public boolean hasStatusEffect() {
+    return this.activeStatus != null;
+  }
+
+  /**
+   * Applies a status effect to this entity.
+   *
+   * @param status the status effect to apply
+   */
+  public void applyStatusEffect(StatusEffect status) {
+    this.activeStatus = status;
+  }
+
+  /**
+   * Removes any active status effect from this entity.
+   */
+  public void clearStatusEffect() {
+    this.activeStatus = null;
+  }
+
+  /**
+   * @return the texture representing this entity in battle, or null if none
+   */
+  public abstract Texture getTexture();
 }
