@@ -4,18 +4,29 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.github.tommyettinger.textra.Font;
+import com.github.tommyettinger.textra.TextraLabel;
 
+import edu.tip.forestoftreasures.Controller.EntityBattleController;
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.Model.entities.Entity;
+import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
+import edu.tip.forestoftreasures.utils.FontFactory;
 
+/**
+ * View for the entity battle screen. Responsible only for rendering UI.
+ * All input handling and game logic is delegated to {@link EntityBattleController}.
+ */
 public class EntityBattleScreen implements Screen {
-  // Reference to the GameLauncher which holds the AssetManager for loading textures, etc.
   private final GameLauncher game;
 
   // --- Local variables ---
@@ -23,7 +34,7 @@ public class EntityBattleScreen implements Screen {
   private Table screenTable;
   private Table leftPanelTable;
   private Table rightPanelTable;
-  
+
   // For scenario image container
   private Table scenarioImageBorderTable;
   private Table scenarioImageContentTable;
@@ -40,36 +51,49 @@ public class EntityBattleScreen implements Screen {
   private Table playerStatsBorderTable;
   private Table playerStatsContentTable;
 
-  // Border and Content Color Configuration ---
+  // Border and Content Color Configuration
   private Color borderColor = Color.valueOf("#2a2a2a");
   private Color contentColor = Color.valueOf("#191a1c");
 
-  // Border and Content Drawables;
+  // Border and Content Drawables
   private Drawable borderBg;
   private Drawable contentBg;
 
-  public EntityBattleScreen(GameLauncher game) {
+  // Fonts (cached by FontFactory — do not dispose per screen)
+  private Font statsFont;
+
+  // Controller
+  private EntityBattleController controller;
+
+  // UI Components to refresh
+  private TextraLabel enemyHpLabel;
+  private TextraLabel playerHpLabel;
+
+  // Dialogue Config
+  private boolean skipAnim = false; // default to false
+
+  public EntityBattleScreen(GameLauncher game, String screenKey, Player player, Runnable onComplete) {
     this.game = game;
+    statsFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 32, Color.WHITE);
+    controller = new EntityBattleController(this.game, this, player, screenKey, onComplete);
   }
 
   @Override
   public void show() {
-    // Prepare your screen here
     stage = new Stage(new ScreenViewport());
     Gdx.input.setInputProcessor(stage);
 
-    // Set border and content color of boxes
     borderBg = DrawableFactory.getColoredDrawable(borderColor);
     contentBg = DrawableFactory.getColoredDrawable(contentColor);
 
-    // Show user interface to the player
     drawUI();
   }
 
   @Override
   public void render(float delta) {
-    // Draw your screen here. "delta" is the time since last render in seconds.
     ScreenUtils.clear(Color.valueOf("#121315"));
+
+    controller.handleInput();
 
     stage.act(delta);
     stage.draw();
@@ -77,35 +101,45 @@ public class EntityBattleScreen implements Screen {
 
   @Override
   public void resize(int width, int height) {
-    // If the window is minimized on a desktop (LWJGL3) platform, width and height are 0, which causes problems.
-    // In that case, we don't resize anything, and wait for the window to be a normal size before updating.
     if(width <= 0 || height <= 0) return;
-
-    // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
   }
 
   @Override
-  public void pause() {
-    // Invoked when your application is paused.
-  }
+  public void pause() {}
 
   @Override
-  public void resume() {
-    // Invoked when your application is resumed after pause.
-  }
+  public void resume() {}
 
   @Override
   public void hide() {
-    // This method is called when another screen replaces this one.
     Gdx.input.setInputProcessor(null);
   }
 
   @Override
   public void dispose() {
-    // Destroy screen's assets here.
     stage.dispose();
   }
+
+  // ---------------------------------------------------------------------------
+  // UPDATE METHODS
+  // ---------------------------------------------------------------------------
+
+  public void updateEnemyHealth() {
+    if (enemyHpLabel != null && controller != null) {
+      enemyHpLabel.setText("Health: " + formatStat(controller.getEnemy().getHp()));
+    }
+  }
+
+  public void updatePlayerHealth() {
+    if (playerHpLabel != null && controller != null) {
+      playerHpLabel.setText("Health: " + formatStat(controller.getPlayer().getHp()));
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // UI DRAWING
+  // ---------------------------------------------------------------------------
 
   private void drawUI() {
     screenTable = new Table();
@@ -132,7 +166,7 @@ public class EntityBattleScreen implements Screen {
   private void drawRightPanel() {
     rightPanelTable = new Table();
     rightPanelTable.pad(40f);
-    
+
     screenTable.add(rightPanelTable)
       .growY()
       .width(Value.percentWidth(0.5f, screenTable));
@@ -142,6 +176,8 @@ public class EntityBattleScreen implements Screen {
   }
 
   private void drawEnemyStatsBox() {
+    Entity enemy = controller.getEnemy();
+
     // Border instantiation
     enemyStatsBorderTable = new Table();
     enemyStatsBorderTable.pad(3f);
@@ -150,6 +186,44 @@ public class EntityBattleScreen implements Screen {
     // Content instantiation
     enemyStatsContentTable = new Table();
     enemyStatsContentTable.setBackground(contentBg);
+    enemyStatsContentTable.pad(50f);
+
+    // Enemy name (top-center, does not expand vertically)
+    TextraLabel nameLabel = new TextraLabel(controller.getEnemyName().toUpperCase(), statsFont);  // Uppercase format for enemy stats name
+    enemyStatsContentTable.add(nameLabel)
+      .center()
+      .expandX()
+      .padBottom(20f)
+      .row();
+
+    // Stats container (vertically centered in remaining space, left-aligned)
+    Table statsTable = new Table();
+
+    enemyHpLabel = new TextraLabel(
+      "Health: " + formatStat(enemy.getHp()), statsFont);
+    statsTable.add(enemyHpLabel)
+      .left()
+      .padBottom(10f)
+      .row();
+
+    TextraLabel strengthLabel = new TextraLabel(
+      "Strength: " + formatStat(enemy.getStrength()), statsFont);
+    statsTable.add(strengthLabel)
+      .left()
+      .padBottom(10f)
+      .row();
+
+    TextraLabel initiativeLabel = new TextraLabel(
+      "Initiative: " + formatStat(enemy.getInitiative()), statsFont);
+    statsTable.add(initiativeLabel)
+      .left()
+      .row();
+
+    enemyStatsContentTable.add(statsTable)
+      .expand()
+      .center()
+      .left()
+      .row();
 
     // Add content to border table
     enemyStatsBorderTable.add(enemyStatsContentTable)
@@ -157,11 +231,14 @@ public class EntityBattleScreen implements Screen {
 
     rightPanelTable.add(enemyStatsBorderTable)
       .grow()
+      .uniformY()
       .padBottom(50f)
       .row();
   }
 
   private void drawPlayerStatsBox() {
+    Player player = controller.getPlayer();
+
     // Border instantiation
     playerStatsBorderTable = new Table();
     playerStatsBorderTable.pad(3f);
@@ -170,13 +247,67 @@ public class EntityBattleScreen implements Screen {
     // Content instantiation
     playerStatsContentTable = new Table();
     playerStatsContentTable.setBackground(contentBg);
+    playerStatsContentTable.pad(50f);
 
+    // Player name (top-center, does not expand vertically)
+    TextraLabel nameLabel = new TextraLabel("PLAYER", statsFont);
+    playerStatsContentTable.add(nameLabel)
+      .center()
+      .expandX()
+      .colspan(2)
+      .padBottom(20f)
+      .row();
+
+    // Stats container (vertically centered in remaining space, left-aligned)
+    Table statsTable = new Table();
+
+    playerHpLabel = new TextraLabel(
+      "Health: " + formatStat(player.getHp()), statsFont);
+    statsTable.add(playerHpLabel)
+      .left()
+      .padBottom(10f)
+      .row();
+
+    TextraLabel intelligenceLabel = new TextraLabel(
+      "Intelligence: " + formatStat(player.getIntelligence()), statsFont);
+    statsTable.add(intelligenceLabel)
+      .left()
+      .padBottom(10f)
+      .row();
+
+    TextraLabel initiativeLabel = new TextraLabel(
+      "Initiative: " + formatStat(player.getInitiative()), statsFont);
+    statsTable.add(initiativeLabel)
+      .left()
+      .row();
+
+    playerStatsContentTable.add(statsTable)
+      .expand()
+      .center()
+      .left()
+      .colspan(2)
+      .padBottom(20f)
+      .row();
+
+    // Movesets header (centered, same layout as player name)
+    TextraLabel movesetsHeader = new TextraLabel("MOVESETS:", statsFont);
+    playerStatsContentTable.add(movesetsHeader)
+      .center()
+      .expandX()
+      .colspan(2)
+      .padBottom(20f)
+      .row();
+      
+    // Skill selection widget (rendered by the controller)
+    controller.renderSkillWidgets(playerStatsContentTable, statsFont);
+      
     // Add content to border table
     playerStatsBorderTable.add(playerStatsContentTable)
       .grow();
 
     rightPanelTable.add(playerStatsBorderTable)
-      .grow();
+      .grow()
+      .uniformY();
   }
 
   private void drawScenarioImageBox() {
@@ -188,6 +319,13 @@ public class EntityBattleScreen implements Screen {
     // Content instantiation
     scenarioImageContentTable = new Table();
     scenarioImageContentTable.setBackground(contentBg);
+
+    Entity enemy = controller.getEnemy();
+    if (enemy.getTexture() != null) {
+      Image enemyImage = new Image(enemy.getTexture());
+      enemyImage.setScaling(Scaling.fit);
+      scenarioImageContentTable.add(enemyImage).grow();
+    }
 
     // Add content to border table
     scenarioImageBorderTable.add(scenarioImageContentTable)
@@ -208,6 +346,13 @@ public class EntityBattleScreen implements Screen {
     // Content instantiation
     textDialogueContentTable = new Table();
     textDialogueContentTable.setBackground(contentBg);
+    textDialogueContentTable.pad(10f, 25f, 10f, 25f); // padding top, left, bottom, right
+    textDialogueContentTable.align(Align.bottomLeft);
+    textDialogueContentTable.setClip(true);
+
+    // Provide the dialogue table to the controller so it can manage lines
+    controller.setTextDialogueTable(textDialogueContentTable);
+    controller.addDialogueLine(controller.getInitiativeFlavorText(), skipAnim, controller::startFirstTurn);
 
     // Add content to border table
     textDialogueBorderTable.add(textDialogueContentTable)
@@ -215,5 +360,18 @@ public class EntityBattleScreen implements Screen {
 
     leftPanelTable.add(textDialogueBorderTable)
       .grow();
+  }
+
+  /**
+   * Formats a stat value: shows 2 decimal places if the value has a
+   * fractional part, otherwise displays the whole number only.
+   *
+   * @param value the stat value to format
+   * @return the formatted string
+   */
+  private String formatStat(float value) {
+    return (value % 1 == 0)
+      ? String.format("%.0f", value)
+      : String.format("%.2f", value);
   }
 }
