@@ -1,5 +1,8 @@
 package edu.tip.forestoftreasures.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
@@ -8,13 +11,39 @@ import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator.FreeTypeFontParameter;
 import com.github.tommyettinger.textra.Font;
 
+/**
+ * Utility class for generating and caching TextraTypist fonts.
+ * Fonts are cached by their configuration (path, size, color) so the same
+ * font is only generated once no matter how many screens request it.
+ *
+ * Call {@link #disposeAll()} once at application shutdown (e.g., in
+ * {@code GameLauncher.dispose()}) to release all cached font resources.
+ */
 public final class FontFactory {
+  private static final Map<String, Font> cache = new HashMap<>();
+
   private FontFactory() {
-    // Throw exception for invalid instantiation of utility class
-    throw new InstantiationError("Utility class cannot be instantiated"); 
+    throw new InstantiationError("Utility class cannot be instantiated");
   }
 
+  /**
+   * Returns a cached font for the given configuration, generating it
+   * on first request. Subsequent calls with the same parameters return
+   * the same Font instance — no duplicate native resources.
+   *
+   * @param fontPath path to the .ttf font file in assets
+   * @param size     pixel size of the generated font
+   * @param color    font color
+   * @return a cached {@link Font} instance
+   */
   public static Font generateFont(String fontPath, int size, Color color) {
+    String key = fontPath + "-" + size + "-" + color.toString();
+
+    Font cached = cache.get(key);
+    if (cached != null) {
+      return cached;
+    }
+
     FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(fontPath));
     FreeTypeFontParameter params = new FreeTypeFontParameter();
     params.size = size;
@@ -26,6 +55,20 @@ public final class FontFactory {
     BitmapFont bitmapFont = generator.generateFont(params);
     generator.dispose();
 
-    return new Font(bitmapFont);
+    Font font = new Font(bitmapFont);
+    cache.put(key, font);
+
+    return font;
+  }
+
+  /**
+   * Disposes all cached fonts and clears the cache.
+   * Must be called once at application shutdown to prevent memory leaks.
+   */
+  public static void disposeAll() {
+    for (Font font : cache.values()) {
+      font.dispose();
+    }
+    cache.clear();
   }
 }

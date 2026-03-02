@@ -9,6 +9,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
+import edu.tip.forestoftreasures.utils.FontFactory;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
@@ -43,6 +44,7 @@ public class GameLauncher extends Game {
       assets.load("scenarios/day1/hobgoblin_hurt.png", Texture.class);
       assets.load("scenarios/day1/forest_treant.png", Texture.class);
       assets.load("scenarios/day1/day1_end.png", Texture.class);
+      assets.load("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
       assets.finishLoading();
 
       settingsConfig = new SettingsConfiguration();
@@ -56,5 +58,6 @@ public class GameLauncher extends Game {
     super.dispose();
     assets.dispose();
     DrawableFactory.dispose();
+    FontFactory.disposeAll();
   }
 }

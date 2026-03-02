@@ -2,8 +2,19 @@ Font sizes:
 1. Regular = 16px
 2. Dialogue = 20px
 3. Medium = 24px
-4. Large = 30+px
+4. Large = 32px
 
 Dialogue CHOICE Indicator:
-1. Green (#66FF00) = GOOD
+1. Green #66FF00 = GOOD
 2. Red = BAD
+
+Damage System Indicator:
+1. 200% = #FFDB51
+2. 100% = #66FF00
+3. 75% = #15A3C7
+4. 50% = #AEE2FF
+5. 0% = Red
+
+Status Effect Application Indicator:
+1. Success = #66FF00
+2. Failure = Red

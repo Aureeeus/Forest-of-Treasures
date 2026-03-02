@@ -7,6 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
@@ -53,7 +54,7 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
-        game.setScreen(new EntityBattleScreen(game));
+        game.setScreen(new EntityBattleScreen(game, "bandit_battle_minigame", new Player(48f, 10f, 0f, 15f, 12f, 12f), null));
         screen.dispose();
       }
     });
