@@ -2,6 +2,7 @@ package edu.tip.forestoftreasures.Controller;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -111,13 +112,16 @@ public class EntityBattleController {
    * Instantiates the correct enemy based on the story schema's screenKey.
    * Add new cases here as more enemy types are introduced.
    *
-   * @param screenKey the identifier from the MinigameNode in story_schema.json
+   * @param screenKey the identifier  from the MinigameNode in story_schema.json
    */
   private void resolveEnemy(String screenKey) {
     switch (screenKey) {
       case "bandit_battle_minigame" -> {
+        float initiative = Dice.roll();
         Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
-        this.enemy = new Bandit(Dice.roll(), banditTexture);
+        Sound banditAttackSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+
+        this.enemy = new Bandit(initiative, banditTexture, banditAttackSound);
         this.enemyName = "Bandit";
       }
       default -> throw new RuntimeException(
@@ -176,7 +180,9 @@ public class EntityBattleController {
   }
 
   /**
-   * Called when the player confirms their skill selection with ENTER during their turn.
+   * Evaluates the player's selected skill against the enemy entity.
+   * Shifts the battle state to dialogue animation to display the flavor text
+   * of the executed action before ending the player's turn.
    */
   private void confirmSkillSelection() {
     state = BattleState.ANIMATING_DIALOGUE;
@@ -202,6 +208,11 @@ public class EntityBattleController {
     addDialogueLine(flavorText, skipAnimConfig, this::onPlayerTurnEnded);
   }
 
+  /**
+   * Called immediately after the player's turn text finishes typing out.
+   * Checks if the enemy died to end the battle; otherwise, transitions
+   * to the enemy's turn logic.
+   */
   private void onPlayerTurnEnded() {
     if (!enemy.isAlive()) {
       state = BattleState.BATTLE_END;
@@ -211,6 +222,12 @@ public class EntityBattleController {
     }
   }
 
+  /**
+   * Calculates and applies the enemy's logic for their turn.
+   * This includes evaluating ongoing status effects (e.g., SLEEP causing a skipped turn)
+   * and resolving its attack against the player if it is able to act.
+   * Updates UI logic and flavor text accordingly.
+   */
   private void executeEnemyTurn() {
     state = BattleState.ANIMATING_DIALOGUE;
     
@@ -241,7 +258,12 @@ public class EntityBattleController {
         // Handled as Sleep (returns true)
         flavorText = "The " + enemyName + " has decided to become part of the forest floor a bit earlier than expected. They are fast asleep.";
       } else {
+        // Get SFX volume from settings
+        float sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
+
         if (enemy instanceof Bandit bandit) {
+          bandit.playAttackSound(sfxVolume);
+          
           AttackResult result = bandit.attackWithFlavor(player);
           flavorText = result.flavorText();
         } else {
@@ -270,8 +292,15 @@ public class EntityBattleController {
     });
   }
 
+  /**
+   * Concludes the battle scenario. Disposes of native UI resources
+   * to prevent memory leaks and executes the completion callback 
+   * to transition back to the overworld or previous screen.
+   */
   private void endBattle() {
     // TODO: Handle when player dies and should show a popup screen to retry or go back to main menu
+    screen.dispose();
+    
     if (onComplete != null) {
       onComplete.run();
     }

@@ -1,6 +1,7 @@
 package edu.tip.forestoftreasures.Model.entities;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.audio.Sound;
 
 /**
  * A bandit enemy encountered during battle sequences.
@@ -8,14 +9,22 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class Bandit extends Entity {
   private final Texture texture;
+  private final Sound attackSound;
 
-  public Bandit(float initiative, Texture texture) {
+  public Bandit(float initiative, Texture texture, Sound attackSound) {
     super(50f, 14f, initiative);
     this.texture = texture;
+    this.attackSound = attackSound;
   }
 
   public Texture getTexture() {
     return texture;
+  }
+
+  public void playAttackSound(float volume) {
+    if (attackSound != null) {
+      attackSound.play(volume);
+    }
   }
 
   /**

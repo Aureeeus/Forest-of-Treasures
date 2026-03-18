@@ -1,5 +1,7 @@
 package edu.tip.forestoftreasures.Model.entities;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 /**
  * Status effects that can be applied to an entity during battle.
  * Each effect triggers at the start of the afflicted entity's turn.
@@ -38,7 +40,7 @@ public enum StatusEffect {
    */
   public static StatusEffect random() {
     StatusEffect[] values = values();
-    int index = java.util.concurrent.ThreadLocalRandom.current().nextInt(values.length);
+    int index = ThreadLocalRandom.current().nextInt(values.length);
     return values[index];
   }
 }

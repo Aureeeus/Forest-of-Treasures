@@ -17,12 +17,12 @@ import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.Controller.Day1Controller;
+import edu.tip.forestoftreasures.Controller.DayController;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 
-public class Day1Screen implements Screen {
+public class DayScreen implements Screen {
   private final Stage stage;
   private final GameLauncher game;
   private boolean isInitialized = false;
@@ -53,7 +53,14 @@ public class Day1Screen implements Screen {
   private Table leftDialogueContentTable;
   private Table topDialogueContentTable;
   private Table bottomDialogueContentTable;
-  private Day1Controller controller;
+  private DayController controller;
+
+  // Player stat labels (refreshable after battle)
+  private TextraLabel hpLabel;
+  private TextraLabel strengthLabel;
+  private TextraLabel intelligenceLabel;
+  private TextraLabel dexterityLabel;
+  private TextraLabel charismaLabel;
 
   // --- Right Panel Color Configuration ---
   Color rightBorderColor = Color.valueOf("#2a2a2a");
@@ -63,7 +70,7 @@ public class Day1Screen implements Screen {
   Color leftBorderColor = Color.valueOf("#2a2a2a");
   Color leftContentColor = Color.valueOf("#191a1c");
 
-  public Day1Screen(GameLauncher game) {
+  public DayScreen(GameLauncher game) {
     this.game = game;
     this.sheet = game.assets.get("icons/stats_icons.png", Texture.class);
     sheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
@@ -147,7 +154,7 @@ public class Day1Screen implements Screen {
         .row();
   
       Image hpIcon = new Image(heartTexture);
-      TextraLabel hpLabel = new TextraLabel(String.format(": %.0f", player.getHp()), playerStatsTextFont);
+      hpLabel = new TextraLabel(String.format(": %s", formatStat(player.getHp())), playerStatsTextFont);
       rightContentTable.add(hpIcon)
         .size(90f)
         .left()
@@ -158,7 +165,7 @@ public class Day1Screen implements Screen {
         .row();
   
       Image strengthIcon = new Image(strengthTexture);
-      TextraLabel strengthLabel = new TextraLabel(String.format(": %.0f", player.getStrength()), playerStatsTextFont);
+      strengthLabel = new TextraLabel(String.format(": %s", formatStat(player.getStrength())), playerStatsTextFont);
       rightContentTable.add(strengthIcon)
         .size(90f)
         .left();
@@ -168,7 +175,7 @@ public class Day1Screen implements Screen {
         .row();
   
       Image intelligenceIcon = new Image(intelligenceTexture);
-      TextraLabel intelligenceLabel = new TextraLabel(String.format(": %.0f", player.getIntelligence()), playerStatsTextFont);
+      intelligenceLabel = new TextraLabel(String.format(": %s", formatStat(player.getIntelligence())), playerStatsTextFont);
       rightContentTable.add(intelligenceIcon)
         .size(90f)
         .left();
@@ -178,7 +185,7 @@ public class Day1Screen implements Screen {
         .row();
       
       Image dexterityIcon = new Image(dexterityTexture);
-      TextraLabel dexterityLabel = new TextraLabel(String.format(": %.0f", player.getDexterity()), playerStatsTextFont);
+      dexterityLabel = new TextraLabel(String.format(": %s", formatStat(player.getDexterity())), playerStatsTextFont);
       rightContentTable.add(dexterityIcon)
         .size(90f)
         .left();
@@ -188,7 +195,7 @@ public class Day1Screen implements Screen {
         .row();
   
       Image charismaIcon = new Image(charismateTexture);
-      TextraLabel charismaLabel = new TextraLabel(String.format(": %.0f", player.getCharisma()), playerStatsTextFont);
+      charismaLabel = new TextraLabel(String.format(": %s", formatStat(player.getCharisma())), playerStatsTextFont);
       rightContentTable.add(charismaIcon)
         .size(90f)
         .left();
@@ -308,7 +315,7 @@ public class Day1Screen implements Screen {
         .width(Value.percentWidth(0.3f, table));
 
       // Load controller to this screen
-      controller = new Day1Controller(game, this);
+      controller = new DayController(game, this);
     }
   }
 
@@ -389,5 +396,27 @@ public class Day1Screen implements Screen {
 
   public Player getPlayer() {
     return player;
+  }
+
+  /**
+   * Refreshes all player stat labels with the current values from the Player model.
+   * Called after returning from a battle minigame where stats (especially HP) may have changed.
+   */
+  public void updatePlayerStats() {
+    if (hpLabel != null) hpLabel.setText(": " + formatStat(player.getHp()));
+    if (strengthLabel != null) strengthLabel.setText(": " + formatStat(player.getStrength()));
+    if (intelligenceLabel != null) intelligenceLabel.setText(": " + formatStat(player.getIntelligence()));
+    if (dexterityLabel != null) dexterityLabel.setText(": " + formatStat(player.getDexterity()));
+    if (charismaLabel != null) charismaLabel.setText(": " + formatStat(player.getCharisma()));
+  }
+
+  /**
+   * Formats a stat value: shows 2 decimal places if the value has a
+   * fractional part, otherwise displays the whole number only.
+   */
+  private String formatStat(float value) {
+    return (value % 1 == 0)
+      ? String.format("%.0f", value)
+      : String.format("%.2f", value);
   }
 }

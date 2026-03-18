@@ -3,6 +3,8 @@ package edu.tip.forestoftreasures;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.SkinLoader;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
@@ -36,7 +38,18 @@ public class GameLauncher extends Game {
 
       // --- Spritesheet icons ---
       assets.load("icons/dialogue_ui_sheet.png", Texture.class);
-      
+
+      // --- Bg Music ---
+      assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
+
+      // --- Sound Effects ---
+      assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);
+      assets.load("audio/sfx/main_menu_select_sound.wav", Sound.class);
+      assets.load("audio/sfx/maze_enter.mp3", Sound.class);
+
+      // --- Battle SFX ---
+      assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+
       // --- Day 1 UI ---
       assets.load("scenarios/day1/forest_intro.png", Texture.class);
       assets.load("scenarios/day1/forest_sprite.png", Texture.class);

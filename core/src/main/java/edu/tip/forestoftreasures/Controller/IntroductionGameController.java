@@ -7,8 +7,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.View.Day1Screen;
-// import edu.tip.forestoftreasures.View.Day1Screen;
+import edu.tip.forestoftreasures.View.DayScreen;
+// import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 
 public class IntroductionGameController {
@@ -17,6 +17,13 @@ public class IntroductionGameController {
   private final IntroductionGameScreen screen;
   private final TypingLabel typingLabel;
 
+  /**
+   * Initializes the introduction sequence controller and binds
+   * interactive listeners to the provided stage and typing label.
+   *
+   * @param game   The main game instance.
+   * @param screen The introduction screen containing the UI stage.
+   */
   public IntroductionGameController(GameLauncher game, IntroductionGameScreen screen) {
     this.game = game;
     this.screen = screen;
@@ -26,6 +33,11 @@ public class IntroductionGameController {
     addListeners();
   }
 
+  /**
+   * Registers input listeners to the stage.
+   * - Clicking (touchDown) or pressing SPACE skips the typing animation if it's playing.
+   * - Pressing SPACE when the animation has already finished transitions the state to Day 1.
+   */
   private void addListeners() {
     stage.addListener(new InputListener() {
       @Override
@@ -43,7 +55,7 @@ public class IntroductionGameController {
           if (!typingLabel.hasEnded()) {
             typingLabel.skipToTheEnd();
           } else {
-            game.setScreen(new Day1Screen(game));
+            game.setScreen(new DayScreen(game));
             screen.dispose();
           }
           return true;

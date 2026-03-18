@@ -47,7 +47,7 @@ public class SettingsScreen implements Screen {
     Gdx.input.setInputProcessor(stage);
 
     // Set background music
-    backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/main_menu_bg_music.mp3"));
+    backgroundMusic = game.assets.get("audio/bgm/main_menu_bg_music.mp3", Music.class);
     backgroundMusic.setLooping(true);
     backgroundMusic.setVolume(0.5f);
     backgroundMusic.play();
@@ -137,7 +137,6 @@ public class SettingsScreen implements Screen {
     // Destroy screen's assets here.
     stage.dispose();
     backgroundTexture.dispose();
-    backgroundMusic.dispose();
   }
 
   public TextButton getBackButton() {

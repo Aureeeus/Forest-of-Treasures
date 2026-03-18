@@ -1,6 +1,5 @@
 package edu.tip.forestoftreasures.Controller;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
@@ -19,7 +18,7 @@ public class SettingsController {
     this.game = game;
     this.screen = screen;
 
-    this.selectSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_select_sound.wav"));
+    this.selectSound = game.assets.get("audio/sfx/main_menu_select_sound.wav", Sound.class);
 
     addListeners();
   }

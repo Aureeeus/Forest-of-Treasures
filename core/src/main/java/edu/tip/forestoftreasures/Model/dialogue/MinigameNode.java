@@ -3,7 +3,7 @@ package edu.tip.forestoftreasures.Model.dialogue;
 public class MinigameNode extends DialogueNode {
   /**
    * String identifier for which minigame screen to launch.
-   * Matched against cases in Day1Controller.resolveMinigameScreen().
+   * Matched against cases in DayController.resolveMinigameScreen().
    */
   public final String screenKey;
   

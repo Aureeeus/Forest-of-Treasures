@@ -32,17 +32,17 @@ import edu.tip.forestoftreasures.Model.dialogue.DialogueNode;
 import edu.tip.forestoftreasures.Model.dialogue.DialogueRunner;
 import edu.tip.forestoftreasures.Model.dialogue.LineNode;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
-import edu.tip.forestoftreasures.View.Day1Screen;
+import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.MazeBossScreen;
 
-public class Day1Controller implements DialogueRunner.DisplayHandler {
-  // Data of thee Dialogue depening on the day
+public class DayController implements DialogueRunner.DisplayHandler {
+  // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
-  private static final String DAY_KEY    = "day1";
+  private int currentDay = 1;
 
   private final GameLauncher game;
-  private final Day1Screen screen;
+  private final DayScreen screen;
 
   // --- Dialogue system ---
   private final DialogueRunner runner;
@@ -74,13 +74,13 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
   private final Font selectChoiceFont;
 
   /**
-   * Constructs the Day1Controller, wires up UI references, loads the day
+   * Constructs the DayController, wires up UI references, loads the day
    * from JSON, and starts the runner from the loaded root node.
    *
    * @param game   The main game launcher holding the asset manager.
-   * @param screen The Day1Screen holding all LibGDX stage and table references.
+   * @param screen The DayScreen holding all LibGDX stage and table references.
    */
-  public Day1Controller(GameLauncher game, Day1Screen screen) {
+  public DayController(GameLauncher game, DayScreen screen) {
     this.game = game;
     this.screen = screen;
 
@@ -91,8 +91,8 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     
     Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
     TextureRegion selectChoiceTexture = new TextureRegion(selectIconSheet, 448, 384, 64, 64);
+    
     this.selectChoiceIcon = new Image(selectChoiceTexture);
-
     this.dialogueFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
     dialogueFont.adjustLineHeight(1.3f);
     this.selectChoiceFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
@@ -102,11 +102,11 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     this.achievementVerifier = new AchievementVerifier();
 
     addListeners();
-    loadAndStartDay();
+    loadAndStartDay("day" + currentDay);
   }
 
   /**
-   * Loads the day1 data from story.json via DialogueLoader and starts the runner.
+   * Loads the data from story.json via DialogueLoader and starts the runner.
    *
    * DialogueLoader reads the JSON and returns a DayData record containing:
    *   - rootNode    : the first node to pass into runner.start()
@@ -116,9 +116,11 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    *
    * NOTE: All textures referenced in story.json must already be loaded by
    * AssetManager before this method is called — typically in your LoadingScreen.
+   *
+   * @param dayKey The key for the day in the story_schema.json file.
    */
-  private void loadAndStartDay() {
-    DayData day = DialogueLoader.load(STORY_FILE, DAY_KEY);
+  private void loadAndStartDay(String dayKey) {
+    DayData day = DialogueLoader.load(STORY_FILE, dayKey);
 
     this.storyRoot    = day.rootNode();
     this.achievements = day.achievements();
@@ -249,7 +251,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    * Called by DialogueRunner when the next node is a MinigameNode.
    *
    * Switches to the appropriate minigame screen via game.setScreen().
-   * Day1Screen is hidden but NOT disposed — all dialogue state is preserved.
+   * DayScreen is hidden but NOT disposed — all dialogue state is preserved.
    * The graph resumes when the minigame screen calls runner.onMinigameFinished().
    *
    * @param node The MinigameNode containing the screenKey to launch.
@@ -267,8 +269,26 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    */
   @Override
   public void onDialogueEnd() {
-    Gdx.app.log("Day1Controller", "Day complete. Checking achievements...");
+    Gdx.app.log("DayController", "Day complete. Checking achievements...");
     checkAchievements();
+    onDayEnd();
+  }
+
+  /**
+   * Called to transition logic to the next day.
+   */
+  private void onDayEnd() {
+    currentDay++;
+    screen.getTextDialogueTable().clearChildren(); // Clears all text
+
+    switch (currentDay) {
+      case 2 -> loadAndStartDay("day" + currentDay);
+      case 3 -> loadAndStartDay("day" + currentDay);
+      default ->
+        // Exceeded 3 days or invalid day. Represents edge of current demo or ending screen
+        Gdx.app.log("DayController", "End of Game! Day: " + currentDay);
+        // Possible implementation: game.setScreen(new CreditsScreen(game));
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -280,7 +300,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    *
    * The minigame screen receives a Runnable callback instead of a direct
    * runner reference — it calls onComplete.run() when the player passes,
-   * which returns to Day1Screen and resumes the dialogue graph.
+   * which returns to DayScreen and resumes the dialogue graph.
    *
    * To add a new minigame: add a new case here and create its Screen class.
    *
@@ -288,9 +308,20 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
    * @return The minigame Screen to transition to.
    */
   private Screen resolveMinigameScreen(String screenKey) {
+    // Determines whether the minigame involves entity combat, requiring a stat refresh on return
+    boolean isBattleMinigame = switch (screenKey) {
+      case "bandit_battle_minigame" -> true;
+      default -> false;
+    };
+
     Runnable onComplete = () -> {
-      game.setScreen(screen); // return to Day1Screen — state is preserved
+      game.setScreen(screen); // return to DayScreen — state is preserved
       setPendingOverflowTrim(true);
+
+      if (isBattleMinigame) {
+        screen.updatePlayerStats();
+      }
+
       runner.onMinigameFinished(); // resume dialogue graph from next node
     };
 
@@ -299,7 +330,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
       case "maze_minigame" -> new MazeBossScreen(game, onComplete);
       case "bandit_battle_minigame" -> new EntityBattleScreen(game, screenKey, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
-        "[Day1Controller] Unknown minigame screenKey: '" + screenKey + "'"
+        "[DayController] Unknown minigame screenKey: '" + screenKey + "'"
       );
     };
   }
@@ -393,12 +424,12 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     );
 
     if (unlocked.isEmpty()) {
-      Gdx.app.log("Day1Controller", "No achievements unlocked.");
+      Gdx.app.log("DayController", "No achievements unlocked.");
       return;
     }
 
     for (Achievement achievement : unlocked) {
-      Gdx.app.log("Day1Controller", "Unlocked: ["
+      Gdx.app.log("DayController", "Unlocked: ["
         + achievement.id + "] " + achievement.description);
     }
   }
@@ -418,7 +449,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
     screen.getSettingsIcon().addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {
-        Gdx.app.log("Day1Controller", "Settings clicked!");
+        Gdx.app.log("DayController", "Settings clicked!");
       }
 
       @Override
@@ -507,7 +538,7 @@ public class Day1Controller implements DialogueRunner.DisplayHandler {
   /**
    * Disposes of all font resources held by this controller.
    *
-   * Must be called from Day1Screen.dispose() to prevent memory leaks.
+   * Must be called from DayScreen.dispose() to prevent memory leaks.
    * Fonts are not managed by AssetManager so they require manual disposal.
    * Textures are NOT disposed here — AssetManager owns and manages them.
    */

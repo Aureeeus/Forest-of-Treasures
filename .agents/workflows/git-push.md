@@ -1,48 +1,26 @@
 ---
-description: Safely commit and push changes to the remote repository
+description: A workflow for safely committing and pushing changes to a remote Git repository
 ---
+# Git Push Workflow
 
-# Safe Git Commit & Push
+This workflow ensures that changes are committed with clear, descriptive messages and safely pushed to the remote repository without causing conflicts.
 
-Use this workflow whenever committing and pushing changes to avoid pulling unwanted files (e.g. gradle configs) that can cause project conflicts.
-
-## Steps
-
-// turbo
-1. Check the current branch and working tree status:
-```
-git status
-```
-
-2. Stage only the relevant files for the commit:
-```
-git add <file1> <file2> ...
-```
-
-3. Commit with a meaningful, descriptive message:
-```
-git commit -m "<type>: <short summary>
-
-<detailed bullet points explaining what changed and why>"
-```
-
-// turbo
-4. Fetch the latest remote changes **without** modifying the working tree:
-```
-git fetch origin <branch-name>
-```
-
-// turbo
-5. Check if there are any new remote commits that could conflict:
-```
-git log HEAD..origin/<branch-name> --oneline
-```
-
-6. **If no new commits** — push directly:
-```
-git push origin <branch-name>
-```
-
-7. **If new commits exist** — notify the user about the remote changes and ask how to proceed (rebase, merge, or abort) before pushing.
-
-> **IMPORTANT**: Do NOT use `git pull` or `git pull --rebase` as it pulls all remote content into the working tree, which can conflict with local gradle and build files.
+1. **Review and organize staged changes:** Using `git status` and `git diff --cached`, review the currently staged changes. Understand what the files are about and what modifications have been made to provide a descriptive commit message. If no changes are staged, add them contextually using `git add <files>`.
+2. **Commit the changes:** Create a commit message that is clear, readable, and adheres to standard Git commit guidelines (e.g., using conventional commits like `feat:`, `fix:`, `docs:`, etc., if applicable or at least a clear imperative mood summary).
+3. **Compose a detailed commit message summary:** When making your commit, include a bulleted list of what was changed in the commit description to provide clear context for reviewers and future reference. Ensure the summary is highly readable and easy to understand.
+   ```bash
+   # example
+   git commit -m "feat: user authentication system
+   
+   - Added JWT-based login and registration endpoints
+   - Configured secure HTTP-only cookies for token storage
+   - Updated User model to include password hashing"
+   ```
+4. **Fetch remote updates:** After committing, use `git fetch` to check if there are newly pushed updates on the remote repository.
+5. **Handle remote updates safely:** Run `git status` to see if your local branch is behind the remote tracking branch.
+   - If there *are* updates on the remote and your local branch is tracking it, be cautious. You can stash any active unstaged changes if needed (`git stash`). Notify the user to avoid pushing conflicts, or proceed to pull with rebase/merge if standard practice, ensuring we avoid overwriting or creating messy conflict resolutions without user awareness.
+6. **Ensure no conflicts:** Use `git status`, `git log origin/main..HEAD` (or the relevant remote branch), or `git diff` to verify the state between your local commits and the remote before attempting to push. Resolving conflicts locally if a pull was required is mandatory before pushing.
+7. **Push to the remote repository:** When all conflicts are resolved or there are no remote updates to worry about, safely push to the remote repository. Inform the user what branch you are pushing to before or after doing so.
+   ```bash
+   git push origin <branch-name>
+   ```

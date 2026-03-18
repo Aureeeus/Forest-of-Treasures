@@ -25,19 +25,31 @@ public class MainMenuController {
 
   private float sfxVolume;
 
+  /**
+   * Initializes the main menu controller, setting up necessary audio assets
+   * and fetching system settings before binding interactive listeners to the UI.
+   *
+   * @param game   The main game launcher holding the asset manager and settings.
+   * @param screen The main menu screen containing the UI elements.
+   */
   public MainMenuController(GameLauncher game, MainMenuScreen screen) {
     this.game = game;
     this.screen = screen;
     this.skin = game.assets.get("ui/fotskin.json", Skin.class);
 
-    this.startSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_start_sound.wav"));
-    this.selectSound = Gdx.audio.newSound(Gdx.files.internal("audio/main_menu_select_sound.wav"));
+    this.startSound = game.assets.get("audio/sfx/main_menu_start_sound.wav", Sound.class);
+    this.selectSound = game.assets.get("audio/sfx/main_menu_select_sound.wav", Sound.class);
 
     sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
 
     addListeners();
   }
 
+  /**
+   * Registers input listeners for all buttons on the main menu.
+   * Handles transitioning between different screens (Intro, Battle, Settings, Maze)
+   * and plays interactive sound effects upon pressing.
+   */
   private void addListeners() {
 
     // Quit button listener
@@ -45,6 +57,7 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         startSound.play(sfxVolume);
+        screen.stopMusic();
         game.setScreen(new IntroductionGameScreen(game));
         screen.dispose();
       }
@@ -86,13 +99,19 @@ public class MainMenuController {
     });
   }
 
+  /**
+   * Safely disposes the current screen and exits the application.
+   */
   private void handleQuit() {
     game.getScreen().dispose();
     Gdx.app.exit();
   }
 
+  /**
+   * Frees up memory allocated by native audio resources when the controller
+   * is no longer needed. Must be called by the screen's dispose method.
+   */
   public void dispose() {
-    startSound.dispose();
-    selectSound.dispose();
+    // Audio resources are managed by AssetManager
   }
 }

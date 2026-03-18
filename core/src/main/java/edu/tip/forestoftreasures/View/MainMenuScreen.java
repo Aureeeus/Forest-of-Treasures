@@ -54,7 +54,7 @@ public class MainMenuScreen implements Screen {
     Gdx.input.setInputProcessor(stage);
 
     // Set background music
-    backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/main_menu_bg_music.mp3"));
+    backgroundMusic = game.assets.get("audio/bgm/main_menu_bg_music.mp3", Music.class);
     backgroundMusic.setLooping(true);
     backgroundMusic.setVolume(musicVolume);
     backgroundMusic.play();
@@ -141,7 +141,6 @@ public class MainMenuScreen implements Screen {
     // Destroy screen's assets here.
     stage.dispose();
     backgroundTexture.dispose();
-    backgroundMusic.dispose();
     controller.dispose();
   }
 
@@ -163,5 +162,15 @@ public class MainMenuScreen implements Screen {
 
   public TextButton getTestButton() {
     return testButton;
+  }
+
+  /**
+   * Stops the background music if it is currently playing.
+   * Can be called by the controller before transitioning to another screen.
+   */
+  public void stopMusic() {
+    if (backgroundMusic != null && backgroundMusic.isPlaying()) {
+      backgroundMusic.stop();;
+    }
   }
 }

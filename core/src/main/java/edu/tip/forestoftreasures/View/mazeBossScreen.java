@@ -54,8 +54,8 @@ public class MazeBossScreen implements Screen {
     // Prepare your screen here.
     stage = new Stage(new FitViewport(1920, 1080));
 
-    enterSound = Gdx.audio.newSound(Gdx.files.internal("audio/maze_enter.mp3"));
-    // mazeMusic = Gdx.audio.newMusic(Gdx.files.internal("audio/maze_music.mp3"));
+    enterSound = game.assets.get("audio/sfx/maze_enter.mp3", Sound.class);
+    // mazeMusic = game.assets.get("audio/maze_music.mp3", Music.class);
     // mazeMusic.setLooping(true);
     // mazeMusic.setVolume(0.5f); // Adjust volume as needed
 
@@ -153,6 +153,5 @@ public class MazeBossScreen implements Screen {
     mazeMap.dispose();
     mapRenderer.dispose();
     shapeRenderer.dispose();
-    enterSound.dispose();
   }
 }
