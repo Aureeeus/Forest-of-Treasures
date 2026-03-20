@@ -12,7 +12,7 @@ import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
-import edu.tip.forestoftreasures.View.MazeBossScreen;
+import edu.tip.forestoftreasures.View.mazeBossScreen;
 
 public class MainMenuController {
   private final GameLauncher game;
@@ -47,7 +47,8 @@ public class MainMenuController {
 
   /**
    * Registers input listeners for all buttons on the main menu.
-   * Handles transitioning between different screens (Intro, Battle, Settings, Maze)
+   * Handles transitioning between different screens (Intro, Battle, Settings,
+   * Maze)
    * and plays interactive sound effects upon pressing.
    */
   private void addListeners() {
@@ -67,7 +68,8 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
-        game.setScreen(new EntityBattleScreen(game, "bandit_battle_minigame", new Player(48f, 10f, 0f, 15f, 12f, 12f), null));
+        game.setScreen(
+            new EntityBattleScreen(game, "bandit_battle_minigame", new Player(48f, 10f, 0f, 15f, 12f, 12f), null));
         screen.dispose();
       }
     });
@@ -93,7 +95,7 @@ public class MainMenuController {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
-        game.setScreen(new MazeBossScreen(game, null));
+        game.setScreen(new mazeBossScreen(game, null));
         screen.dispose();
       }
     });

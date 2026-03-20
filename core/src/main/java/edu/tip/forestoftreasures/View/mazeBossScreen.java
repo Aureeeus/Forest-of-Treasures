@@ -13,24 +13,22 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.utils.ScreenUtils;
-import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.Controller.MazeBossController;
+import edu.tip.forestoftreasures.Controller.mazeBossController;
+import edu.tip.forestoftreasures.View.GameOverScreen;
 
-public class MazeBossScreen implements Screen {
+public class mazeBossScreen implements Screen {
   private Stage stage;
   private Table table;
   private final GameLauncher game;
-  private MazeBossController controller;
+  private mazeBossController controller;
   private SpriteBatch batch;
   private Texture playerTexture;
+  private Texture treantTexture;
 
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
@@ -43,10 +41,10 @@ public class MazeBossScreen implements Screen {
 
   private final Runnable onComplete;
 
-  public MazeBossScreen(GameLauncher game, Runnable onComplete) {
+  public mazeBossScreen(GameLauncher game, Runnable onComplete) {
     this.game = game;
     this.onComplete = onComplete;
-    this.controller = new MazeBossController();
+    this.controller = new mazeBossController();
   }
 
   @Override
@@ -55,12 +53,10 @@ public class MazeBossScreen implements Screen {
     stage = new Stage(new FitViewport(1920, 1080));
 
     enterSound = game.assets.get("audio/sfx/maze_enter.mp3", Sound.class);
-    // mazeMusic = game.assets.get("audio/maze_music.mp3", Music.class);
-    // mazeMusic.setLooping(true);
-    // mazeMusic.setVolume(0.5f); // Adjust volume as needed
 
     batch = new SpriteBatch();
     playerTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
+    treantTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
     shapeRenderer = new ShapeRenderer();
 
     mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
@@ -79,6 +75,12 @@ public class MazeBossScreen implements Screen {
   @Override
   public void render(float delta) {
     controller.movement(delta, mazeMap);
+
+    // If the player was killed by the enemy, go to Game Over
+    if (controller.playerDead) {
+      game.setScreen(new GameOverScreen(game));
+      return;
+    }
 
     // Check exit BEFORE rendering — no point drawing if we're switching screens
     if (controller.isOnExit(mazeMap)) {
@@ -108,7 +110,18 @@ public class MazeBossScreen implements Screen {
     // Draw the Player
     batch.setProjectionMatrix(camera.combined);
     batch.begin();
+    // Player
     batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y, 48, 48);
+
+    // Enemy (tinted red)
+    if (controller.enemyActive) {
+      batch.setColor(Color.RED);
+      batch.draw(playerTexture, controller.enemyPosition.x, controller.enemyPosition.y, 48, 48);
+      batch.setColor(Color.WHITE);
+    }
+
+    // Treant placeholder above maze
+    batch.draw(treantTexture, 512 - 64, 820, 128, 128);
     batch.end();
 
     // Draw UI/Stage (Buttons like FIGHT, ACT, etc.)
@@ -118,30 +131,20 @@ public class MazeBossScreen implements Screen {
 
   @Override
   public void resize(int width, int height) {
-    // Handle screen resizing here.
-    // If the window is minimized on a desktop (LWJGL3) platform, width and height
-    // are 0, which causes problems.
-    // In that case, we don't resize anything, and wait for the window to be a
-    // normal size before updating.
     stage.getViewport().update(width, height, true);
-
-    // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
   }
 
   @Override
   public void pause() {
-    // Handle game pause here.
   }
 
   @Override
   public void resume() {
-    // Handle game resume here.
   }
 
   @Override
   public void hide() {
-    // Handle screen hiding here.
     Gdx.input.setInputProcessor(null);
   }
 
@@ -150,6 +153,7 @@ public class MazeBossScreen implements Screen {
     stage.dispose();
     batch.dispose();
     playerTexture.dispose();
+    treantTexture.dispose();
     mazeMap.dispose();
     mapRenderer.dispose();
     shapeRenderer.dispose();

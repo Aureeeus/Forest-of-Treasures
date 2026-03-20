@@ -34,7 +34,7 @@ import edu.tip.forestoftreasures.Model.dialogue.LineNode;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
-import edu.tip.forestoftreasures.View.MazeBossScreen;
+import edu.tip.forestoftreasures.View.mazeBossScreen;
 
 public class DayController implements DialogueRunner.DisplayHandler {
   // Data of the Dialogue depending on the day
@@ -47,8 +47,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
   // --- Dialogue system ---
   private final DialogueRunner runner;
   private final AchievementVerifier achievementVerifier;
-  private DialogueNode storyRoot;          // kept for BFS validation in AchievementVerifier
-  private List<Achievement> achievements;  // loaded from JSON
+  private DialogueNode storyRoot; // kept for BFS validation in AchievementVerifier
+  private List<Achievement> achievements; // loaded from JSON
 
   private boolean pendingOverflowTrim = false;
 
@@ -88,16 +88,17 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.textDialogueTable = screen.getTextDialogueTable();
     this.dialogueWidgetTable = screen.getDialogueWidgetTable();
     this.settingsIcon = screen.getSettingsIcon();
-    
+
     Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
     TextureRegion selectChoiceTexture = new TextureRegion(selectIconSheet, 448, 384, 64, 64);
-    
+
     this.selectChoiceIcon = new Image(selectChoiceTexture);
     this.dialogueFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
     dialogueFont.adjustLineHeight(1.3f);
     this.selectChoiceFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
 
-    // Pass this controller as the DisplayHandler — runner calls back into showLine() etc.
+    // Pass this controller as the DisplayHandler — runner calls back into
+    // showLine() etc.
     this.runner = new DialogueRunner(this);
     this.achievementVerifier = new AchievementVerifier();
 
@@ -109,8 +110,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * Loads the data from story.json via DialogueLoader and starts the runner.
    *
    * DialogueLoader reads the JSON and returns a DayData record containing:
-   *   - rootNode    : the first node to pass into runner.start()
-   *   - achievements: the list of achievements defined for this day
+   * - rootNode : the first node to pass into runner.start()
+   * - achievements: the list of achievements defined for this day
    *
    * Both are stored so they are available when onDialogueEnd() fires.
    *
@@ -122,7 +123,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   private void loadAndStartDay(String dayKey) {
     DayData day = DialogueLoader.load(STORY_FILE, dayKey);
 
-    this.storyRoot    = day.rootNode();
+    this.storyRoot = day.rootNode();
     this.achievements = day.achievements();
 
     runner.start(storyRoot);
@@ -161,19 +162,20 @@ public class DayController implements DialogueRunner.DisplayHandler {
     });
 
     textDialogueTable.add(typingLabel)
-      .growX()
-      .bottom()
-      .left()
-      .padBottom(5f)
-      .row();
+        .growX()
+        .bottom()
+        .left()
+        .padBottom(5f)
+        .row();
 
     textDialogueTable.invalidateHierarchy();
 
     Gdx.app.postRunnable(this::trimDialogueOverflow);
   }
-  
+
   /**
-   * Removes old dialogue lines from the top until all content fits inside the table.
+   * Removes old dialogue lines from the top until all content fits inside the
+   * table.
    */
   private void trimDialogueOverflow() {
     textDialogueTable.validate();
@@ -201,7 +203,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
         contentHeight += cell.getActorHeight() + cell.getPadTop() + cell.getPadBottom();
       }
 
-      if (contentHeight <= tableHeight) break; // fits, stop trimming 
+      if (contentHeight <= tableHeight)
+        break; // fits, stop trimming
 
       textDialogueTable.removeActorAt(0, true); // remove oldest line
       textDialogueTable.invalidateHierarchy();
@@ -241,7 +244,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   @Override
   public void showChoices(ChoiceNode node) {
     activeChoiceNode = node;
-    selectedRow      = 0; // reset cursor to first option each time
+    selectedRow = 0; // reset cursor to first option each time
 
     renderChoiceWidgets(node);
     screen.getStage().setKeyboardFocus(dialogueWidgetTable);
@@ -285,9 +288,10 @@ public class DayController implements DialogueRunner.DisplayHandler {
       case 2 -> loadAndStartDay("day" + currentDay);
       case 3 -> loadAndStartDay("day" + currentDay);
       default ->
-        // Exceeded 3 days or invalid day. Represents edge of current demo or ending screen
+        // Exceeded 3 days or invalid day. Represents edge of current demo or ending
+        // screen
         Gdx.app.log("DayController", "End of Game! Day: " + currentDay);
-        // Possible implementation: game.setScreen(new CreditsScreen(game));
+      // Possible implementation: game.setScreen(new CreditsScreen(game));
     }
   }
 
@@ -308,7 +312,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * @return The minigame Screen to transition to.
    */
   private Screen resolveMinigameScreen(String screenKey) {
-    // Determines whether the minigame involves entity combat, requiring a stat refresh on return
+    // Determines whether the minigame involves entity combat, requiring a stat
+    // refresh on return
     boolean isBattleMinigame = switch (screenKey) {
       case "bandit_battle_minigame" -> true;
       default -> false;
@@ -327,11 +332,10 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     return switch (screenKey) {
       // Add new minigame screens here as cases
-      case "maze_minigame" -> new MazeBossScreen(game, onComplete);
+      case "maze_minigame" -> new mazeBossScreen(game, onComplete);
       case "bandit_battle_minigame" -> new EntityBattleScreen(game, screenKey, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
-        "[DayController] Unknown minigame screenKey: '" + screenKey + "'"
-      );
+          "[DayController] Unknown minigame screenKey: '" + screenKey + "'");
     };
   }
 
@@ -405,11 +409,12 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * @param isSelected True to highlight, false to reset to white.
    */
   private void tintCell(Container<?> cell, boolean isSelected) {
-    if (cell.getActor() == null) return;
+    if (cell.getActor() == null)
+      return;
     cell.getActor().setColor(isSelected ? Color.valueOf("#FFDB51") : Color.WHITE);
   }
 
-    /**
+  /**
    * Checks all achievements loaded from JSON against the player's recorded path.
    *
    * AchievementVerifier runs BFS on the graph first to validate each achievement
@@ -418,10 +423,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
    */
   private void checkAchievements() {
     List<Achievement> unlocked = achievementVerifier.getUnlockedAchievements(
-      achievements,
-      runner.getPlayerPath(),
-      storyRoot
-    );
+        achievements,
+        runner.getPlayerPath(),
+        storyRoot);
 
     if (unlocked.isEmpty()) {
       Gdx.app.log("DayController", "No achievements unlocked.");
@@ -430,7 +434,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     for (Achievement achievement : unlocked) {
       Gdx.app.log("DayController", "Unlocked: ["
-        + achievement.id + "] " + achievement.description);
+          + achievement.id + "] " + achievement.description);
     }
   }
 
@@ -466,26 +470,28 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
       @Override
       public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
-        if (pointer == -1) settingsIcon.setColor(Color.valueOf("#c7c7c7"));
+        if (pointer == -1)
+          settingsIcon.setColor(Color.valueOf("#c7c7c7"));
         super.enter(event, x, y, pointer, fromActor);
       }
 
       @Override
       public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
-        if (pointer == -1) settingsIcon.setColor(Color.WHITE);
+        if (pointer == -1)
+          settingsIcon.setColor(Color.WHITE);
         super.exit(event, x, y, pointer, toActor);
       }
     });
   }
 
-   /**
+  /**
    * Adds keyboard navigation and confirmation to the dialogue widget table.
    *
    * UP/DOWN moves the cursor between choice rows.
    * ENTER confirms the highlighted choice:
-   *   1. Clears the choice UI from the screen.
-   *   2. Calls runner.onChoiceSelected(selectedRow) which records the decision
-   *      in PlayerPathTracker and advances the graph to the chosen branch.
+   * 1. Clears the choice UI from the screen.
+   * 2. Calls runner.onChoiceSelected(selectedRow) which records the decision
+   * in PlayerPathTracker and advances the graph to the chosen branch.
    *
    * Input is only processed when activeChoiceNode is not null, ensuring
    * keyboard events during normal dialogue lines are safely ignored.
