@@ -14,6 +14,10 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.github.tommyettinger.textra.Font;
+import com.github.tommyettinger.textra.TextraLabel;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -27,8 +31,27 @@ public class mazeBossScreen implements Screen {
   private final GameLauncher game;
   private mazeBossController controller;
   private SpriteBatch batch;
-  private Texture playerTexture;
+  private Texture playerUpTexture;
+  private Texture playerDownTexture;
+  private Texture playerLeftTexture;
+  private Texture playerRightTexture;
   private Texture treantTexture;
+  private Font textraFont;
+  private TextraLabel treantLabel;
+  private float treantDialogTimer = 0f;
+  private final float TREANT_DIALOG_INTERVAL = 8f;
+
+  // Ten separate dialog strings (editable)
+  public String treantText1 = "I have caught you!";
+  public String treantText2 = "Goono";
+  public String treantText3 = "Goonoo";
+  public String treantText4 = "Goonooo";
+  public String treantText5 = "this is the end for you, trespasser!";
+  public String treantText6 = "Goonooooo";
+  public String treantText7 = "Goonoooooo";
+  public String treantText8 = "Goonooooooo";
+  public String treantText9 = "Goonoooooooo";
+  public String treantText10 = "Goonooooooooo";
 
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
@@ -55,8 +78,26 @@ public class mazeBossScreen implements Screen {
     enterSound = game.assets.get("audio/sfx/maze_enter.mp3", Sound.class);
 
     batch = new SpriteBatch();
-    playerTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
-    treantTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
+    // directional player textures
+    playerUpTexture = new Texture(Gdx.files.internal("images/Player_Up-removebg-preview.png"));
+    playerDownTexture = new Texture(Gdx.files.internal("images/player_down-removebg-preview.png"));
+    playerLeftTexture = new Texture(Gdx.files.internal("images/Player_Left-removebg-preview.png"));
+    playerRightTexture = new Texture(Gdx.files.internal("images/Player_Right-removebg-preview.png"));
+    // treant: prefer forest_treant.png; fallback to Diamond-Player.png if missing
+    if (Gdx.files.internal("images/forest_treant.png").exists()) {
+      treantTexture = new Texture(Gdx.files.internal("images/forest_treant.png"));
+    } else {
+      treantTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
+    }
+
+    // prepare treant label using the same textra font as IntroductionGameScreen
+    textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
+    treantLabel = new TextraLabel(treantText1, textraFont);
+    // position label to the right of the treant image (adjusted after scaling)
+    treantLabel.setPosition(500, 860);
+    treantLabel.setWrap(true);
+    treantLabel.setWidth(300);
+    stage.addActor(treantLabel);
     shapeRenderer = new ShapeRenderer();
 
     mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
@@ -110,23 +151,78 @@ public class mazeBossScreen implements Screen {
     // Draw the Player
     batch.setProjectionMatrix(camera.combined);
     batch.begin();
-    // Player
-    batch.draw(playerTexture, controller.playerPosition.x, controller.playerPosition.y, 48, 48);
+    // choose texture based on facing
+    Texture cur = playerDownTexture;
+    switch (controller.playerFacing) {
+      case 0:
+        cur = playerUpTexture;
+        break;
+      case 1:
+        cur = playerRightTexture;
+        break;
+      case 3:
+        cur = playerLeftTexture;
+        break;
+      default:
+        cur = playerDownTexture;
+    }
+    batch.draw(cur, controller.playerPosition.x, controller.playerPosition.y, 24, 24);
 
     // Enemy (tinted red)
     if (controller.enemyActive) {
       batch.setColor(Color.RED);
-      batch.draw(playerTexture, controller.enemyPosition.x, controller.enemyPosition.y, 48, 48);
+      batch.draw(playerDownTexture, controller.enemyPosition.x, controller.enemyPosition.y, 24, 24);
       batch.setColor(Color.WHITE);
     }
 
-    // Treant placeholder above maze
-    batch.draw(treantTexture, 512 - 64, 820, 128, 128);
+    // Treant placeholder above maze (50% larger than previous size, nudged left)
+    batch.draw(treantTexture, 420, 790, 327, 327);
     batch.end();
 
     // Draw UI/Stage (Buttons like FIGHT, ACT, etc.)
     stage.act(delta);
     stage.draw();
+    // update treant dialog timer and randomize every interval
+    treantDialogTimer += delta;
+    if (treantDialogTimer >= TREANT_DIALOG_INTERVAL) {
+      treantDialogTimer = 0f;
+      int idx = (int) (Math.random() * 10);
+      String t;
+      switch (idx) {
+        default:
+        case 0:
+          t = treantText1;
+          break;
+        case 1:
+          t = treantText2;
+          break;
+        case 2:
+          t = treantText3;
+          break;
+        case 3:
+          t = treantText4;
+          break;
+        case 4:
+          t = treantText5;
+          break;
+        case 5:
+          t = treantText6;
+          break;
+        case 6:
+          t = treantText7;
+          break;
+        case 7:
+          t = treantText8;
+          break;
+        case 8:
+          t = treantText9;
+          break;
+        case 9:
+          t = treantText10;
+          break;
+      }
+      treantLabel.setText(t);
+    }
   }
 
   @Override
@@ -152,8 +248,20 @@ public class mazeBossScreen implements Screen {
   public void dispose() {
     stage.dispose();
     batch.dispose();
-    playerTexture.dispose();
-    treantTexture.dispose();
+    if (playerUpTexture != null)
+      playerUpTexture.dispose();
+    if (playerDownTexture != null)
+      playerDownTexture.dispose();
+    if (playerLeftTexture != null)
+      playerLeftTexture.dispose();
+    if (playerRightTexture != null)
+      playerRightTexture.dispose();
+    if (treantTexture != null)
+      treantTexture.dispose();
+    if (treantLabel != null)
+      treantLabel.remove();
+    if (textraFont != null)
+      textraFont.dispose();
     mazeMap.dispose();
     mapRenderer.dispose();
     shapeRenderer.dispose();

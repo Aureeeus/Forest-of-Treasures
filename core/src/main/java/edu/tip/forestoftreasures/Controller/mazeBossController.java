@@ -21,14 +21,16 @@ public class mazeBossController {
   private float enemySpawnTimer = 0f;
   private final float ENEMY_SPAWN_DELAY = 5f; // seconds
   public boolean playerDead = false;
-  public float playerSpeed = 125f;
-  public float enemySpeed = 120f;
+  public float playerSpeed = 75f;
+  public float enemySpeed = 70f;
 
   // Hitbox used for both player and enemy when checking collisions
-  private final float hitboxWidth = 16f;
-  private final float hitboxHeight = 16f;
-  private final float offsetX = 12f;
-  private final float offsetY = 12f;
+  private final float hitboxWidth = 8f;
+  private final float hitboxHeight = 8f;
+  private final float VERTICAL_HITBOX_ADJUST = 1f; // nudge hitbox up a bit to align with walls
+
+  // Player facing: 0=UP,1=RIGHT,2=DOWN,3=LEFT
+  public int playerFacing = 2;
 
   // Pathfinding
   private List<int[]> path = new ArrayList<>();
@@ -38,7 +40,15 @@ public class mazeBossController {
 
   // 32px (Original Tile) * 0.6f (Scale) = 19.2f
   private final float TILE_SIZE = 19.2f;
-  private final float PLAYER_SIZE = 48f;
+  private final float PLAYER_SIZE = 24f;
+
+  private float getOffsetX() {
+    return (PLAYER_SIZE - hitboxWidth) / 2f;
+  }
+
+  private float getOffsetY() {
+    return (PLAYER_SIZE - hitboxHeight) / 2f - VERTICAL_HITBOX_ADJUST;
+  }
 
   // Walkable grid cached from the map
   private boolean[][] walkable;
@@ -65,20 +75,28 @@ public class mazeBossController {
     float oldY = playerPosition.y;
 
     // X Movement
-    if (Gdx.input.isKeyPressed(Input.Keys.A))
+    if (Gdx.input.isKeyPressed(Input.Keys.A)) {
       playerPosition.x -= playerSpeed * deltaTime;
-    if (Gdx.input.isKeyPressed(Input.Keys.D))
+      playerFacing = 3;
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.D)) {
       playerPosition.x += playerSpeed * deltaTime;
+      playerFacing = 1;
+    }
 
     if (isColliding(playerPosition.x, playerPosition.y, layer)) {
       playerPosition.x = oldX;
     }
 
     // Y Movement
-    if (Gdx.input.isKeyPressed(Input.Keys.W))
+    if (Gdx.input.isKeyPressed(Input.Keys.W)) {
       playerPosition.y += playerSpeed * deltaTime;
-    if (Gdx.input.isKeyPressed(Input.Keys.S))
+      playerFacing = 0;
+    }
+    if (Gdx.input.isKeyPressed(Input.Keys.S)) {
       playerPosition.y -= playerSpeed * deltaTime;
+      playerFacing = 2;
+    }
 
     if (isColliding(playerPosition.x, playerPosition.y, layer)) {
       playerPosition.y = oldY;
@@ -109,8 +127,8 @@ public class mazeBossController {
         int[] cell = path.get(pathIndex);
         // Target the center of the tile adjusted for the actor hitbox so collision
         // checks align
-        float targetX = (cell[0] * TILE_SIZE) - offsetX + (TILE_SIZE - hitboxWidth) / 2f;
-        float targetY = (cell[1] * TILE_SIZE) - offsetY + (TILE_SIZE - hitboxHeight) / 2f;
+        float targetX = (cell[0] * TILE_SIZE) - getOffsetX() + (TILE_SIZE - hitboxWidth) / 2f;
+        float targetY = (cell[1] * TILE_SIZE) - getOffsetY() + (TILE_SIZE - hitboxHeight) / 2f;
 
         float dx = targetX - enemyPosition.x;
         float dy = targetY - enemyPosition.y;
@@ -169,7 +187,7 @@ public class mazeBossController {
       }
 
       // Check for overlap (touch) between enemy and player
-      float touchDist = 24f; // threshold for touch
+      float touchDist = 12f; // threshold for touch (scaled with player size)
       if (enemyPosition.dst(playerPosition) <= touchDist) {
         playerDead = true;
       }
@@ -218,10 +236,10 @@ public class mazeBossController {
 
   private void buildPathToPlayer(TiledMapTileLayer layer) {
     // compute start/goal from actor centers and find nearest walkable tiles
-    int startX = (int) ((enemyPosition.x + offsetX + hitboxWidth / 2f) / TILE_SIZE);
-    int startY = (int) ((enemyPosition.y + offsetY + hitboxHeight / 2f) / TILE_SIZE);
-    int goalX = (int) ((playerPosition.x + offsetX + hitboxWidth / 2f) / TILE_SIZE);
-    int goalY = (int) ((playerPosition.y + offsetY + hitboxHeight / 2f) / TILE_SIZE);
+    int startX = (int) ((enemyPosition.x + getOffsetX() + hitboxWidth / 2f) / TILE_SIZE);
+    int startY = (int) ((enemyPosition.y + getOffsetY() + hitboxHeight / 2f) / TILE_SIZE);
+    int goalX = (int) ((playerPosition.x + getOffsetX() + hitboxWidth / 2f) / TILE_SIZE);
+    int goalY = (int) ((playerPosition.y + getOffsetY() + hitboxHeight / 2f) / TILE_SIZE);
 
     path.clear();
     pathIndex = 0;
@@ -336,13 +354,13 @@ public class mazeBossController {
   private boolean isColliding(float x, float y, TiledMapTileLayer layer) {
     for (float stepX = 0; stepX <= hitboxWidth; stepX += hitboxWidth / 2) {
       for (float stepY = 0; stepY <= hitboxHeight; stepY += hitboxHeight / 2) {
-        if (checkPoint(x + offsetX + stepX, y + offsetY + stepY, layer)) {
+        if (checkPoint(x + getOffsetX() + stepX, y + getOffsetY() + stepY, layer)) {
           return true;
         }
       }
     }
 
-    if (checkPoint(x + offsetX + hitboxWidth, y + offsetY + hitboxHeight, layer))
+    if (checkPoint(x + getOffsetX() + hitboxWidth, y + getOffsetY() + hitboxHeight, layer))
       return true;
 
     return false;
