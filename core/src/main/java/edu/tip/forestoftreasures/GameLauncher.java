@@ -6,6 +6,7 @@ import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
@@ -28,6 +29,9 @@ public class GameLauncher extends Game {
       SkinLoader.SkinParameter params = new SkinLoader.SkinParameter("ui/fotskin.atlas");
       assets.load("ui/fotskin.json", Skin.class, params);
 
+      // --- Backgrounds ---
+      assets.load("images/background.png", Texture.class);
+
       // --- Player Stats and Movesets UI ---
       assets.load("icons/stats_icons.png", Texture.class);
       assets.load("icons/Gear.png", Texture.class);
@@ -49,6 +53,9 @@ public class GameLauncher extends Game {
 
       // --- Battle SFX ---
       assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+
+      // --- Particle Effects ---
+      assets.load("particles/autumn_leaf.p", ParticleEffect.class);
 
       // --- Day 1 UI ---
       assets.load("scenarios/day1/forest_intro.png", Texture.class);

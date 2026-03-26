@@ -5,12 +5,12 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
@@ -30,6 +30,10 @@ public class MainMenuScreen implements Screen {
   private Skin skin;
   private Texture backgroundTexture;
   private Music backgroundMusic;
+
+  // Particle effect rendering
+  private ParticleEffect leafEffect;
+  private SpriteBatch batch;
   
 
   private TextButton startButton;
@@ -59,17 +63,12 @@ public class MainMenuScreen implements Screen {
     backgroundMusic.setVolume(musicVolume);
     backgroundMusic.play();
 
+    backgroundTexture = game.assets.get("images/background.png", Texture.class);
+
     table = new Table();
     table.defaults().size(380, 60).spaceBottom(20f);
     table.setFillParent(true);
     stage.addActor(table);
-
-    backgroundTexture = new Texture(Gdx.files.internal("images/background.png"));
-
-    Image backgroundImage = new Image(backgroundTexture);
-    backgroundImage.setScaling(Scaling.fit);
-
-    table.setBackground(backgroundImage.getDrawable());
 
     // Adding UI elements to the table
     startButton = new TextButton("START GAME", skin, "main-menu-text-button");
@@ -91,15 +90,30 @@ public class MainMenuScreen implements Screen {
     testButton = new TextButton("maze testing", skin, "main-menu-text-button");
     table.add(testButton);
     table.row();
+
+    // Copy the managed particle effect so the AssetManager original stays reusable
+    leafEffect = new ParticleEffect(game.assets.get("particles/autumn_leaf.p", ParticleEffect.class));
+    leafEffect.setPosition(Gdx.graphics.getWidth() / 2f, Gdx.graphics.getHeight());
+    leafEffect.start();
+
+    batch = new SpriteBatch();
+
     controller = new MainMenuController(game, this);
   }
 
   @Override
   public void render(float delta) {
-    // Draw your screen here. "delta" is the time since last render in seconds.
     ScreenUtils.clear(Color.BLACK);
 
     stage.act(delta);
+
+    // Layer order: background → particles → UI
+    batch.begin();
+    batch.draw(backgroundTexture, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+    leafEffect.update(delta);
+    leafEffect.draw(batch);
+    batch.end();
+
     stage.draw();
   }
 
@@ -112,8 +126,8 @@ public class MainMenuScreen implements Screen {
     if (width <= 0 || height <= 0)
       return;
 
-    // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
+    leafEffect.setPosition(width / 2f, height);
   }
 
   @Override
@@ -138,9 +152,10 @@ public class MainMenuScreen implements Screen {
 
   @Override
   public void dispose() {
-    // Destroy screen's assets here.
     stage.dispose();
     backgroundTexture.dispose();
+    leafEffect.dispose();
+    batch.dispose();
     controller.dispose();
   }
 
