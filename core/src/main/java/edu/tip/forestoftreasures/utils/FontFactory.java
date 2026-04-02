@@ -20,8 +20,13 @@ import com.github.tommyettinger.textra.Font;
  * {@code GameLauncher.dispose()}) to release all cached font resources.
  */
 public final class FontFactory {
+  /** Internal cache for storing generated {@link Font} instances, keyed by a generated configuration string. */
   private static final Map<String, Font> cache = new HashMap<>();
 
+  /**
+   * Private constructor to prevent instantiation of the utility class.
+   * @throws InstantiationError if an attempt is made to instantiate this class.
+   */
   private FontFactory() {
     throw new InstantiationError("Utility class cannot be instantiated");
   }

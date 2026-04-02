@@ -69,9 +69,6 @@ public class EntityBattleScreen implements Screen {
   private TextraLabel enemyHpLabel;
   private TextraLabel playerHpLabel;
 
-  // Dialogue Config
-  private boolean skipAnim = false; // default to false
-
   public EntityBattleScreen(GameLauncher game, String screenKey, Player player, Runnable onComplete) {
     this.game = game;
     statsFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 32, Color.WHITE);
@@ -352,7 +349,7 @@ public class EntityBattleScreen implements Screen {
 
     // Provide the dialogue table to the controller so it can manage lines
     controller.setTextDialogueTable(textDialogueContentTable);
-    controller.addDialogueLine(controller.getInitiativeFlavorText(), skipAnim, controller::startFirstTurn);
+    controller.addDialogueLine(controller.getInitiativeFlavorText(), controller::startFirstTurn);
 
     // Add content to border table
     textDialogueBorderTable.add(textDialogueContentTable)

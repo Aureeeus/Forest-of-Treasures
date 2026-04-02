@@ -15,6 +15,7 @@ import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.utils.FontFactory;
 
 public class GameOverScreen implements Screen {
   private Stage stage;
@@ -38,7 +39,7 @@ public class GameOverScreen implements Screen {
     table.setFillParent(true);
     stage.addActor(table);
 
-    textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
+    textraFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 24, Color.WHITE);
 
     String dialogue = "{COLOR=#FF0000}YOU DIED{CLEARCOLOR}\nYou journey ends here, The forest claims another soul once again.";
     typingLabel = new TypingLabel(dialogue, textraFont);
@@ -104,7 +105,5 @@ public class GameOverScreen implements Screen {
   public void dispose() {
     if (stage != null)
       stage.dispose();
-    if (textraFont != null)
-      textraFont.dispose();
   }
 }

@@ -14,8 +14,6 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -23,7 +21,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.mazeBossController;
-import edu.tip.forestoftreasures.View.GameOverScreen;
+import edu.tip.forestoftreasures.utils.FontFactory;
 
 public class mazeBossScreen implements Screen {
   private Stage stage;
@@ -91,7 +89,7 @@ public class mazeBossScreen implements Screen {
     }
 
     // prepare treant label using the same textra font as IntroductionGameScreen
-    textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
+    textraFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 24, Color.WHITE);
     treantLabel = new TextraLabel(treantText1, textraFont);
     // position label to the right of the treant image (adjusted after scaling)
     treantLabel.setPosition(500, 860);
@@ -260,8 +258,6 @@ public class mazeBossScreen implements Screen {
       treantTexture.dispose();
     if (treantLabel != null)
       treantLabel.remove();
-    if (textraFont != null)
-      textraFont.dispose();
     mazeMap.dispose();
     mapRenderer.dispose();
     shapeRenderer.dispose();
