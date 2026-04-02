@@ -55,10 +55,10 @@
         },
         "testmap.tmx": {
             "scale": 1,
-            "selectedLayer": 0,
+            "selectedLayer": 2,
             "viewCenter": {
                 "x": 938,
-                "y": 701
+                "y": 2165
             }
         },
         "testmap.tmx#Test": {

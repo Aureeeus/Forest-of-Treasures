@@ -36,6 +36,7 @@ public class mazeBossScreen implements Screen {
   private Texture playerLeftTexture;
   private Texture playerRightTexture;
   private Texture treantTexture;
+  private Texture enemyTexture;
   private Font textraFont;
   private TextraLabel treantLabel;
   private float treantDialogTimer = 0f;
@@ -43,15 +44,15 @@ public class mazeBossScreen implements Screen {
 
   // Ten separate dialog strings (editable)
   public String treantText1 = "I have caught you!";
-  public String treantText2 = "Goono";
-  public String treantText3 = "Goonoo";
-  public String treantText4 = "Goonooo";
+  public String treantText2 = "There is only one way out of this maze";
+  public String treantText3 = "Vile Tresspaser. This will be your grave!";
+  public String treantText4 = "Witness the power of the forest!";
   public String treantText5 = "this is the end for you, trespasser!";
-  public String treantText6 = "Goonooooo";
-  public String treantText7 = "Goonoooooo";
-  public String treantText8 = "Goonooooooo";
-  public String treantText9 = "Goonoooooooo";
-  public String treantText10 = "Goonooooooooo";
+  public String treantText6 = "Say your prayers, trespasser!";
+  public String treantText7 = "You abuse Nature's hospitality";
+  public String treantText8 = "We have been kind to you";
+  public String treantText9 = "You have no respect for the forest!";
+  public String treantText10 = "Dirty Defiler!";
 
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
@@ -89,6 +90,8 @@ public class mazeBossScreen implements Screen {
     } else {
       treantTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
     }
+
+    enemyTexture = new Texture(Gdx.files.internal("images/Diamond-Player.png"));
 
     // prepare treant label using the same textra font as IntroductionGameScreen
     textraFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
@@ -171,7 +174,7 @@ public class mazeBossScreen implements Screen {
     // Enemy (tinted red)
     if (controller.enemyActive) {
       batch.setColor(Color.RED);
-      batch.draw(playerDownTexture, controller.enemyPosition.x, controller.enemyPosition.y, 24, 24);
+      batch.draw(enemyTexture, controller.enemyPosition.x - 12, controller.enemyPosition.y - 12, 48, 48);
       batch.setColor(Color.WHITE);
     }
 
@@ -258,6 +261,8 @@ public class mazeBossScreen implements Screen {
       playerRightTexture.dispose();
     if (treantTexture != null)
       treantTexture.dispose();
+    if (enemyTexture != null)
+      enemyTexture.dispose();
     if (treantLabel != null)
       treantLabel.remove();
     if (textraFont != null)
