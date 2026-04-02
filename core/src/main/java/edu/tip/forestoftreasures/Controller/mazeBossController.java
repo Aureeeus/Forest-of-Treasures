@@ -21,8 +21,8 @@ public class mazeBossController {
   private float enemySpawnTimer = 0f;
   private final float ENEMY_SPAWN_DELAY = 5f; // seconds
   public boolean playerDead = false;
-  public float playerSpeed = 75f;
-  public float enemySpeed = 70f;
+  public float playerSpeed = 55f;
+  public float enemySpeed = 50f;
 
   // Hitbox used for both player and enemy when checking collisions
   private final float hitboxWidth = 8f;
