@@ -11,8 +11,10 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
+import edu.tip.forestoftreasures.View.SettingsScreen;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.UIFactory;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all
@@ -22,6 +24,25 @@ public class GameLauncher extends Game {
   public AssetManager assets;
   public SettingsConfiguration settingsConfig;
 
+  // Cached Screens
+  private MainMenuScreen mainMenuScreen;
+  private SettingsScreen settingsScreen;
+
+  public MainMenuScreen getMainMenuScreen() {
+      if (mainMenuScreen == null) {
+          mainMenuScreen = new MainMenuScreen(this);
+      }
+      return mainMenuScreen;
+  }
+
+  public SettingsScreen getSettingsScreen() {
+      if (settingsScreen == null) {
+          Music bgMusic = assets.get("audio/bgm/main_menu_bg_music.mp3", Music.class);
+          settingsScreen = new edu.tip.forestoftreasures.View.SettingsScreen(this, bgMusic);
+      }
+      return settingsScreen;
+  }
+
   @Override
   public void create() {
       assets = new AssetManager();
@@ -30,7 +51,8 @@ public class GameLauncher extends Game {
       assets.load("ui/fotskin.json", Skin.class, params);
 
       // --- Backgrounds ---
-      assets.load("images/background.png", Texture.class);
+      assets.load("images/backgrounds/main_menu_bg.png", Texture.class);
+      assets.load("images/backgrounds/settings_bg.png", Texture.class);
 
       // --- Player Stats and Movesets UI ---
       assets.load("icons/stats_icons.png", Texture.class);
@@ -48,7 +70,7 @@ public class GameLauncher extends Game {
 
       // --- Sound Effects ---
       assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);
-      assets.load("audio/sfx/main_menu_select_sound.wav", Sound.class);
+      assets.load("audio/sfx/select_sound.wav", Sound.class);
       assets.load("audio/sfx/maze_enter.mp3", Sound.class);
 
       // --- Battle SFX ---
@@ -56,6 +78,15 @@ public class GameLauncher extends Game {
 
       // --- Particle Effects ---
       assets.load("particles/autumn_leaf.p", ParticleEffect.class);
+
+      // --- Settings UI ---
+      assets.load("icons/wood_exit_button.png", Texture.class);
+      assets.load("images/ui/wood_checkbox_unchecked.png", Texture.class);
+      assets.load("images/ui/wood_checkbox_checked.png", Texture.class);
+      assets.load("images/ui/wood_slider_empty.png", Texture.class);
+      assets.load("images/ui/wood_slider_filled.png", Texture.class);
+      assets.load("images/ui/wood_grabber_normal.png", Texture.class);
+      assets.load("images/ui/wood_grabber_pressed.png", Texture.class);
 
       // --- Day 1 UI ---
       assets.load("scenarios/day1/forest_intro.png", Texture.class);
@@ -68,16 +99,22 @@ public class GameLauncher extends Game {
       assets.finishLoading();
 
       settingsConfig = new SettingsConfiguration();
-
-      this.setScreen(new MainMenuScreen(this));
+      this.setScreen(getMainMenuScreen());
   }
 
 
   @Override
   public void dispose() {
     super.dispose();
+    
+    // Explicitly dispose of cached screens to release their manual local resources (e.g., Stages, SpriteBatches)
+    // Their loaded Textures and Sounds are handled by the AssetManager below.
+    if (mainMenuScreen != null) mainMenuScreen.dispose();
+    if (settingsScreen != null) settingsScreen.dispose();
+
     assets.dispose();
     DrawableFactory.dispose();
     FontFactory.disposeAll();
+    UIFactory.dispose();
   }
 }

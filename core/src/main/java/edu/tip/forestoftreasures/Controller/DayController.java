@@ -150,8 +150,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
     typingLabel.setWrap(true);
 
-    // ! Developer condition to skip lines
-    // if (!typingLabel.hasEnded()) typingLabel.skipToTheEnd();
+    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
+    if (!typingLabel.hasEnded() && isSkipDialogueEnabled) typingLabel.skipToTheEnd();
 
     // Notify the runner when the typing animation finishes so the graph advances
     typingLabel.setTypingListener(new TypingAdapter() {

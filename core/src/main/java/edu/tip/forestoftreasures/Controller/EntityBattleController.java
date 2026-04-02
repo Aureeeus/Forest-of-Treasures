@@ -61,8 +61,6 @@ public class EntityBattleController {
   private int enemySleepCounter = 0;
   private static final int MAX_SLEEP_TURNS = 2;
 
-  private boolean skipAnimConfig = false; // Globally toggle dialogue animations
-
   // UI references from screen
   private Image selectSkillIcon;
   private Container<Actor> skillIconCell0 = new Container<>(null);
@@ -205,7 +203,7 @@ public class EntityBattleController {
     }
 
     screen.updateEnemyHealth();
-    addDialogueLine(flavorText, skipAnimConfig, this::onPlayerTurnEnded);
+    addDialogueLine(flavorText, this::onPlayerTurnEnded);
   }
 
   /**
@@ -216,7 +214,7 @@ public class EntityBattleController {
   private void onPlayerTurnEnded() {
     if (!enemy.isAlive()) {
       state = BattleState.BATTLE_END;
-      addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", skipAnimConfig, this::endBattle);
+      addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", this::endBattle);
     } else {
       executeEnemyTurn();
     }
@@ -278,16 +276,16 @@ public class EntityBattleController {
     
     screen.updatePlayerHealth();
     
-    addDialogueLine(flavorText, skipAnimConfig, () -> {
+    addDialogueLine(flavorText, () -> {
       if (!enemy.isAlive()) {
         state = BattleState.BATTLE_END;
-        addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", skipAnimConfig, this::endBattle);
+        addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", this::endBattle);
       } else if (!player.isAlive()) {
         state = BattleState.BATTLE_END;
-        addDialogueLine("\n{COLOR=RED}You have been killed...{ENDCOLOR}", skipAnimConfig, this::endBattle);
+        addDialogueLine("\n{COLOR=RED}You have been killed...{ENDCOLOR}", this::endBattle);
       } else {
         state = BattleState.PLAYER_TURN;
-        addDialogueLine("\n{COLOR=#FFDB51}It's your turn!{ENDCOLOR}", skipAnimConfig, null);
+        addDialogueLine("\n{COLOR=#FFDB51}It's your turn!{ENDCOLOR}", null);
       }
     });
   }
@@ -394,7 +392,7 @@ public class EntityBattleController {
   public void startFirstTurn() {
     if (player.getInitiative() > enemy.getInitiative()) {
       state = BattleState.PLAYER_TURN;
-      addDialogueLine("\n{COLOR=#FFDB51}It's your turn!{ENDCOLOR}", skipAnimConfig, null);
+      addDialogueLine("\n{COLOR=#FFDB51}It's your turn!{ENDCOLOR}", null);
     } else {
       executeEnemyTurn();
     }
@@ -405,17 +403,17 @@ public class EntityBattleController {
    * Bubbles up existing text by aligning to the bottom, pushing older lines up.
    * If the lines overflow the height, older lines are trimmed.
    *
-   * @param text     The text to display.
-   * @param skipAnim If true, skips the typing animation.
+   * @param text       The text to display.
    * @param onComplete Optional callback executed when typing animation finishes
    */
-  public void addDialogueLine(String text, boolean skipAnim, Runnable onComplete) {
+  public void addDialogueLine(String text, Runnable onComplete) {
     if (textDialogueTable == null) return;
 
     TypingLabel typingLabel = new TypingLabel(text, dialogueFont);
     typingLabel.setWrap(true);
 
-    if (skipAnim) {
+    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
+    if (isSkipDialogueEnabled) {
       typingLabel.skipToTheEnd();
       if (onComplete != null) {
         Gdx.app.postRunnable(onComplete);

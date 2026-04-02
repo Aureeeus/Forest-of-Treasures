@@ -54,14 +54,20 @@ configure(subprojects) {
     File assetsFolder = new File("${project.rootDir}/assets/")
     // projectFolder/assets/assets.txt
     File assetsFile = new File(assetsFolder, "assets.txt")
-    // delete that file in case we've already created it
-    assetsFile.delete()
 
-    // iterate through all files inside that folder
-    // convert it to a relative path
-    // and append it to the file assets.txt
-    fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }.sort().each {
-      assetsFile.append(it + "\n")
+    doLast {
+      // iterate through all files inside that folder
+      // convert it to a relative path
+      // and sort them
+      def newContent = fileTree(assetsFolder).collect { assetsFolder.relativePath(it) }
+        .findAll { it != "assets.txt" } // Don't list the file itself
+        .sort()
+        .join("\n") + "\n"
+
+      // Only write if the content actually changed to avoid triggering IDE sync issues
+      if (!assetsFile.exists() || assetsFile.text != newContent) {
+        assetsFile.text = newContent
+      }
     }
   }
   processResources.dependsOn 'generateAssetList'

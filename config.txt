@@ -1,8 +1,13 @@
+UI Keys (for UIFactor):
+1. Wood Toggle Button = "wood_toggle_button"
+
 Font sizes:
 1. Regular = 16px
 2. Dialogue = 20px
 3. Medium = 24px
 4. Large = 32px
+5. XL = 50px
+6. XXL = 70px
 
 Dialogue CHOICE Indicator:
 1. Green #66FF00 = GOOD

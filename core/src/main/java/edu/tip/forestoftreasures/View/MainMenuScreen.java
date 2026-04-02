@@ -26,7 +26,7 @@ public class MainMenuScreen implements Screen {
   private final GameLauncher game;
   private MainMenuController controller;
 
-  // Game designs and sounds (disposable)
+  // Game designs and sounds
   private Skin skin;
   private Texture backgroundTexture;
   private Music backgroundMusic;
@@ -35,7 +35,6 @@ public class MainMenuScreen implements Screen {
   private ParticleEffect leafEffect;
   private SpriteBatch batch;
   
-
   private TextButton startButton;
   private TextButton achievementsButton;
   private TextButton settingsButton;
@@ -46,24 +45,21 @@ public class MainMenuScreen implements Screen {
 
   public MainMenuScreen(GameLauncher game) {
     this.game = game;
+    initialize();
   }
 
-  @Override
-  public void show() {
-    // Prepare your screen here.
+  private void initialize() {
     skin = game.assets.get("ui/fotskin.json", Skin.class);
-    musicVolume = game.settingsConfig.getGameSettings().musicVolume();
+    musicVolume = game.settingsConfig.getGameSettings().bgMusicVolume();
 
     stage = new Stage(new ScreenViewport());
-    Gdx.input.setInputProcessor(stage);
 
     // Set background music
     backgroundMusic = game.assets.get("audio/bgm/main_menu_bg_music.mp3", Music.class);
     backgroundMusic.setLooping(true);
     backgroundMusic.setVolume(musicVolume);
-    backgroundMusic.play();
 
-    backgroundTexture = game.assets.get("images/background.png", Texture.class);
+    backgroundTexture = game.assets.get("images/backgrounds/main_menu_bg.png", Texture.class);
 
     table = new Table();
     table.defaults().size(380, 60).spaceBottom(20f);
@@ -102,6 +98,24 @@ public class MainMenuScreen implements Screen {
   }
 
   @Override
+  public void show() {
+    Gdx.input.setInputProcessor(stage);
+    
+    // Synchronize settings upon returning to this screen
+    musicVolume = game.settingsConfig.getGameSettings().bgMusicVolume();
+    if (backgroundMusic != null) {
+      backgroundMusic.setVolume(musicVolume);
+    }
+    if (controller != null) {
+      controller.syncSettings();
+    }
+
+    if (!backgroundMusic.isPlaying()) {
+      backgroundMusic.play();
+    }
+  }
+
+  @Override
   public void render(float delta) {
     ScreenUtils.clear(Color.BLACK);
 
@@ -133,7 +147,7 @@ public class MainMenuScreen implements Screen {
   @Override
   public void pause() {
     // Invoked when your application is paused.
-    if (backgroundMusic.isPlaying()) {
+    if (backgroundMusic != null && backgroundMusic.isPlaying()) {
       backgroundMusic.pause();
     }
   }
@@ -141,7 +155,9 @@ public class MainMenuScreen implements Screen {
   @Override
   public void resume() {
     // Invoked when your application is resumed after pause.
-    backgroundMusic.play();
+    if (backgroundMusic != null && !backgroundMusic.isPlaying()) {
+      backgroundMusic.play();
+    }
   }
 
   @Override
@@ -153,8 +169,6 @@ public class MainMenuScreen implements Screen {
   @Override
   public void dispose() {
     stage.dispose();
-    backgroundTexture.dispose();
-    leafEffect.dispose();
     batch.dispose();
     controller.dispose();
   }
@@ -185,7 +199,15 @@ public class MainMenuScreen implements Screen {
    */
   public void stopMusic() {
     if (backgroundMusic != null && backgroundMusic.isPlaying()) {
-      backgroundMusic.stop();;
+      backgroundMusic.stop();
     }
+  }
+
+  /**
+   * Returns the background music.
+   * Can be called by the controller to change the music volume.
+   */
+  public Music getBackgroundMusic() {
+    return backgroundMusic;
   }
 }
