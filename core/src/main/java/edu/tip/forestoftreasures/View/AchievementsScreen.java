@@ -24,7 +24,8 @@ import edu.tip.forestoftreasures.utils.FontFactory;
 
 /**
  * Achievements screen showing a scrollable list of 12 achievement entries.
- * Each entry displays a 100×100 icon placeholder alongside a title and description.
+ * Each entry displays a 100×100 icon placeholder alongside a title and
+ * description.
  */
 public class AchievementsScreen implements Screen {
 
@@ -32,7 +33,7 @@ public class AchievementsScreen implements Screen {
     // Constants
     // -----------------------------------------------------------------------
 
-    private static final int ACHIEVEMENT_COUNT = 15;
+    private static final int ACHIEVEMENT_COUNT = 13;
 
     /** Pixel size of the achievement icon box. */
     private static final float ICON_SIZE = 100f;
@@ -41,10 +42,58 @@ public class AchievementsScreen implements Screen {
     private static final float ROW_SPACING = 18f;
 
     // Colors used for the box outlines and icon placeholders
-    private static final Color BOX_BG_COLOR     = new Color(0.13f, 0.09f, 0.06f, 0.85f);
+    private static final Color BOX_BG_COLOR = new Color(0.13f, 0.09f, 0.06f, 0.85f);
     private static final Color BOX_BORDER_COLOR = new Color(0.65f, 0.45f, 0.22f, 1f);
-    private static final Color ICON_LOCKED_COLOR  = new Color(0.25f, 0.25f, 0.25f, 1f);
-    private static final Color DIVIDER_COLOR    = new Color(0.45f, 0.30f, 0.12f, 0.6f);
+    private static final Color ICON_LOCKED_COLOR = new Color(0.25f, 0.25f, 0.25f, 1f);
+    private static final Color DIVIDER_COLOR = new Color(0.45f, 0.30f, 0.12f, 0.6f);
+
+    private static final String[] ACHIEVEMENT_ICON_PATHS = {
+            "icons/Achievements/Achievement First Blood.png",
+            "icons/Achievements/Achievement Greedy Water Boy.png",
+            "icons/Achievements/Achievement Into the Unknown.png",
+            "icons/Achievements/Achievement Lovely Labyrinth.png",
+            "icons/Achievements/Achievement Peace Talks.png",
+            "icons/Achievements/Achievement The Most Ambitious Crossover.png",
+            "icons/Achievements/Achievement The Treasure I Never Had.png",
+            "icons/Achievements/Achievement The Treasure of Life.png",
+            "icons/Achievements/Achievement Treasure of Aggression.png",
+            "icons/Achievements/Achievement Treasure of Harmony.png",
+            "icons/Achievements/Achievement Treasure of Riches.png",
+            "icons/Achievements/Achievement Wait for it.png",
+            "icons/Achievements/Achievement_Blessing_of_the_Sprite.png"
+    };
+
+    private static final String[] ACHIEVEMENT_TITLES = {
+            "First Blood",
+            "Greedy Water Boy",
+            "Into the Unknown",
+            "Lovely Labyrinth",
+            "Peace Talks",
+            "The Most Ambitious Crossover",
+            "The Treasure I Never Had",
+            "The Treasure of Life",
+            "Treasure of Aggression",
+            "Treasure of Harmony",
+            "Treasure of Riches",
+            "Wait for it...",
+            "Blessing of the Sprite"
+    };
+
+    private static final String[] ACHIEVEMENT_DESCRIPTIONS = {
+            "Defeat your first enemy and claim dominance.",
+            "Better safe than sorry, I suppose...",
+            "Take a leap of faith into unexplored territories.",
+            "Successfully navigate the trickiest of mazes.",
+            "Resolve a conflict without drawing your weapon.",
+            "You solved Racism, YAY!.",
+            "You fought hard, Mage.",
+            "Maybe life is the treasure all along.",
+            "Is this really a treasure..?",
+            "Restore balance to the spirits of the forest.",
+            "Gather an unimaginable amount of gold coins.",
+            "Talk Less! Smile More!",
+            "Receive a magical blessing from the forest sprites."
+    };
 
     // -----------------------------------------------------------------------
     // Fields
@@ -86,7 +135,8 @@ public class AchievementsScreen implements Screen {
     }
 
     /**
-     * Adds the "ACHIEVEMENTS" title and the exit button to the top of the root table.
+     * Adds the "ACHIEVEMENTS" title and the exit button to the top of the root
+     * table.
      */
     private void addHeader(Table root) {
         Table header = new Table();
@@ -101,7 +151,8 @@ public class AchievementsScreen implements Screen {
         exitButton = new ImageButton(exitDrawable);
         exitButton.getImageCell().expand().fill();
 
-        // Layout: [spacer] [title] [exit button] — spacer mirrors the button width to keep title centred
+        // Layout: [spacer] [title] [exit button] — spacer mirrors the button width to
+        // keep title centred
         header.add().width(90f);
         header.add(titleLabel).expandX().center();
         header.add(exitButton).size(90f).right();
@@ -133,7 +184,11 @@ public class AchievementsScreen implements Screen {
             public void draw(com.badlogic.gdx.graphics.g2d.Batch batch, float x, float y, float width, float height) {
                 baseBg.draw(batch, x, y, width, height);
             }
-            @Override public float getMinWidth() { return 10f; }
+
+            @Override
+            public float getMinWidth() {
+                return 10f;
+            }
         };
         final Drawable baseKnob = DrawableFactory.getColoredDrawable(BOX_BORDER_COLOR);
         spStyle.vScrollKnob = new com.badlogic.gdx.scenes.scene2d.utils.BaseDrawable() {
@@ -141,8 +196,16 @@ public class AchievementsScreen implements Screen {
             public void draw(com.badlogic.gdx.graphics.g2d.Batch batch, float x, float y, float width, float height) {
                 baseKnob.draw(batch, x, y, width, height);
             }
-            @Override public float getMinWidth() { return 10f; }
-            @Override public float getMinHeight() { return 30f; }
+
+            @Override
+            public float getMinWidth() {
+                return 10f;
+            }
+
+            @Override
+            public float getMinHeight() {
+                return 30f;
+            }
         };
 
         scrollPane = new ScrollPane(listTable, spStyle);
@@ -169,7 +232,7 @@ public class AchievementsScreen implements Screen {
      */
     private Table buildAchievementRow(int index) {
         Font titleFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 28, Color.valueOf("#d4a96a"));
-        Font descFont  = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf",  30, Color.valueOf("#ccc5b0"));
+        Font descFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 30, Color.valueOf("#ccc5b0"));
 
         // Outer table acts as a visible border via its background color + padding
         Table borderTable = new Table();
@@ -181,8 +244,10 @@ public class AchievementsScreen implements Screen {
         inner.setBackground(DrawableFactory.getColoredDrawable(BOX_BG_COLOR));
         inner.pad(14f);
 
-        // Icon placeholder — swap for a real Image once achievement art is ready
-        Image iconPlaceholder = new Image(DrawableFactory.getColoredDrawable(ICON_LOCKED_COLOR));
+        // Map the index to one of the 15 icons we declared
+        String path = ACHIEVEMENT_ICON_PATHS[(index - 1) % ACHIEVEMENT_ICON_PATHS.length];
+        Texture iconTex = game.assets.get(path, Texture.class);
+        Image iconPlaceholder = new Image(iconTex);
 
         // Vertical divider
         Image vertDivider = DrawableFactory.createDivider(BOX_BORDER_COLOR);
@@ -192,8 +257,11 @@ public class AchievementsScreen implements Screen {
         textColumn.top().left();
         textColumn.defaults().left().padBottom(6f);
 
-        TextraLabel nameLabel = new TextraLabel("Achievement " + index, titleFont);
-        TextraLabel descLabel = new TextraLabel("Placeholder description for achievement " + index + ".", descFont);
+        String title = ACHIEVEMENT_TITLES[(index - 1) % ACHIEVEMENT_TITLES.length];
+        String desc = ACHIEVEMENT_DESCRIPTIONS[(index - 1) % ACHIEVEMENT_DESCRIPTIONS.length];
+
+        TextraLabel nameLabel = new TextraLabel(title, titleFont);
+        TextraLabel descLabel = new TextraLabel(desc, descFont);
         descLabel.setWrap(true);
 
         textColumn.add(nameLabel).growX().row();
@@ -231,11 +299,14 @@ public class AchievementsScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
-        if (width <= 0 || height <= 0) return;
+        if (width <= 0 || height <= 0)
+            return;
         stage.getViewport().update(width, height, true);
     }
 
-    @Override public void pause() {}
+    @Override
+    public void pause() {
+    }
 
     @Override
     public void resume() {
@@ -249,7 +320,8 @@ public class AchievementsScreen implements Screen {
 
     @Override
     public void dispose() {
-        if (stage != null) stage.dispose();
+        if (stage != null)
+            stage.dispose();
     }
 
     // -----------------------------------------------------------------------
