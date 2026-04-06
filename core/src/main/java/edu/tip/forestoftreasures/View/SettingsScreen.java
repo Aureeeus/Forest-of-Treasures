@@ -167,15 +167,24 @@ public class SettingsScreen implements Screen {
     // Volume label and slider
     TextraLabel volumeLabel = new TextraLabel(label, labelFontXL);
     Slider volumeSlider = UIFactory.createComponent("wood_slider", game);
-    volumeSlider.setValue(game.settingsConfig.getGameSettings().bgMusicVolume());
 
-    // Link the slider to class-level slider for controller to use
-    switch (label) {
-      case "BACKGROUND MUSIC:" -> bgMusicVolumeSlider = volumeSlider;
-      case "SOUND EFFECTS:" -> sfxVolumeSlider = volumeSlider;
-      case "AMBIENCE:" -> ambienceVolumeSlider = volumeSlider;
+    // Link the slider to class-level field AND set the correct initial value per category
+    float initialValue = switch (label) {
+      case "BACKGROUND MUSIC:" -> {
+        bgMusicVolumeSlider = volumeSlider;
+        yield game.settingsConfig.getGameSettings().bgMusicVolume();
+      }
+      case "SOUND EFFECTS:" -> {
+        sfxVolumeSlider = volumeSlider;
+        yield game.settingsConfig.getGameSettings().sfxVolume();
+      }
+      case "AMBIENCE:" -> {
+        ambienceVolumeSlider = volumeSlider;
+        yield game.settingsConfig.getGameSettings().ambienceVolume();
+      }
       default -> throw new IllegalArgumentException("Unknown volume control: " + label);
-    }
+    };
+    volumeSlider.setValue(initialValue);
 
     // Add them to the sub-table
     volumeTable.add(volumeLabel).padLeft(40f);
