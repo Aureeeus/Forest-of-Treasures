@@ -67,6 +67,7 @@ public class GameLauncher extends Game {
 
       // --- Bg Music ---
       assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
+      assets.load("audio/bgm/end_credits_bg_music.mp3", Music.class);
 
       // --- Sound Effects ---
       assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);

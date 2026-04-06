@@ -37,6 +37,7 @@ public class MainMenuScreen implements Screen {
   
   private TextButton startButton;
   private TextButton achievementsButton;
+  private TextButton creditsButton;
   private TextButton settingsButton;
   private TextButton quitButton;
   private TextButton testButton;
@@ -73,6 +74,10 @@ public class MainMenuScreen implements Screen {
 
     achievementsButton = new TextButton("ACHIEVEMENTS", skin, "main-menu-text-button");
     table.add(achievementsButton);
+    table.row();
+
+    creditsButton = new TextButton("CREDITS", skin, "main-menu-text-button");
+    table.add(creditsButton);
     table.row();
 
     settingsButton = new TextButton("SETTINGS", skin, "main-menu-text-button");
@@ -179,6 +184,10 @@ public class MainMenuScreen implements Screen {
 
   public TextButton getAchievementsButton() {
     return achievementsButton;
+  }
+
+  public TextButton getCreditsButton() {
+    return creditsButton;
   }
 
   public TextButton getSettingsButton() {

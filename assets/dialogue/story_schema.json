@@ -5,12 +5,17 @@
       {
         "id": "Blessing of the Sprite",
         "description": "You welcomed the sprite and received its blessing.",
-        "requiredChoiceSequence": [1]
+        "requiredChoiceSequence": [
+          1
+        ]
       },
       {
         "id": "Lovely Labyrinth",
         "description": "You navigated the twisting corridors of the Great Maze and emerged on the other side with your wits-and your sneakers-intact. Not even a dead end could stop you.",
-        "requiredChoiceSequence": [-1, 0]
+        "requiredChoiceSequence": [
+          -1,
+          0
+        ]
       }
     ],
     "nodes": [
@@ -125,6 +130,13 @@
     "entryNode": "d2_line1",
     "achievements": [],
     "nodes": [
+      {
+        "id": "d2_line1",
+        "type": "line",
+        "text": "I’ve been awakened by faint rustling outside the camp. I did not fear for my safety as my barrier still stands. I peeked outside my sleeping bag to see Salamanders drinking from the stream. Normally, salamanders are found in swamps. Quite interesting how these salamanders are green and not red. Their spine is much more protruded, and their eyes shut from side-to-side. Had I not known anything, I’d say they were baby dragons. After drinking from the stream, they swam along its flow. Truly a curious creature indeed. They’ll make my notes for sure. I’m starting to think that maybe this forest should be left alone. ",
+        "texture": "",
+        "next": ""
+      }
     ]
   }
 }
