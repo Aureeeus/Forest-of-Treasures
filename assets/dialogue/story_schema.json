@@ -120,5 +120,11 @@
         "next": null
       }
     ]
+  },
+  "day2": {
+    "entryNode": "d2_line1",
+    "achievements": [],
+    "nodes": [
+    ]
   }
 }
