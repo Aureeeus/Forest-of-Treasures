@@ -126,7 +126,7 @@ public class EntityBattleScreen implements Screen {
   public void hide() {
     Gdx.input.setInputProcessor(null);
     if (battleMusic != null) {
-      battleMusic.pause();
+      battleMusic.stop(); // Ensured to restart from the beginning next time
     }
   }
 
@@ -135,6 +135,9 @@ public class EntityBattleScreen implements Screen {
     stage.dispose();
     if (battleMusic != null) {
       battleMusic.stop();
+      // Note: We do not call battleMusic.dispose() here because it is managed 
+      // by the AssetManager. Manually disposing it would break future lookups.
+      battleMusic = null;
     }
   }
 

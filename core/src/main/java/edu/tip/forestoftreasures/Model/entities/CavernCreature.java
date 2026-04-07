@@ -3,6 +3,8 @@ package edu.tip.forestoftreasures.Model.entities;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.tip.forestoftreasures.Model.mechanics.Dice;
+import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
+import edu.tip.forestoftreasures.Model.mechanics.DamageTier;
 
 import com.badlogic.gdx.audio.Sound;
 
@@ -22,7 +24,7 @@ public class CavernCreature extends Entity {
    * @param attackSound  Optional sound effect (currently null).
    */
   public CavernCreature(float initiative, Texture texture, Sound attackSound) {
-    super(50f, 14f, initiative);
+    super(65f, 18f, initiative);
     this.texture = texture;
     this.attackSound = attackSound;
   }

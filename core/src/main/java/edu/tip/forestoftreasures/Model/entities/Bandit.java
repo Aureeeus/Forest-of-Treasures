@@ -3,6 +3,8 @@ package edu.tip.forestoftreasures.Model.entities;
 import com.badlogic.gdx.graphics.Texture;
 
 import edu.tip.forestoftreasures.Model.mechanics.Dice;
+import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
+import edu.tip.forestoftreasures.Model.mechanics.DamageTier;
 
 import com.badlogic.gdx.audio.Sound;
 
