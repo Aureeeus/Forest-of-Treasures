@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.utils.Drawable;
@@ -55,7 +54,6 @@ public class CreditsScreen implements Screen {
 
     // UI
     private ImageButton exitButton;
-    private Skin skin;
 
     // -----------------------------------------------------------------------
     // Constructor
@@ -71,8 +69,6 @@ public class CreditsScreen implements Screen {
     // -----------------------------------------------------------------------
 
     private void initialize() {
-        skin = game.assets.get("ui/fotskin.json", Skin.class);
-
         stage = new Stage(new ScreenViewport());
 
         creditsMusic = game.assets.get("audio/bgm/end_credits_bg_music.mp3", Music.class);
@@ -142,7 +138,7 @@ public class CreditsScreen implements Screen {
         addSpacer(creditsTable, 36f);
 
         // --- Programming ---
-        addLabel(creditsTable, "PROGRAMMING", headerFont);
+        addLabel(creditsTable, "PROGRAMMERS", headerFont);
         addLabel(creditsTable, "ABO, John Ramil", bodyFont);
         addLabel(creditsTable, "LIBRADO, John David", bodyFont);
         addLabel(creditsTable, "MANALO, Christian Benedict", bodyFont);

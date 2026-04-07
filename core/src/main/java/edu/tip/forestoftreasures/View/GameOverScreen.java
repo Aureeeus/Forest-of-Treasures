@@ -41,7 +41,7 @@ public class GameOverScreen implements Screen {
 
     textraFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 24, Color.WHITE);
 
-    String dialogue = "{COLOR=#FF0000}YOU DIED{CLEARCOLOR}\nYou journey ends here, The forest claims another soul once again.";
+    String dialogue = "{COLOR=#FF0000}YOU DIED!!!{CLEARCOLOR}\nYour journey ends here. The forest claims another soul once again.";
     typingLabel = new TypingLabel(dialogue, textraFont);
     typingLabel.setWrap(true);
 

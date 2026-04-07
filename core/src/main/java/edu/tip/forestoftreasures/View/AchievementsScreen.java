@@ -44,8 +44,6 @@ public class AchievementsScreen implements Screen {
     // Colors used for the box outlines and icon placeholders
     private static final Color BOX_BG_COLOR = new Color(0.13f, 0.09f, 0.06f, 0.85f);
     private static final Color BOX_BORDER_COLOR = new Color(0.65f, 0.45f, 0.22f, 1f);
-    private static final Color ICON_LOCKED_COLOR = new Color(0.25f, 0.25f, 0.25f, 1f);
-    private static final Color DIVIDER_COLOR = new Color(0.45f, 0.30f, 0.12f, 0.6f);
 
     private static final String[] ACHIEVEMENT_ICON_PATHS = {
             "icons/Achievements/Achievement First Blood.png",
@@ -107,6 +105,10 @@ public class AchievementsScreen implements Screen {
     private ImageButton exitButton;
     private ScrollPane scrollPane;
 
+    private Font headerFont;
+    private Font rowTitleFont;
+    private Font rowDescFont;
+
     // -----------------------------------------------------------------------
     // Constructor
     // -----------------------------------------------------------------------
@@ -141,8 +143,8 @@ public class AchievementsScreen implements Screen {
     private void addHeader(Table root) {
         Table header = new Table();
 
-        Font titleFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 52, Color.valueOf("#f5deb3"));
-        TextraLabel titleLabel = new TextraLabel("ACHIEVEMENTS", titleFont);
+        headerFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 52, Color.valueOf("#f5deb3"));
+        TextraLabel titleLabel = new TextraLabel("ACHIEVEMENTS", headerFont);
 
         iconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
         TextureRegion exitRegion = new TextureRegion(iconSheet, 512, 256, 64, 64);
@@ -172,6 +174,9 @@ public class AchievementsScreen implements Screen {
         Table listTable = new Table();
         listTable.top();
         listTable.padTop(4f);
+
+        rowTitleFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 28, Color.valueOf("#d4a96a"));
+        rowDescFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 30, Color.valueOf("#ccc5b0"));
 
         for (int i = 1; i <= ACHIEVEMENT_COUNT; i++) {
             listTable.add(buildAchievementRow(i)).growX().padBottom(ROW_SPACING).row();
@@ -231,8 +236,6 @@ public class AchievementsScreen implements Screen {
      * @return A {@link Table} representing the styled achievement box.
      */
     private Table buildAchievementRow(int index) {
-        Font titleFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 28, Color.valueOf("#d4a96a"));
-        Font descFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 30, Color.valueOf("#ccc5b0"));
 
         // Outer table acts as a visible border via its background color + padding
         Table borderTable = new Table();
@@ -254,23 +257,23 @@ public class AchievementsScreen implements Screen {
 
         // Text column
         Table textColumn = new Table();
-        textColumn.top().left();
+        textColumn.center().left();
         textColumn.defaults().left().padBottom(6f);
 
         String title = ACHIEVEMENT_TITLES[(index - 1) % ACHIEVEMENT_TITLES.length];
         String desc = ACHIEVEMENT_DESCRIPTIONS[(index - 1) % ACHIEVEMENT_DESCRIPTIONS.length];
 
-        TextraLabel nameLabel = new TextraLabel(title, titleFont);
-        TextraLabel descLabel = new TextraLabel(desc, descFont);
+        TextraLabel nameLabel = new TextraLabel(title, rowTitleFont);
+        TextraLabel descLabel = new TextraLabel(desc, rowDescFont);
         descLabel.setWrap(true);
 
-        textColumn.add(nameLabel).growX().row();
+        textColumn.add(nameLabel).growX().padTop(15f).row();
         textColumn.add(descLabel).growX().row();
 
         // Assemble the inner content row
         inner.add(iconPlaceholder).size(ICON_SIZE).padRight(14f);
         inner.add(vertDivider).width(2f).fillY().padRight(14f);
-        inner.add(textColumn).expandX().fillX().top();
+        inner.add(textColumn).expandX().fillX().center();
 
         // Slot the inner table into the border table
         borderTable.add(inner).grow();

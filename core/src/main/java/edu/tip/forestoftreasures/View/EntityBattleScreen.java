@@ -18,6 +18,7 @@ import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.Controller.EntityBattleController;
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
@@ -71,10 +72,10 @@ public class EntityBattleScreen implements Screen {
   private TextraLabel playerHpLabel;
   private Music battleMusic;
 
-  public EntityBattleScreen(GameLauncher game, String screenKey, Player player, Runnable onComplete) {
+  public EntityBattleScreen(GameLauncher game, MinigameNode node, Player player, Runnable onComplete) {
     this.game = game;
     statsFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 32, Color.WHITE);
-    controller = new EntityBattleController(this.game, this, player, screenKey, onComplete);
+    controller = new EntityBattleController(this.game, this, player, node, onComplete);
   }
 
   @Override
