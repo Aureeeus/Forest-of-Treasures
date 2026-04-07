@@ -23,3 +23,10 @@ Damage System Indicator:
 Status Effect Application Indicator:
 1. Success = #66FF00
 2. Failure = Red
+
+Story Schema Coloring:
+1. Question/Choice = #FFDB51
+2. Good Choice = #66FF00
+3. Bad Choice = Red
+4. Text Emphasis / Creatures = Red
+5. Item Decrements = Red

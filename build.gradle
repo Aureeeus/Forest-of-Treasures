@@ -32,7 +32,7 @@ allprojects {
       file {
         whenMerged { classpath ->
           classpath.entries.each { entry ->
-            if (entry.hasProperty('path') && entry.path?.contains('JRE_CONTAINER')) {
+            if (entry.hasProperty('path') && entry.path?.startsWith('org.eclipse.jdt.launching.JRE_CONTAINER')) {
               entry.path = 'org.eclipse.jdt.launching.JRE_CONTAINER'
             }
           }
