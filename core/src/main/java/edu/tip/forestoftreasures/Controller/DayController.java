@@ -31,12 +31,22 @@ import edu.tip.forestoftreasures.Model.dialogue.DialogueLoader.DayData;
 import edu.tip.forestoftreasures.Model.dialogue.DialogueNode;
 import edu.tip.forestoftreasures.Model.dialogue.DialogueRunner;
 import edu.tip.forestoftreasures.Model.dialogue.LineNode;
+import edu.tip.forestoftreasures.Model.dialogue.ManualRollNode;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.View.DayScreen;
+import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
+import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.View.mazeBossScreen;
 
 public class DayController implements DialogueRunner.DisplayHandler {
+  // --- Developer Options ---
+  /**
+   * Developer flag. Set to true to automatically skip/win minigames.
+   * This is useful for testing without having to clear the minigame manually.
+   */
+  public static final boolean DEV_SKIP_MINIGAMES = false;
+
   // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
   private int currentDay = 1;
@@ -55,6 +65,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   // --- Choice UI state ---
   private int selectedRow = 0;
   private ChoiceNode activeChoiceNode; // the currently displayed choice, null when not choosing
+  private ManualRollNode activeManualRollNode;
 
   // UI references
   private Image settingsIcon;
@@ -149,6 +160,18 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
     typingLabel.setWrap(true);
+
+    if (node.damage > 0) {
+      screen.getPlayer().takeDamage((float) node.damage);
+      screen.updatePlayerStats();
+
+      // If the damage results in death, reset progress to Day 1 and show Game Over
+      if (!screen.getPlayer().isAlive()) {
+        currentDay = 1;
+        game.setScreen(new GameOverScreen(game));
+        return;
+      }
+    }
 
     boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
     if (!typingLabel.hasEnded() && isSkipDialogueEnabled) typingLabel.skipToTheEnd();
@@ -250,6 +273,40 @@ public class DayController implements DialogueRunner.DisplayHandler {
     screen.getStage().setKeyboardFocus(dialogueWidgetTable);
   }
 
+  @Override
+  public void showManualRoll(ManualRollNode node) {
+    activeManualRollNode = node;
+
+    if (node.texturePath != null) {
+      Texture texture = game.assets.get(node.texturePath, Texture.class);
+      showImageScenario(texture);
+    }
+
+    TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
+    typingLabel.setWrap(true);
+
+    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
+    if (!typingLabel.hasEnded() && isSkipDialogueEnabled) typingLabel.skipToTheEnd();
+
+    typingLabel.setTypingListener(new TypingAdapter() {
+      @Override
+      public void end() {
+        renderManualRollWidget(node);
+        screen.getStage().setKeyboardFocus(dialogueWidgetTable);
+      }
+    });
+
+    textDialogueTable.add(typingLabel)
+        .growX()
+        .bottom()
+        .left()
+        .padBottom(5f)
+        .row();
+
+    textDialogueTable.invalidateHierarchy();
+    Gdx.app.postRunnable(this::trimDialogueOverflow);
+  }
+
   /**
    * Called by DialogueRunner when the next node is a MinigameNode.
    *
@@ -261,7 +318,13 @@ public class DayController implements DialogueRunner.DisplayHandler {
    */
   @Override
   public void showMinigame(MinigameNode node) {
-    game.setScreen(resolveMinigameScreen(node.screenKey));
+    if (DEV_SKIP_MINIGAMES) {
+      Gdx.app.log("DayController", "[DEV MODE] Auto-skipping/winning minigame: " + node.screenKey);
+      createMinigameCompletionCallback(node.screenKey).run();
+      return;
+    }
+
+    game.setScreen(resolveMinigameScreen(node));
   }
 
   /**
@@ -277,6 +340,13 @@ public class DayController implements DialogueRunner.DisplayHandler {
     onDayEnd();
   }
 
+  @Override
+  public void forceGameEnd() {
+    Gdx.app.log("DayController", "Game ending triggered. Transitioning to credits.");
+    checkAchievements();
+    game.setScreen(new CreditsScreen(game));
+  }
+
   /**
    * Called to transition logic to the next day.
    */
@@ -286,18 +356,45 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     switch (currentDay) {
       case 2 -> loadAndStartDay("day" + currentDay);
-      case 3 -> loadAndStartDay("day" + currentDay);
-      default ->
-        // Exceeded 3 days or invalid day. Represents edge of current demo or ending
-        // screen
+      // case 3 -> loadAndStartDay("day" + currentDay); // Re-enable when day3 exists in story_schema.json
+      default -> {
         Gdx.app.log("DayController", "End of Game! Day: " + currentDay);
-      // Possible implementation: game.setScreen(new CreditsScreen(game));
+        game.setScreen(new CreditsScreen(game));
+      }
     }
   }
 
   // ---------------------------------------------------------------------------
   // MINIGAME SCREEN RESOLUTION
   // ---------------------------------------------------------------------------
+
+  /**
+   * Creates the callback executed when a minigame is successfully completed.
+   * Handles returning from the minigame screen back to the DayScreen and
+   * resuming the dialogue flow.
+   *
+   * @param screenKey The identifier for the minigame to resolve specific logic.
+   * @return A Runnable containing the on-complete logic.
+   */
+  private Runnable createMinigameCompletionCallback(String screenKey) {
+    // Determines whether the minigame involves entity combat, requiring a stat
+    // refresh on return. Now includes cavern creature battle.
+    boolean isBattleMinigame = switch (screenKey) {
+      case "bandit_battle_minigame", "cavern_creature_battle_minigame" -> true;
+      default -> false;
+    };
+
+    return () -> {
+      game.setScreen(screen); // return to DayScreen — state is preserved
+      setPendingOverflowTrim(true);
+
+      if (isBattleMinigame) {
+        screen.updatePlayerStats();
+      }
+
+      runner.onMinigameFinished(); // resume dialogue graph from next node
+    };
+  }
 
   /**
    * Maps a screenKey string from story.json to its actual minigame Screen.
@@ -308,34 +405,19 @@ public class DayController implements DialogueRunner.DisplayHandler {
    *
    * To add a new minigame: add a new case here and create its Screen class.
    *
-   * @param screenKey The key defined in the MinigameNode's JSON.
+   * @param node The MinigameNode containing minigame configurations from JSON.
    * @return The minigame Screen to transition to.
    */
-  private Screen resolveMinigameScreen(String screenKey) {
-    // Determines whether the minigame involves entity combat, requiring a stat
-    // refresh on return
-    boolean isBattleMinigame = switch (screenKey) {
-      case "bandit_battle_minigame" -> true;
-      default -> false;
-    };
+  private Screen resolveMinigameScreen(MinigameNode node) {
+    Runnable onComplete = createMinigameCompletionCallback(node.screenKey);
 
-    Runnable onComplete = () -> {
-      game.setScreen(screen); // return to DayScreen — state is preserved
-      setPendingOverflowTrim(true);
-
-      if (isBattleMinigame) {
-        screen.updatePlayerStats();
-      }
-
-      runner.onMinigameFinished(); // resume dialogue graph from next node
-    };
-
-    return switch (screenKey) {
+    return switch (node.screenKey) {
       // Add new minigame screens here as cases
       case "maze_minigame" -> new mazeBossScreen(game, onComplete);
-      case "bandit_battle_minigame" -> new EntityBattleScreen(game, screenKey, screen.getPlayer(), onComplete);
+      // Both battle minigame variants use the EntityBattleScreen with specific routing via screenKey
+      case "bandit_battle_minigame", "cavern_creature_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
-          "[DayController] Unknown minigame screenKey: '" + screenKey + "'");
+          "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
     };
   }
 
@@ -372,6 +454,22 @@ public class DayController implements DialogueRunner.DisplayHandler {
   }
 
   /**
+   * Renders the single prompt for a manual roll action.
+   */
+  private void renderManualRollWidget(ManualRollNode node) {
+    TextraLabel promptLabel = new TextraLabel(node.label, selectChoiceFont);
+    promptLabel.setAlignment(Align.left);
+
+    dialogueCell0.setActor(selectChoiceIcon);
+    dialogueCell1.setActor(promptLabel);
+    dialogueCell1.fill();
+    tintCell(dialogueCell1, true);
+
+    dialogueWidgetTable.add(dialogueCell0).size(30f).padRight(20f).padBottom(20f);
+    dialogueWidgetTable.add(dialogueCell1).growX().align(Align.left | Align.center).padBottom(20f).row();
+  }
+
+  /**
    * Removes all choice widgets from the dialogue widget table and resets state.
    * Called immediately before forwarding the confirmed choice to the runner.
    */
@@ -382,6 +480,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     dialogueCell2.setActor(null);
     dialogueCell3.setActor(null);
     activeChoiceNode = null;
+    activeManualRollNode = null;
   }
 
   /**
@@ -500,23 +599,28 @@ public class DayController implements DialogueRunner.DisplayHandler {
     dialogueWidgetTable.addListener(new InputListener() {
       @Override
       public boolean keyDown(InputEvent event, int keycode) {
-        if (keycode == Input.Keys.UP) {
+        if (keycode == Input.Keys.UP && activeChoiceNode != null) {
           selectedRow = Math.max(0, selectedRow - 1);
           refreshSelection();
           return true;
         }
 
-        if (keycode == Input.Keys.DOWN) {
+        if (keycode == Input.Keys.DOWN && activeChoiceNode != null) {
           selectedRow = Math.min(1, selectedRow + 1);
           refreshSelection();
           return true;
         }
 
-        if ((keycode == Input.Keys.ENTER)
-            && activeChoiceNode != null) {
-          clearChoiceWidgets();
-          runner.onChoiceSelected(selectedRow);
-          return true;
+        if (keycode == Input.Keys.ENTER) {
+          if (activeChoiceNode != null) {
+            clearChoiceWidgets();
+            runner.onChoiceSelected(selectedRow);
+            return true;
+          } else if (activeManualRollNode != null) {
+            clearChoiceWidgets();
+            runner.onManualRollExecuted();
+            return true;
+          }
         }
 
         return false;

@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
+import edu.tip.forestoftreasures.View.AchievementsScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
@@ -27,6 +28,7 @@ public class GameLauncher extends Game {
     // Cached Screens
     private MainMenuScreen mainMenuScreen;
     private SettingsScreen settingsScreen;
+    private AchievementsScreen achievementsScreen;
 
     public MainMenuScreen getMainMenuScreen() {
         if (mainMenuScreen == null) {
@@ -38,9 +40,16 @@ public class GameLauncher extends Game {
     public SettingsScreen getSettingsScreen() {
         if (settingsScreen == null) {
             Music bgMusic = assets.get("audio/bgm/main_menu_bg_music.mp3", Music.class);
-            settingsScreen = new edu.tip.forestoftreasures.View.SettingsScreen(this, bgMusic);
+            settingsScreen = new SettingsScreen(this, bgMusic);
         }
         return settingsScreen;
+    }
+
+    public AchievementsScreen getAchievementsScreen() {
+        if (achievementsScreen == null) {
+            achievementsScreen = new AchievementsScreen(this);
+        }
+        return achievementsScreen;
     }
 
     @Override
@@ -116,6 +125,9 @@ public class GameLauncher extends Game {
         assets.load("scenarios/day1/forest_treant.png", Texture.class);
         assets.load("scenarios/day1/day1_end.png", Texture.class);
         assets.load("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
+        
+        // --- Day 2 UI ---
+        assets.load("scenarios/day2/cavern_creature.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
@@ -133,6 +145,8 @@ public class GameLauncher extends Game {
             mainMenuScreen.dispose();
         if (settingsScreen != null)
             settingsScreen.dispose();
+        if (achievementsScreen != null)
+            achievementsScreen.dispose();
 
         assets.dispose();
         DrawableFactory.dispose();

@@ -17,15 +17,18 @@ import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
+import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.Model.entities.AttackResult;
 import edu.tip.forestoftreasures.Model.entities.Bandit;
-import edu.tip.forestoftreasures.Model.entities.Dice;
+import edu.tip.forestoftreasures.Model.entities.CavernCreature;
+import edu.tip.forestoftreasures.Model.mechanics.Dice;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.entities.SkillResult;
 import edu.tip.forestoftreasures.Model.entities.StatusEffect;
 import edu.tip.forestoftreasures.Model.entities.DamageTier;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
+import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.utils.FontFactory;
 
 /**
@@ -82,17 +85,22 @@ public class EntityBattleController {
    * @param game      the main game launcher holding the asset manager
    * @param screen    the battle screen view this controller manages
    * @param player    the player entity for this battle
-   * @param screenKey the identifier from the MinigameNode in story_schema.json
+   * @param node      the MinigameNode defining this battle scenario
    * @param onComplete the callback to run when the battle ends
    */
-  public EntityBattleController(GameLauncher game, EntityBattleScreen screen, Player player, String screenKey, Runnable onComplete) {
+  public EntityBattleController(GameLauncher game, EntityBattleScreen screen, Player player, MinigameNode node, Runnable onComplete) {
     this.game = game;
     this.screen = screen;
     this.player = player;
     this.onComplete = onComplete;
-    this.player.setInitiative(Dice.roll()); // random initiative every battle
+    
+    if (node.playerTurn != null) {
+      this.player.setInitiative(node.playerTurn ? 20f : 1f);
+    } else {
+      this.player.setInitiative(Dice.roll()); // random initiative every battle
+    }
 
-    resolveEnemy(screenKey);
+    resolveEnemy(node.screenKey, node.playerTurn);
 
     // Arrow icon from sprite sheet
     Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
@@ -111,17 +119,38 @@ public class EntityBattleController {
    * Instantiates the correct enemy based on the story schema's screenKey.
    * Add new cases here as more enemy types are introduced.
    *
-   * @param screenKey the identifier  from the MinigameNode in story_schema.json
+   * @param screenKey     the identifier  from the MinigameNode in story_schema.json
+   * @param playerTurn    optional override flag to set fixed priorities
    */
-  private void resolveEnemy(String screenKey) {
+  private void resolveEnemy(String screenKey, Boolean playerTurn) {
     switch (screenKey) {
       case "bandit_battle_minigame" -> {
-        float initiative = Dice.roll();
+        float initiative;
+        if (playerTurn != null) {
+          initiative = playerTurn ? 1f : 20f;
+        } else {
+          initiative = Dice.roll();
+        }
+        
         Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
         Sound banditAttackSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
 
         this.enemy = new Bandit(initiative, banditTexture, banditAttackSound);
         this.enemyName = "Bandit";
+      }
+      // Day 2 Cavern creature integration
+      case "cavern_creature_battle_minigame" -> {
+        float initiative;
+        if (playerTurn != null) {
+          initiative = playerTurn ? 1f : 20f;
+        } else {
+          initiative = Dice.roll();
+        }
+        
+        Texture creatureTexture = game.assets.get("scenarios/day2/cavern_creature.png", Texture.class);
+
+        this.enemy = new CavernCreature(initiative, creatureTexture, null);
+        this.enemyName = "Cavern Creature";
       }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
@@ -275,6 +304,12 @@ public class EntityBattleController {
           
           AttackResult result = bandit.attackWithFlavor(player);
           flavorText = result.flavorText();
+        } // Cavern creature turn resolution
+        else if (enemy instanceof CavernCreature cavernCreature) {
+          cavernCreature.playAttackSound(sfxVolume);
+          
+          AttackResult result = cavernCreature.attackWithFlavor(player);
+          flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies
           float dmg = enemy.attack(player);
@@ -307,10 +342,12 @@ public class EntityBattleController {
    * to transition back to the overworld or previous screen.
    */
   private void endBattle() {
-    // TODO: Handle when player dies and should show a popup screen to retry or go back to main menu
     screen.dispose();
     
-    if (onComplete != null) {
+    // If player died, go to GameOverScreen; otherwise resume dialogue
+    if (!player.isAlive()) {
+      game.setScreen(new GameOverScreen(game));
+    } else if (onComplete != null) {
       onComplete.run();
     }
   }
