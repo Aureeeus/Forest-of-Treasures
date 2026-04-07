@@ -1,6 +1,7 @@
 package edu.tip.forestoftreasures.Model.entities;
 
 import com.badlogic.gdx.graphics.Texture;
+import edu.tip.forestoftreasures.Model.mechanics.StatusEffect;
 
 /**
  * Abstract base class for all living entities in the game (player, enemies, etc.).
