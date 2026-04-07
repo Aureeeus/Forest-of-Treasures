@@ -24,6 +24,7 @@ import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.entities.SkillResult;
 import edu.tip.forestoftreasures.Model.entities.StatusEffect;
+import edu.tip.forestoftreasures.Model.entities.DamageTier;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.utils.FontFactory;
 
@@ -186,19 +187,29 @@ public class EntityBattleController {
     state = BattleState.ANIMATING_DIALOGUE;
     
     String flavorText = "";
+    float sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
     
     switch (selectedSkillRow) {
       case 0 -> {
         AttackResult result = player.useCryOfMisery(enemy);
         flavorText = result.flavorText();
+        if (result.tier() != DamageTier.MISS) {
+          game.assets.get("audio/sfx/Cry of Misery.mp3", Sound.class).play(sfxVolume);
+        }
       }
       case 1 -> {
         SkillResult result = player.useIntenseAura(enemy);
         flavorText = result.flavorText();
+        if (result.applied()) {
+          game.assets.get("audio/sfx/Intense Aura.wav", Sound.class).play(sfxVolume);
+        }
       }
       case 2 -> {
         AttackResult result = player.useLullabyOfObedience(enemy);
         flavorText = result.flavorText();
+        if (result.tier() != DamageTier.MISS) {
+          game.assets.get("audio/sfx/Lullaby Of Obedience.wav", Sound.class).play(sfxVolume);
+        }
       }
     }
 

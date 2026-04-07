@@ -83,6 +83,7 @@ public class GameLauncher extends Game {
         // --- Bg Music ---
         assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
         assets.load("audio/bgm/end_credits_bg_music.mp3", Music.class);
+        assets.load("audio/sfx/Battle_Screen_Music.mp3", Music.class);
 
         // --- Sound Effects ---
         assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);
@@ -91,6 +92,9 @@ public class GameLauncher extends Game {
 
         // --- Battle SFX ---
         assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+        assets.load("audio/sfx/Cry of Misery.mp3", Sound.class);
+        assets.load("audio/sfx/Intense Aura.wav", Sound.class);
+        assets.load("audio/sfx/Lullaby Of Obedience.wav", Sound.class);
 
         // --- Particle Effects ---
         assets.load("particles/autumn_leaf.p", ParticleEffect.class);

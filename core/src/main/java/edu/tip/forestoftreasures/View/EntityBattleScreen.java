@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.audio.Music;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
 
@@ -68,6 +69,7 @@ public class EntityBattleScreen implements Screen {
   // UI Components to refresh
   private TextraLabel enemyHpLabel;
   private TextraLabel playerHpLabel;
+  private Music battleMusic;
 
   public EntityBattleScreen(GameLauncher game, String screenKey, Player player, Runnable onComplete) {
     this.game = game;
@@ -82,6 +84,17 @@ public class EntityBattleScreen implements Screen {
 
     borderBg = DrawableFactory.getColoredDrawable(borderColor);
     contentBg = DrawableFactory.getColoredDrawable(contentColor);
+
+    try {
+        battleMusic = game.assets.get("audio/sfx/Battle_Screen_Music.mp3", Music.class);
+        if (battleMusic != null) {
+            battleMusic.setLooping(true);
+            battleMusic.setVolume(game.settingsConfig.getGameSettings().bgMusicVolume());
+            battleMusic.play();
+        }
+    } catch (Exception e) {
+        // Skip playing if not properly loaded
+    }
 
     drawUI();
   }
@@ -111,11 +124,17 @@ public class EntityBattleScreen implements Screen {
   @Override
   public void hide() {
     Gdx.input.setInputProcessor(null);
+    if (battleMusic != null) {
+      battleMusic.pause();
+    }
   }
 
   @Override
   public void dispose() {
     stage.dispose();
+    if (battleMusic != null) {
+      battleMusic.stop();
+    }
   }
 
   // ---------------------------------------------------------------------------
