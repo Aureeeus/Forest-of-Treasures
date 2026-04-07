@@ -1,4 +1,4 @@
-package edu.tip.forestoftreasures.Model.entities;
+package edu.tip.forestoftreasures.Model.mechanics;
 
 import java.util.concurrent.ThreadLocalRandom;
 

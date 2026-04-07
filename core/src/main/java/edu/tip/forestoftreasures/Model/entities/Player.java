@@ -2,6 +2,8 @@ package edu.tip.forestoftreasures.Model.entities;
 
 import com.badlogic.gdx.graphics.Texture;
 
+import edu.tip.forestoftreasures.Model.mechanics.Dice;
+
 /**
  * Represents the player character in the game.
  * Extends {@link Entity} with RPG stats (intelligence, dexterity, charisma)

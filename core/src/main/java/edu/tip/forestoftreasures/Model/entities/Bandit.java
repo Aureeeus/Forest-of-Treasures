@@ -1,6 +1,9 @@
 package edu.tip.forestoftreasures.Model.entities;
 
 import com.badlogic.gdx.graphics.Texture;
+
+import edu.tip.forestoftreasures.Model.mechanics.Dice;
+
 import com.badlogic.gdx.audio.Sound;
 
 /**
