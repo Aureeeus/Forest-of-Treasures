@@ -5,17 +5,12 @@
       {
         "id": "Blessing of the Sprite",
         "description": "You welcomed the sprite and received its blessing.",
-        "requiredChoiceSequence": [
-          1
-        ]
+        "requiredChoiceSequence": [1]
       },
       {
         "id": "Lovely Labyrinth",
         "description": "You navigated the twisting corridors of the Great Maze and emerged on the other side with your wits-and your sneakers-intact. Not even a dead end could stop you.",
-        "requiredChoiceSequence": [
-          -1,
-          0
-        ]
+        "requiredChoiceSequence": [-1, 0]
       }
     ],
     "nodes": [
@@ -100,7 +95,7 @@
       {
         "id": "d1_hobgoblin_battle_choice_line2",
         "type": "line",
-        "text": "\nI dont think this is part of my job. I dont want the hobgoblins perpetrators to be after me. I turned a blind eye to the creature and continued venturing.",
+        "text": "\nI dont think this is part of my job. I dont want the hobgoblins' perpetrators to be after me. I turned a blind eye to the creature and continued venturing.",
         "texture": null,
         "next": "d1_line4"
       },
@@ -120,7 +115,7 @@
       {
         "id": "d1_line5",
         "type": "line",
-        "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues. ",
+        "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues.",
         "texture": "scenarios/day1/day1_end.png",
         "next": null
       }
@@ -133,9 +128,357 @@
       {
         "id": "d2_line1",
         "type": "line",
-        "text": "I’ve been awakened by faint rustling outside the camp. I did not fear for my safety as my barrier still stands. I peeked outside my sleeping bag to see Salamanders drinking from the stream. Normally, salamanders are found in swamps. Quite interesting how these salamanders are green and not red. Their spine is much more protruded, and their eyes shut from side-to-side. Had I not known anything, I’d say they were baby dragons. After drinking from the stream, they swam along its flow. Truly a curious creature indeed. They’ll make my notes for sure. I’m starting to think that maybe this forest should be left alone. ",
-        "texture": "",
-        "next": ""
+        "text": "I've been awakened by {SHAKE}faint rustling{ENDSHAKE} outside the camp. {WAIT=1}I did not fear for my safety as my barrier still stands. I peeked outside my sleeping bag to see {COLOR=RED}Salamanders{ENDCOLOR} drinking from the stream. Normally, {COLOR=RED}salamanders{ENDCOLOR} are found in swamps. Quite interesting how these {COLOR=RED}salamanders{ENDCOLOR} are {SICK}green and not red{ENDSICK}. Their spine is much more protruded, and their eyes shut from side-to-side. Had I not known anything, I'd say they were {COLOR=RED}baby dragons{ENDCOLOR}. After drinking from the stream, {WAVE}they swam along its flow{ENDWAVE}. Truly a curious creature indeed. They'll make my notes for sure. I'm starting to think that maybe {COLOR=RED}this forest should be left alone{ENDCOLOR}.",
+        "texture": null,
+        "next": "d2_line2"
+      },
+      {
+        "id": "d2_line2",
+        "type": "line",
+        "text": "\nI packed my belongings and dispelled the cloak. I have some space left in my bag for water. {COLOR=#FFDB51}Should I bring some from this stream?{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_gather_water_choice"
+      },
+      {
+        "id": "d2_gather_water_choice",
+        "type": "choice",
+        "texture": null,
+        "choices": [
+          {
+            "label": "YES",
+            "next": "d2_gather_water_choice_line1"
+          },
+          {
+            "label": "NO",
+            "next": "d2_gather_water_choice_line2"
+          }
+        ]
+      },
+      {
+        "id": "d2_gather_water_choice_line1",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}I packed 10 bottles just in case. I don't know whether to feel glad that I found a stream this early or be scared that I might not find another place to get water. I packed water to fill the remaining space in my bag. Better safe than sorry.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_line3"
+      },
+      {
+        "id": "d2_gather_water_choice_line2",
+        "type": "line",
+        "text": "\nThis forest won't survive if this stream is the only water source this place has. I'd better save some space, or when I need it.",
+        "texture": null,
+        "next": "d2_line3"
+      },
+      {
+        "id": "d2_line3",
+        "type": "line",
+        "text": "\nAs the adventure pushed through, the trees became much taller and wider. The forest looked dimmer, so I started etching lines on trees to mark the places I've been to. The bushes start thickening and growing higher. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_bush_choice"
+      },
+      {
+        "id": "d2_bush_choice",
+        "type": "choice",
+        "texture": null,
+        "choices": [
+          {
+            "label": "CUT THE BUSHES IN FRONT OF YOU WITH A SPELL",
+            "next": "d2_bush_choice_line1"
+          },
+          {
+            "label": "COMB THROUGH THE BUSHES WITH YOUR HANDS",
+            "next": "d2_bush_choice_line2"
+          }
+        ]
+      },
+      {
+        "id": "d2_bush_choice_line1",
+        "type": "line",
+        "text": "\nI cast a spell to clear the bushes in front of me. Luckily, I went with my gut and chopped out these bushes, or else I would've fallen into this {SHAKE}{COLOR=RED}cavern{ENDCOLOR}{ENDSHAKE}. If this forest is to be cleared out, the kingdom should send an expedition team. Caverns are not suited for research mages such as I.",
+        "texture": null,
+        "next": null
+      },
+      {
+        "id": "d2_bush_choice_line2",
+        "type": "line",
+        "text": "\n{COLOR=RED}Your blind steps brought you harm. You fell into a ravine with no way back to the surface except the way you fell in. You take 4 damage.{ENDCOLOR}",
+        "texture": null,
+        "damage": 4,
+        "next": "d2_cavern_line1"
+      },
+      {
+        "id": "d2_cavern_line1",
+        "type": "line",
+        "text": "\nI am stuck here with no light whatsoever except the light from the {COLOR=RED}sinkhole{ENDCOLOR} I fell in. My breaths echoed, which only meant one thing - this {COLOR=RED}ravine{ENDCOLOR} is wide enough for me to explore.",
+        "texture": null,
+        "next": "d2_cavern_line2"
+      },
+      {
+        "id": "d2_cavern_line2",
+        "type": "line",
+        "text": "\nI kept walking straight ahead, hoping for my eyes to adjust in the darkness. After a while, I see {COLOR=RED}a faint glow{ENDCOLOR} in the distance. {RAINBOW}Bioluminescent moss{ENDRAINBOW} covered the walls of this cave. I ran towards it.",
+        "texture": null,
+        "next": "d2_athleticism_roll"
+      },
+      {
+        "id": "d2_athleticism_roll",
+        "type": "automatic_roll",
+        "threshold": 10,
+        "successNext": "d2_observation_roll",
+        "failNext": "d2_athleticism_fail_line"
+      },
+      {
+        "id": "d2_athleticism_fail_line",
+        "type": "line",
+        "text": "\n{COLOR=RED}You tripped. You take 2 damage.{ENDCOLOR}",
+        "damage": 2,
+        "texture": null,
+        "next": "d2_observation_roll"
+      },
+      {
+        "id": "d2_observation_roll",
+        "type": "manual_roll",
+        "text": "\nI inspected the {RAINBOW}bioluminescent moss{ENDRAINBOW}. It was rare to me as I do not fall into caves often, nor do I voluntarily explore them. {WAVE}Water dripped on my shoulder{ENDWAVE}. It doesn't feel like normal water. I looked up to see where it came from.",
+        "texture": null,
+        "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
+        "threshold": 15,
+        "successNext": "d2_observation_success_line",
+        "failNext": "d2_observation_fail_line"
+      },
+      {
+        "id": "d2_observation_success_line",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}A cavern creature with glowing eyes was drooling. You managed to strike it first before it could lunge.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_cavern_creature_battle_minigame_suc_obs"
+      },
+      {
+        "id": "d2_observation_fail_line",
+        "type": "line",
+        "text": "\n{COLOR=RED}A cavern creature with glowing eyes was drooling. It lunges at you and takes the first turn.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_cavern_creature_battle_minigame_fail_obs"
+      },
+      {
+        "id": "d2_cavern_creature_battle_minigame_suc_obs",
+        "type": "minigame",
+        "screenKey": "cavern_creature_battle_minigame",
+        "playerTurn": true,
+        "next": "d2_cavern_line3"
+      },
+      {
+        "id": "d2_cavern_creature_battle_minigame_fail_obs",
+        "type": "minigame",
+        "screenKey": "cavern_creature_battle_minigame",
+        "playerTurn": false,
+        "next": "d2_cavern_line3"
+      },
+      {
+        "id": "d2_cavern_line3",
+        "type": "line",
+        "text": "\nI defeated the creature. The creature that was so unique, I would've never imagined could exist. A creature so {RAINBOW}extraordinary{ENDRAINBOW} that my curiosity skyrocketed through the roof. I have to find more about this place.",
+        "texture": null,
+        "next": "d2_magic_roll"
+      },
+      {
+        "id": "d2_magic_roll",
+        "type": "manual_roll",
+        "text": "\nAs I venture deeper, the {RAINBOW}luminescent moss{ENDRAINBOW} starts thickening — gradually lighting this once dark abyss. Flowers that look like corals crawl across the floor and upward the walls. However, what shocked me was these {WAVE}fish-like creatures{ENDWAVE}, hovering as if they were swimming.",
+        "texture": null,
+        "label": "{COLOR=#FFDB51}FEEL THE MAGIC OF THIS PLACE{ENDCOLOR}",
+        "threshold": 15,
+        "successNext": "d2_magic_success_line",
+        "failNext": "d2_magic_fail_line"
+      },
+      {
+        "id": "d2_magic_success_line",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}Magic fills the place{ENDCOLOR}. You see {RAINBOW}Mana traces{ENDRAINBOW} so thick, it stuns you momentarily. Abusing the stun, a {COLOR=RED}centipede-like creature with gills{ENDCOLOR} snarl at you and attacks you.",
+        "texture": null,
+        "next": "d2_centipede_battle_minigame"
+      },
+      {
+        "id": "d2_magic_fail_line",
+        "type": "line",
+        "text": "\nYour sensation to mana does not connect in this place. Something might be blocking this connection.",
+        "texture": null,
+        "next": "d2_cavern_line4"
+      },
+      {
+        "id": "d2_centipede_battle_minigame",
+        "type": "minigame",
+        "screenKey": "centipede_battle_minigame",
+        "next": "d2_cavern_line4"
+      },
+      {
+        "id": "d2_cavern_line4",
+        "type": "line",
+        "text": "\nI've lost track of time - and quite honestly, my mission too. There's only one goal in my mind right now - to find the light of day or the shine of the moon. Although, I'd be lying if I say that the {RAINBOW}beauty of this place{ENDRAINBOW} does not mesmerize me.",
+        "texture": null,
+        "next": "d2_cavern_line5"
+      },
+      {
+        "id": "d2_cavern_line5",
+        "type": "line",
+        "text": "\nAfter a couple steps, I hear {SHAKE}a terrifying scream{ENDSHAKE} - not of a human, but of a beast. I don't know whether to be glad or scared as I remember this war cry. It was of a {COLOR=RED}Leviathan{ENDCOLOR}. {COLOR=RED}Leviathans{ENDCOLOR} normally inhabit deep sea trenches but the cavern lacks the size to handle it. However, I was mistaken. After taking a left at a place resembling a crossroad, the already large ravine just changed the game. A deep, and wide cliff reveals itself to me. The cliff was so deep and wide that a {SHAKE}{COLOR=RED}large lava pool{ENDCOLOR}{ENDSHAKE} engulfs the majority of this cavern's floor. I look up and I see the {COLOR=RED}Leviathan{ENDCOLOR} hovering over the lava pool.",
+        "texture": null,
+        "next": "d2_lightstep_roll"
+      },
+      {
+        "id": "d2_lightstep_roll",
+        "type": "automatic_roll",
+        "threshold": 10,
+        "successNext": "d2_lightstep_success_line",
+        "failNext": "d2_lightstep_fail_line"
+      },
+      {
+        "id": "d2_lightstep_success_line",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}You managed to reach the ravine floor without issue.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_leviathan_battle_minigame"
+      },
+      {
+        "id": "d2_lightstep_fail_line",
+        "type": "line",
+        "text": "\n{COLOR=RED}You fall into the ravine as your step gets heavy by mistake. You take 5 damage.{ENDCOLOR}",
+        "damage": 5,
+        "texture": null,
+        "next": "d2_leviathan_battle_minigame"
+      },
+      {
+        "id": "d2_leviathan_battle_minigame",
+        "type": "minigame",
+        "screenKey": "leviathan_battle_minigame",
+        "next": "d2_cavern_line6"
+      },      {
+        "id": "d2_cavern_line6",
+        "type": "line",
+        "text": "\nThe cavern floor was hard to traverse; some rocks were unstable to walk on. I make sure that I check for stability before standing on a platform or else I meet my end. The {COLOR=RED}Leviathan{ENDCOLOR} screeches once more, the {SHAKE}whole cavern shakes{ENDSHAKE}, and I luckily dodge the stalagmites that fall. However, unlike me, another {COLOR=RED}territorial Leviathan{ENDCOLOR} was unlucky. The second Leviathan engaged in combat with the first one, causing {COLOR=RED}fireballs{ENDCOLOR} to rain from the sky. Each fireball that hits the terrain unleashes a minor earthquake, enough to crack the platforms beneath me.",
+        "texture": null,
+        "next": "d2_cavern_line7"
+      },
+      {
+        "id": "d2_cavern_line7",
+        "type": "line",
+        "text": "\nBarely making it alive, I escaped the {COLOR=RED}hellrain{ENDCOLOR}, and the second leviathan was subdued. A fireball revealed {RAINBOW}a hidden section{ENDRAINBOW} of the cave. The entrance of the section was… {SHAKE}pulsing{ENDSHAKE}. I ventured into the entrance. This section was even deeper than this lava-filled terrain I am in. Oddly enough, this section has no Lava at all. I hear {WAVE}a faint sound, similar that of a chime{ENDWAVE}. When I looked back, the cavern's entrance closed as if it was never opened.",
+        "texture": null,
+        "next": "d2_observation1_roll"
+      },
+      {
+        "id": "d2_observation1_roll",
+        "type": "manual_roll",
+        "text": "\n{BOUNCY}\"{RAINBOW}Save me from the steel of the steed{ENDRAINBOW}\"{ENDBOUNCY} A voice echoed directly in my head.",
+        "texture": null,
+        "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
+        "threshold": 15,
+        "successNext": "d2_observation1_success_line",
+        "failNext": "d2_observation1_fail_line"
+      },
+      {
+        "id": "d2_observation1_success_line",
+        "type": "line",
+        "text": "\nYour eyes quickly adjust in the darkness and lock eyes with a spherical mass of soil, root, and moss.",
+        "texture": null,
+        "next": "d2_cavern_line8"
+      },
+      {
+        "id": "d2_observation1_fail_line",
+        "type": "line",
+        "text": "\n\"Protect me from the flames, young one.\" You hear once again. The cavern then glows for every syllable you heard.",
+        "texture": null,
+        "next": "d2_cavern_line8"
+      },
+      {
+        "id": "d2_cavern_line8",
+        "type": "line",
+        "text": "\n{SHAKE}\"What are you? Who are you?\"{ENDSHAKE} I shout, hoping to reveal whoever it was that spoke to me.",
+        "texture": null,
+        "next": "d2_cavern_line9"
+      },
+      {
+        "id": "d2_cavern_line9",
+        "type": "line",
+        "text": "\n{WAVE}\"The soil breathes, the trees listen. The sky hears, and the creatures watch over. I am the place you stand on. My breath is the air you live on. My blood is your sustenance.\"{ENDWAVE}",
+        "texture": null,
+        "next": "d2_cavern_line10"
+      },
+      {
+        "id": "d2_cavern_line10",
+        "type": "line",
+        "text": "\nI do not understand its poems, but its intentions were clear. It was the cavern - no, the forest speaks to me.",
+        "texture": null,
+        "next": "d2_cavern_line11"
+      },
+      {
+        "id": "d2_cavern_line11",
+        "type": "line",
+        "text": "\nLights emit from the core of the cave. This sphere - resembling an egg - speaks to me in ways I cannot fathom.",
+        "texture": null,
+        "next": "d2_cavern_line12"
+      },
+      {
+        "id": "d2_cavern_line12",
+        "type": "line",
+        "text": "\n{BOUNCY}\"{RAINBOW}Save me from the steel of the steed.{ENDRAINBOW}\"{ENDBOUNCY} The core repeated again and again. The cave was pulsing, and the \"heart\" seemed to be beating.",
+        "texture": null,
+        "next": "d2_cavern_line13"
+      },
+      {
+        "id": "d2_cavern_line13",
+        "type": "line",
+        "text": "\n\"What do you mean?\" I ask.",
+        "texture": null,
+        "next": "d2_cavern_line14"
+      },
+      {
+        "id": "d2_cavern_line14",
+        "type": "line",
+        "text": "\nBefore the heart could react, I saw the {COLOR=RED}knights of Drakeswood{ENDCOLOR}, in full armor, line up at another one of the cavern's entrances.",
+        "texture": null,
+        "next": "d2_cavern_choice"
+      },
+      {
+        "id": "d2_cavern_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "TELL THEM YOUR DISCOVERY",
+            "next": "d2_cavern_choice_line1"
+          },
+          {
+            "label": "ASK THEIR BUSINESS WITH THE CAVE",
+            "next": "d2_cavern_choice_line2"
+          }
+        ]
+      },
+      {
+        "id": "d2_cavern_choice_line1",
+        "type": "line",
+        "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_cavern_line15"
+      },
+      {
+        "id": "d2_cavern_choice_line2",
+        "type": "line",
+        "text": "\n{COLOR=RED}They say you've been gone for a month. Drakeswood believes that the forest has absorbed you as its food. However, they do not want you to know that to eliminate the forest was their true goal. Without hesitation, their captain swings at you. A fierce boss battle starts. The heart does not help you on this one.{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_cavern_line15"
+      },
+      {
+        "id": "d2_cavern_line15",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}I won the fight, leaving the knights' bodies on the ground.{ENDCOLOR} The cave absorbs them for nutrients - even those who were still breathing. The forest takes, the forest survives. It fights for itself and chooses the righteous ones to help itself. I ask the forest to let me go to notify Drakeswood of its \"existence\".",
+        "texture": null,
+        "next": "d2_cavern_line16"
+      },
+      {
+        "id": "d2_cavern_line16",
+        "type": "line",
+        "text": "\nWhether I succeed or don't, I shall return to this forest and guard it.{WAIT=3}",
+        "texture": null,
+        "triggerGameEnd": true,
+        "next": null
       }
     ]
   }
