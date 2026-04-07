@@ -36,7 +36,7 @@ public class PlayerPathTracker {
   /**
    * Records a player's decision at a given ChoiceNode.
    *
-   * @param node        The ChoiceNode the decision was made at.
+   * @param choiceNode  The ChoiceNode the decision was made at.
    * @param choiceIndex The index of the choice the player selected.
    */
   public void record(ChoiceNode choiceNode, int choiceIndex) {

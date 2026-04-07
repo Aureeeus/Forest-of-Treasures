@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.tip.forestoftreasures.Model.PlayerPathTracker;
 import edu.tip.forestoftreasures.Model.PlayerPathTracker.PlayerDecision;
+import edu.tip.forestoftreasures.Model.mechanics.Dice;
 
 public class DialogueRunner {
 
@@ -27,6 +28,13 @@ public class DialogueRunner {
     public void showChoices(ChoiceNode node);
 
     /**
+     * Renders a manual prompt that requires player interaction to perform a D20 roll check.
+     *
+     * @param node The ManualRollNode containing the text, texture, and descriptive label.
+     */
+    public void showManualRoll(ManualRollNode node);
+
+    /**
      * Launches the minigame screen and pauses the dialogue graph.
      * The graph resumes only after onMinigameFinished() is called.
      *
@@ -39,6 +47,12 @@ public class DialogueRunner {
      * Use this to trigger end-of-chapter logic.
      */
     public void onDialogueEnd();
+
+    /**
+     * Called when a LineNode with triggerGameEnd is reached.
+     * Transitions the game to the credits/ending screen.
+     */
+    public void forceGameEnd();
   }
 
   // --- Instance variables ---
@@ -78,21 +92,33 @@ public class DialogueRunner {
       return;
     }
 
+    if (current instanceof AutomaticRollNode roll) {
+      current = roll.evaluate();
+      step(); // instantly transition
+      return;
+    }
+
     if (current instanceof LineNode line) {
       displayHandler.showLine(line);
     } else if (current instanceof ChoiceNode choice) {
       displayHandler.showChoices(choice);
     } else if (current instanceof MinigameNode minigame) {
       displayHandler.showMinigame(minigame);
+    } else if (current instanceof ManualRollNode manualRoll) {
+      displayHandler.showManualRoll(manualRoll);
     }
   }
 
 
   /**
    * Advances to the next node after a line finishes displaying.
-   *
+   * If the finished line has triggerGameEnd set, the game ends immediately.
    */
   public void onLineFinished() {
+    if (current instanceof LineNode line && line.triggerGameEnd) {
+      displayHandler.forceGameEnd();
+      return;
+    }
     current = current.getNext();
     step();
   }
@@ -109,6 +135,16 @@ public class DialogueRunner {
     ChoiceNode choiceNode = (ChoiceNode) current;
     pathTracker.record(choiceNode, index);  // record before advancing
     current = choiceNode.choices.get(index).next();
+    step();
+  }
+
+  /**
+   * Evaluates the manual roll triggered via the ENTER key, triggering dice outcome and branching appropriately.
+   */
+  public void onManualRollExecuted() {
+    ManualRollNode manualRollNode = (ManualRollNode) current;
+    int rollValue = Dice.roll();
+    current = manualRollNode.evaluate(rollValue);
     step();
   }
 

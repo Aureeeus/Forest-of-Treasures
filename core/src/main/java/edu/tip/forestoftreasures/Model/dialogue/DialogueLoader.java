@@ -65,8 +65,8 @@ public class DialogueLoader {
     // PASS 1: create all nodes and index them by id
     Map<String, DialogueNode> nodeMap = createNodes(nodesJson, dayKey);
 
-    // Pass 2a: link ChoiceNodes FIRST so they are rebuilt in the map
-    linkChoiceNodes(nodesJson, nodeMap, dayKey);
+    // Pass 2a: link ChoiceNodes and RollNodes FIRST so they are rebuilt in the map
+    linkChoiceAndRollNodes(nodesJson, nodeMap, dayKey);
 
     // Pass 2b: link LineNodes and MinigameNodes after ChoiceNodes are rebuilt
     linkLineAndMinigameNodes(nodesJson, nodeMap, dayKey);
@@ -111,6 +111,8 @@ public class DialogueLoader {
         case "line"   -> createLineNode(nodeJson);
         case "choice" -> createChoiceNode(nodeJson);
         case "minigame" -> createMinigameNode(nodeJson);
+        case "automatic_roll" -> createAutomaticRollNode(nodeJson);
+        case "manual_roll" -> createManualRollNode(nodeJson);
         default -> throw new RuntimeException(
             "[DialogueLoader] Unknown node type '" + type + "' on id '" + id + "' in " + dayKey
         );
@@ -133,10 +135,31 @@ public class DialogueLoader {
    * @return An unlinked LineNode (next is null until Pass 2).
    */
   private static LineNode createLineNode(JsonValue nodeJson) {
-    String text        = nodeJson.getString("text");
-    String texturePath = nodeJson.getString("texture", null); // null if absent
+    String text            = nodeJson.getString("text");
+    String texturePath     = nodeJson.getString("texture", null); // null if absent
+    int damage             = nodeJson.getInt("damage", 0);
+    boolean triggerGameEnd = nodeJson.getBoolean("triggerGameEnd", false);
 
-    return new LineNode(text, texturePath);
+    return new LineNode(text, texturePath, damage, triggerGameEnd);
+  }
+
+  /**
+   * Creates an unlinked AutomaticRollNode from a JSON node object.
+   */
+  private static AutomaticRollNode createAutomaticRollNode(JsonValue nodeJson) {
+    int threshold = nodeJson.getInt("threshold");
+    return new AutomaticRollNode(threshold);
+  }
+
+  /**
+   * Creates an unlinked ManualRollNode from a JSON node object.
+   */
+  private static ManualRollNode createManualRollNode(JsonValue nodeJson) {
+    String text        = nodeJson.getString("text");
+    String texturePath = nodeJson.getString("texture", null);
+    String label       = nodeJson.getString("label");
+    int threshold      = nodeJson.getInt("threshold");
+    return new ManualRollNode(text, texturePath, label, threshold);
   }
 
   /**
@@ -169,18 +192,22 @@ public class DialogueLoader {
    */
   private static MinigameNode createMinigameNode(JsonValue nodeJson) {
     String screenKey = nodeJson.getString("screenKey");
-    return new MinigameNode(screenKey);
+    Boolean playerTurn = null;
+    if (nodeJson.has("playerTurn")) {
+      playerTurn = nodeJson.getBoolean("playerTurn");
+    }
+    return new MinigameNode(screenKey, playerTurn);
   }
 
   // ---------------------------------------------------------------------------
-  // PASS 2a — CHOICE NODE LINKING
+  // PASS 2a — CHOICE AND ROLL NODE LINKING
   // ---------------------------------------------------------------------------
 
   /**
-   * Pass 2a: Rebuilds all ChoiceNodes with fully resolved next references
+   * Pass 2a: Rebuilds ChoiceNodes and RollNodes with fully resolved next references
    * and replaces them in the map BEFORE LineNodes are linked.
    */
-  private static void linkChoiceNodes(
+  private static void linkChoiceAndRollNodes(
     JsonValue nodesJson,
     Map<String, DialogueNode> nodeMap,
     String dayKey
@@ -188,8 +215,44 @@ public class DialogueLoader {
     for (JsonValue nodeJson = nodesJson.child; nodeJson != null; nodeJson = nodeJson.next) {
       if (nodeJson.getString("type").equals("choice")) {
         linkChoiceNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
+      } else if (nodeJson.getString("type").equals("automatic_roll")) {
+        linkAutomaticRollNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
+      } else if (nodeJson.getString("type").equals("manual_roll")) {
+        linkManualRollNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
       }
     }
+  }
+
+  private static void linkAutomaticRollNode(
+    JsonValue nodeJson,
+    String id,
+    Map<String, DialogueNode> nodeMap,
+    String dayKey
+  ) {
+    String successNextId = nodeJson.getString("successNext", null);
+    String failNextId = nodeJson.getString("failNext", null);
+
+    AutomaticRollNode node = (AutomaticRollNode) nodeMap.get(id);
+    node.setNexts(
+      successNextId != null ? resolveNode(successNextId, nodeMap, id, dayKey) : null, 
+      failNextId != null ? resolveNode(failNextId, nodeMap, id, dayKey) : null
+    );
+  }
+
+  private static void linkManualRollNode(
+    JsonValue nodeJson,
+    String id,
+    Map<String, DialogueNode> nodeMap,
+    String dayKey
+  ) {
+    String successNextId = nodeJson.getString("successNext", null);
+    String failNextId = nodeJson.getString("failNext", null);
+
+    ManualRollNode node = (ManualRollNode) nodeMap.get(id);
+    node.setNexts(
+      successNextId != null ? resolveNode(successNextId, nodeMap, id, dayKey) : null, 
+      failNextId != null ? resolveNode(failNextId, nodeMap, id, dayKey) : null
+    );
   }
 
   // ---------------------------------------------------------------------------
@@ -296,8 +359,8 @@ public class DialogueLoader {
       linkedChoices.add(new ChoiceNode.Choice(label, resolveNode(nextId, nodeMap, id, dayKey)));
     }
 
-    // Replace unlinked node in the map with a fully linked one
-    nodeMap.put(id, new ChoiceNode(linkedChoices.toArray(new ChoiceNode.Choice[0])));
+    ChoiceNode node = (ChoiceNode) nodeMap.get(id);
+    node.setChoices(linkedChoices.toArray(new ChoiceNode.Choice[0]));
   }
 
   /**
