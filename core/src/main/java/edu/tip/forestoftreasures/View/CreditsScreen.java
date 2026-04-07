@@ -275,6 +275,12 @@ public class CreditsScreen implements Screen {
     @Override
     public void dispose() {
         if (stage != null) stage.dispose();
+        if (creditsMusic != null) {
+            creditsMusic.stop();
+            // Note: We do not call creditsMusic.dispose() here because it is managed 
+            // by the AssetManager. Manually disposing it would break future lookups.
+            creditsMusic = null;
+        }
     }
 
     // -----------------------------------------------------------------------

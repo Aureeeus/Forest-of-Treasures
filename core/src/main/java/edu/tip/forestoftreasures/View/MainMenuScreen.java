@@ -169,6 +169,9 @@ public class MainMenuScreen implements Screen {
   public void hide() {
     // This method is called when another screen replaces this one.
     Gdx.input.setInputProcessor(null);
+    if (backgroundMusic != null) {
+      backgroundMusic.stop(); // Ensured to restart from the beginning next time
+    }
   }
 
   @Override
@@ -176,6 +179,12 @@ public class MainMenuScreen implements Screen {
     stage.dispose();
     batch.dispose();
     controller.dispose();
+    if (backgroundMusic != null) {
+      backgroundMusic.stop();
+      // Note: We do not call backgroundMusic.dispose() here because it is managed 
+      // by the AssetManager. Manually disposing it would break future lookups.
+      backgroundMusic = null;
+    }
   }
 
   public TextButton getStartButton() {
