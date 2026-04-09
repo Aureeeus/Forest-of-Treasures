@@ -208,6 +208,15 @@ public class SettingsScreen implements Screen {
   public void show() {
     // Prepare your screen here.
     Gdx.input.setInputProcessor(stage);
+
+    // Ensure music is playing and volume is synchronized
+    if (bgMusic != null) {
+      float musicVolume = game.settingsConfig.getGameSettings().bgMusicVolume();
+      bgMusic.setVolume(musicVolume);
+      if (!bgMusic.isPlaying()) {
+        bgMusic.play();
+      }
+    }
   }
 
   @Override

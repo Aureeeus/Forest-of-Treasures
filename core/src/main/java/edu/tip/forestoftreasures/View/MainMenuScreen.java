@@ -169,9 +169,6 @@ public class MainMenuScreen implements Screen {
   public void hide() {
     // This method is called when another screen replaces this one.
     Gdx.input.setInputProcessor(null);
-    if (backgroundMusic != null) {
-      backgroundMusic.stop(); // Ensured to restart from the beginning next time
-    }
   }
 
   @Override

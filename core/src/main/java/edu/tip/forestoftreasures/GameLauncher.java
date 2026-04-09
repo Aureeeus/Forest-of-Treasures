@@ -127,7 +127,7 @@ public class GameLauncher extends Game {
         assets.load("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
         
         // --- Day 2 UI ---
-        assets.load("scenarios/day2/cavern_creature.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
