@@ -5,7 +5,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -13,13 +12,14 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Align;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
-import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.Model.entities.Bandit;
 import edu.tip.forestoftreasures.Model.entities.CavernCreature;
+import edu.tip.forestoftreasures.Model.entities.Centipede;
+import edu.tip.forestoftreasures.Model.entities.Leviathan;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
@@ -29,7 +29,9 @@ import edu.tip.forestoftreasures.Model.mechanics.SkillResult;
 import edu.tip.forestoftreasures.Model.mechanics.StatusEffect;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.GameOverScreen;
+import edu.tip.forestoftreasures.utils.DialogueUtils;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.UIFactory;
 
 /**
  * Controller for the entity battle screen. Handles all user input,
@@ -50,8 +52,13 @@ public class EntityBattleController {
   private final GameLauncher game;
   private final EntityBattleScreen screen;
   private final Player player;
+  private final String screenKey;
 
   private BattleState state = BattleState.STARTING;
+
+  // Blessing mechanic — exclusive to knights_battle_minigame
+  private static final int BLESSING_THRESHOLD = 15;
+  private String blessingFlavorText;
 
   // Enemy data
   private Entity enemy;
@@ -88,10 +95,16 @@ public class EntityBattleController {
    * @param node      the MinigameNode defining this battle scenario
    * @param onComplete the callback to run when the battle ends
    */
-  public EntityBattleController(GameLauncher game, EntityBattleScreen screen, Player player, MinigameNode node, Runnable onComplete) {
+  public EntityBattleController(
+      GameLauncher game,
+      EntityBattleScreen screen,
+      Player player,
+      MinigameNode node,
+      Runnable onComplete) {
     this.game = game;
     this.screen = screen;
     this.player = player;
+    this.screenKey = node.screenKey;
     this.onComplete = onComplete;
     
     if (node.playerTurn != null) {
@@ -102,13 +115,39 @@ public class EntityBattleController {
 
     resolveEnemy(node.screenKey, node.playerTurn);
 
+    // Dedicated blessing roll — only for the knights battle minigame
+    if ("knights_battle_minigame".equals(screenKey)) {
+      rollForBlessing();
+    }
+
     // Arrow icon from sprite sheet
-    Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
-    TextureRegion selectSkillTexture = new TextureRegion(selectIconSheet, 448, 384, 64, 64);
-    selectSkillIcon = new Image(selectSkillTexture);
+    selectSkillIcon = UIFactory.getSelectionArrowIcon(game);
 
     // Dialogue font
     dialogueFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 20, Color.WHITE);
+  }
+
+  /**
+   * Performs a dedicated D20 roll to determine the player's blessing tier.
+   * A roll at or above the threshold grants HIGH blessing (heal after every knight fight);
+   * below the threshold grants LOW blessing (heal after every 3 knight fights).
+   */
+  private void rollForBlessing() {
+    int blessingRoll = Dice.roll();
+    Player.BlessingTier tier = blessingRoll >= BLESSING_THRESHOLD
+        ? Player.BlessingTier.HIGH
+        : Player.BlessingTier.LOW;
+
+    player.setBlessingTier(tier);
+
+    String tierColor = (tier == Player.BlessingTier.HIGH) ? "#66FF00" : "#AEE2FF";
+    String tierLabel = (tier == Player.BlessingTier.HIGH)
+        ? "An unknown force blesses you to full health every battle."
+        : "An unknown force blesses you to full health every 3 battles.";
+
+    blessingFlavorText = String.format(
+      "\n{COLOR=#FFDB51}Roll for Blessing: [%d]{ENDCOLOR} - {COLOR=%s}%s{ENDCOLOR}",
+      blessingRoll, tierColor, tierLabel);
   }
 
   // ---------------------------------------------------------------------------
@@ -123,38 +162,51 @@ public class EntityBattleController {
    * @param playerTurn    optional override flag to set fixed priorities
    */
   private void resolveEnemy(String screenKey, Boolean playerTurn) {
+    float initiative = calculateEnemyInitiative(playerTurn);
+
     switch (screenKey) {
       case "bandit_battle_minigame" -> {
-        float initiative;
-        if (playerTurn != null) {
-          initiative = playerTurn ? 1f : 20f;
-        } else {
-          initiative = Dice.roll();
-        }
-        
         Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
         Sound banditAttackSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
 
         this.enemy = new Bandit(initiative, banditTexture, banditAttackSound);
         this.enemyName = "Bandit";
       }
-      // Day 2 Cavern creature integration
       case "cavern_creature_battle_minigame" -> {
-        float initiative;
-        if (playerTurn != null) {
-          initiative = playerTurn ? 1f : 20f;
-        } else {
-          initiative = Dice.roll();
-        }
-        
-        Texture creatureTexture = game.assets.get("scenarios/day2/cavern_creature.png", Texture.class);
+        Texture creatureTexture = game.assets.get("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
 
         this.enemy = new CavernCreature(initiative, creatureTexture, null);
         this.enemyName = "Cavern Creature";
       }
+      case "centipede_battle_minigame" -> {
+        Texture centipedeTexture = game.assets.get("scenarios/day2/cavern_arc/centipede.png", Texture.class);
+
+        this.enemy = new Centipede(initiative, centipedeTexture, null);
+        this.enemyName = "Centipede";
+      }
+      case "leviathan_battle_minigame" -> {
+        Texture leviathanTexture = game.assets.get("scenarios/day2/cavern_arc/leviathan.png", Texture.class);
+
+        this.enemy = new Leviathan(initiative, leviathanTexture, null);
+        this.enemyName = "Leviathan";
+      }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
       );
+    }
+  }
+
+  /**
+   * Calculates the enemy's initiative based on the scenario's playerTurn override or by rolling.
+   *
+   * @param playerTurn optional override flag from story_schema.json
+   * @return the calculated initiative
+   */
+  private float calculateEnemyInitiative(Boolean playerTurn) {
+    if (playerTurn != null) {
+      return playerTurn ? 1f : 20f;
+    } else {
+      return Dice.roll();
     }
   }
 
@@ -203,7 +255,7 @@ public class EntityBattleController {
 
     for (int i = 0; i < SKILL_COUNT; i++) {
       iconCells[i].setActor(i == selectedSkillRow ? selectSkillIcon : null);
-      tintCell(labelCells[i], i == selectedSkillRow);
+      UIFactory.tintCell(labelCells[i], i == selectedSkillRow);
     }
   }
 
@@ -304,11 +356,20 @@ public class EntityBattleController {
           
           AttackResult result = bandit.attackWithFlavor(player);
           flavorText = result.flavorText();
-        } // Cavern creature turn resolution
-        else if (enemy instanceof CavernCreature cavernCreature) {
+        } else if (enemy instanceof CavernCreature cavernCreature) {
           cavernCreature.playAttackSound(sfxVolume);
           
           AttackResult result = cavernCreature.attackWithFlavor(player);
+          flavorText = result.flavorText();
+        } else if (enemy instanceof Centipede centipede) {
+          centipede.playAttackSound(sfxVolume);
+          
+          AttackResult result = centipede.attackWithFlavor(player);
+          flavorText = result.flavorText();
+        } else if (enemy instanceof Leviathan leviathan) {
+          leviathan.playAttackSound(sfxVolume);
+          
+          AttackResult result = leviathan.attackWithFlavor(player);
           flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies
@@ -343,6 +404,11 @@ public class EntityBattleController {
    */
   private void endBattle() {
     screen.dispose();
+
+    // Apply the blessing heal callback exclusively for knight battles
+    if ("knights_battle_minigame".equals(screenKey) && player.isAlive()) {
+      player.onKnightBattleCompleted();
+    }
     
     // If player died, go to GameOverScreen; otherwise resume dialogue
     if (!player.isAlive()) {
@@ -374,26 +440,15 @@ public class EntityBattleController {
 
       if (i == 0) {
         iconCells[i].setActor(selectSkillIcon);
-        tintCell(labelCells[i], true);
+        UIFactory.tintCell(labelCells[i], true);
       } else {
-        tintCell(labelCells[i], false);
+        UIFactory.tintCell(labelCells[i], false);
       }
 
       float bottomPad = (i < SKILL_COUNT - 1) ? 10f : 0f;
       skillWidgetTable.add(iconCells[i]).size(30f).padRight(20f).padBottom(bottomPad);
       skillWidgetTable.add(labelCells[i]).growX().align(Align.left | Align.center).padBottom(bottomPad).row();
     }
-  }
-
-  /**
-   * Applies a yellow highlight to the selected cell or resets it to white.
-   *
-   * @param cell       the container whose actor should be tinted
-   * @param isSelected true to highlight, false to reset to white
-   */
-  private void tintCell(Container<?> cell, boolean isSelected) {
-    if (cell.getActor() == null) return;
-    cell.getActor().setColor(isSelected ? Color.valueOf("#FFDB51") : Color.WHITE);
   }
 
   // ---------------------------------------------------------------------------
@@ -436,8 +491,20 @@ public class EntityBattleController {
 
   /**
    * Starts the battle turn loop. Called after the initiative flavor text finishes animating.
+   * If a blessing roll was performed (knights battle), it is shown first.
    */
   public void startFirstTurn() {
+    if (blessingFlavorText != null) {
+      addDialogueLine(blessingFlavorText, this::beginFirstTurn);
+    } else {
+      beginFirstTurn();
+    }
+  }
+
+  /**
+   * Resolves who goes first based on initiative and begins the turn loop.
+   */
+  private void beginFirstTurn() {
     if (player.getInitiative() > enemy.getInitiative()) {
       state = BattleState.PLAYER_TURN;
       addDialogueLine("\n{COLOR=#FFDB51}It's your turn!{ENDCOLOR}", null);
@@ -458,22 +525,7 @@ public class EntityBattleController {
     if (textDialogueTable == null) return;
 
     TypingLabel typingLabel = new TypingLabel(text, dialogueFont);
-    typingLabel.setWrap(true);
-
-    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
-    if (isSkipDialogueEnabled) {
-      typingLabel.skipToTheEnd();
-      if (onComplete != null) {
-        Gdx.app.postRunnable(onComplete);
-      }
-    } else if (onComplete != null) {
-      typingLabel.setTypingListener(new TypingAdapter() {
-        @Override
-        public void end() {
-          onComplete.run();
-        }
-      });
-    }
+    DialogueUtils.configureTypingLabel(typingLabel, game, onComplete);
 
     textDialogueTable.add(typingLabel)
       .growX()
@@ -491,79 +543,6 @@ public class EntityBattleController {
    * Removes old dialogue lines from the top until all content fits inside the table.
    */
   private void trimDialogueOverflow() {
-    if (textDialogueTable == null) return;
-    
-    // Force immediate table layout so we can query exact allocated dimensions
-    textDialogueTable.invalidateHierarchy();
-    textDialogueTable.validate();
-
-    float tableHeight = textDialogueTable.getHeight();
-    if (tableHeight <= 0) {
-      pendingOverflowTrim = true; // screen layout not ready yet, retry next frame
-      return;
-    }
-
-    // Validate that all actors have computed their physical heights.
-    // For wrapped text, width must be established before height is accurate.
-    for (var cell : textDialogueTable.getCells()) {
-      if (!cell.hasActor()) continue;
-      
-      // Force label layout to register wrap boundaries
-      if (cell.getActor() instanceof com.badlogic.gdx.scenes.scene2d.ui.Widget widget) {
-        widget.validate(); 
-      }
-      
-      if (cell.getActorHeight() <= 0) {
-        pendingOverflowTrim = true; // wait for LibGDX layout frame to settle
-        return;
-      }
-    }
-
-    pendingOverflowTrim = false;
-
-    while (true) {
-      // Calculate true content height exclusively for active cells
-      float contentHeight = textDialogueTable.getPadTop() + textDialogueTable.getPadBottom();
-      int activeActorCount = 0;
-
-      for (var cell : textDialogueTable.getCells()) {
-        if (!cell.hasActor()) continue;
-        activeActorCount++;
-        contentHeight += cell.getActorHeight() + cell.getPadTop() + cell.getPadBottom();
-      }
-
-      // If everything fits OR we only have 1 active line left, we are done
-      if (contentHeight <= tableHeight || activeActorCount <= 1) {
-        break; 
-      }
-
-      // Find the oldest valid actor and remove it
-      Actor oldestActor = null;
-      for (var cell : textDialogueTable.getCells()) {
-        if (cell.hasActor()) {
-          oldestActor = cell.getActor();
-          break; // only remove one per loop iteration
-        }
-      }
-
-      if (oldestActor != null) {
-        com.badlogic.gdx.utils.Array<Actor> activeActors = new com.badlogic.gdx.utils.Array<>();
-        for (var cell : textDialogueTable.getCells()) {
-          if (cell.hasActor() && cell.getActor() != oldestActor) {
-            activeActors.add(cell.getActor());
-          }
-        }
-        
-        textDialogueTable.clearChildren();
-        
-        for (Actor a : activeActors) {
-          textDialogueTable.add(a).growX().bottom().left().padBottom(5f).row();
-        }
-      }
-
-      // Re-layout explicitly after removal to update cell dependencies
-      textDialogueTable.invalidateHierarchy();
-      textDialogueTable.validate();
-    }
+    pendingOverflowTrim = !DialogueUtils.trimDialogueOverflow(textDialogueTable);
   }
 }
