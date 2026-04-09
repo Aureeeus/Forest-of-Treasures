@@ -139,8 +139,9 @@ public class DialogueLoader {
     String texturePath     = nodeJson.getString("texture", null); // null if absent
     int damage             = nodeJson.getInt("damage", 0);
     boolean triggerGameEnd = nodeJson.getBoolean("triggerGameEnd", false);
+    String obtainableAchievement = nodeJson.getString("obtainableAchievement", null);
 
-    return new LineNode(text, texturePath, damage, triggerGameEnd);
+    return new LineNode(text, texturePath, damage, triggerGameEnd, obtainableAchievement);
   }
 
   /**
@@ -412,9 +413,6 @@ public class DialogueLoader {
         for (JsonValue index = sequenceJson.child; index != null; index = index.next) {
           sequence.add(index.asInt());
         }
-      } else {
-        Gdx.app.error(TAG, "WARNING: Achievement '" + id
-          + "' is missing requiredChoiceSequence. Skipping.");
       }
 
       achievements.add(new Achievement(id, description, sequence));

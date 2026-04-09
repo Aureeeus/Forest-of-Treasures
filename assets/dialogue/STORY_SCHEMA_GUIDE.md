@@ -30,6 +30,7 @@ Standard text presentation.
 - `texture`: path to the background image in `assets/scenarios/` (or `null` to retain the current image).
 - `damage` (Optional): An integer specifying HP deduction when the line appears. Defaults to `0`.
 - `triggerGameEnd` (Optional): Boolean. If `true`, transitions to the Credits screen after this line finishes typing. Defaults to `false`.
+- `obtainableAchievement` (Optional): A string matching an achievement `id` from the day's `achievements` array. When the runner reaches this line, it immediately runs BFS verification against the player's recorded choices to determine if the achievement is unlocked.
 - `next`: The ID of the next node (or `null` to end the day).
 
 ### 2. Choice Node (`type: "choice"`)
@@ -120,14 +121,40 @@ The system uses [TextraTypist](https://github.com/tommyettinger/textra) tags for
 }
 ```
 
-### Choice Branching
+## Achievement Authoring Patterns
+
+With the `obtainableAchievement` property, you can create two types of achievements:
+
+### A. Sequence-Based Achievement (Automatic)
+Awarded automatically the moment the player makes the final choice that completes the required sequence.
+*   **Definition**: Include a `requiredChoiceSequence` in the day header.
+*   **Trigger**: **NONE**. The system automatically verifies your choices every time you click a button.
+
 ```json
+// Definition (at top of day)
+{ 
+  "id": "Sprite Friend", 
+  "description": "You welcomed the sprite.", 
+  "requiredChoiceSequence": [1] 
+}
+
+// No node tagging needed!
+```
+
+### B. Reach-Only Achievement (Manual)
+Awarded only when the player reaches a specific line of dialogue, regardless of previous choices.
+*   **Definition**: Omit `requiredChoiceSequence` or set it to `[]` in the day header.
+*   **Trigger**: Add `obtainableAchievement` to the target Line Node.
+
+```json
+// Definition (at top of day)
+{ "id": "Explorer", "description": "You reached the secret grove!" }
+
+// Trigger inside nodes
 {
-  "id": "forest_fork",
-  "type": "choice",
-  "choices": [
-    { "label": "LEFT", "next": "left_path" },
-    { "label": "RIGHT", "next": "right_path" }
-  ]
+  "id": "secret_grove_entry",
+  "type": "line",
+  "obtainableAchievement": "Explorer",
+  "text": "You stepped into a clearing that smells of ancient magic."
 }
 ```

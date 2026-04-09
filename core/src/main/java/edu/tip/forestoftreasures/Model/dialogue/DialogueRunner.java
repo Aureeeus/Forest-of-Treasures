@@ -43,6 +43,20 @@ public class DialogueRunner {
     void showMinigame(MinigameNode node);
 
     /**
+     * Called when a player has selected and finalized a choice.
+     * Use this for automatic achievement detection after a decision is made.
+     */
+    void onChoiceFinalized();
+
+    /**
+     * Called when a LineNode with an obtainableAchievement is reached.
+     * Fires before showLine() so the achievement is verified immediately.
+     *
+     * @param achievementId The achievement id declared on the LineNode.
+     */
+    void onAchievementObtainable(String achievementId);
+
+    /**
      * Called when the entire dialogue graph has been fully traversed.
      * Use this to trigger end-of-chapter logic.
      */
@@ -99,6 +113,9 @@ public class DialogueRunner {
     }
 
     if (current instanceof LineNode line) {
+      if (line.obtainableAchievement != null) {
+        displayHandler.onAchievementObtainable(line.obtainableAchievement);
+      }
       displayHandler.showLine(line);
     } else if (current instanceof ChoiceNode choice) {
       displayHandler.showChoices(choice);
@@ -134,6 +151,7 @@ public class DialogueRunner {
   public void onChoiceSelected(int index) {
     ChoiceNode choiceNode = (ChoiceNode) current;
     pathTracker.record(choiceNode, index);  // record before advancing
+    displayHandler.onChoiceFinalized();     // notify handler for auto-achievement detection
     current = choiceNode.choices.get(index).next();
     step();
   }

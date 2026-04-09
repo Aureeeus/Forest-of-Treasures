@@ -116,6 +116,11 @@ public class AchievementVerifier {
    *         with the required sequence exactly.
    */
   public boolean verify(Achievement achievement, List<PlayerDecision> playerPath, DialogueNode root) {
+    // Short-circuit: If no sequence is required, simply reaching the tagged node is enough.
+    if (achievement.requiredChoiceSequence.isEmpty()) {
+        return true;
+    }
+
     // Reject achievements that are not reachable in the graph
     if (!isAchievementReachable(achievement, root)) {
       System.err.println("[AchievementVerifier] WARNING: Achievement '" + achievement.id
