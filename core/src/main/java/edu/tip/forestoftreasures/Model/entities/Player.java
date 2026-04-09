@@ -15,9 +15,19 @@ import edu.tip.forestoftreasures.Model.mechanics.StatusEffect;
  * across the game, so initiative can be re-rolled via setter at each battle start.
  */
 public class Player extends Entity {
+
+  /**
+   * Determines how frequently the player is healed after completing a knight battle.
+   * HIGH heals after every fight; LOW heals after every 3 fights.
+   */
+  public enum BlessingTier { NONE, LOW, HIGH }
+
   private float intelligence;
   private float dexterity;
   private float charisma;
+
+  private BlessingTier blessingTier = BlessingTier.NONE;
+  private int knightBattlesCompleted = 0;
 
   // Player movesets
   private final String skill1 = "Cry of Misery";
@@ -73,6 +83,39 @@ public class Player extends Entity {
    */
   public void setInitiative(float initiative) {
     this.initiative = initiative;
+  }
+
+  public void setBlessingTier(BlessingTier tier) {
+    this.blessingTier = tier;
+  }
+
+  public BlessingTier getBlessingTier() {
+    return blessingTier;
+  }
+
+  /**
+   * Called after completing a knight battle. Increments the internal counter
+   * and restores full HP based on the active blessing tier.
+   *
+   * HIGH tier heals after every knight fight.
+   * LOW tier heals only on every 3rd knight fight.
+   *
+   * @return {@code true} if HP was restored this battle
+   */
+  public boolean onKnightBattleCompleted() {
+    knightBattlesCompleted++;
+
+    boolean shouldHeal = switch (blessingTier) {
+      case HIGH -> true;
+      case LOW  -> knightBattlesCompleted % 3 == 0;
+      case NONE -> false;
+    };
+
+    if (shouldHeal) {
+      restoreFullHp();
+    }
+
+    return shouldHeal;
   }
 
   /**
