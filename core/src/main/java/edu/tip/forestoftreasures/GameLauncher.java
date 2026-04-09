@@ -88,6 +88,7 @@ public class GameLauncher extends Game {
         assets.load("icons/Achievements/Achievement Treasure of Harmony.png", Texture.class);
         assets.load("icons/Achievements/Achievement Treasure of Riches.png", Texture.class);
         assets.load("icons/Achievements/Achievement_Blessing_of_the_Sprite.png", Texture.class);
+        assets.load("icons/Achievements/Achievement Gruesome Farewell.png", Texture.class);
 
         // --- Bg Music ---
         assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);

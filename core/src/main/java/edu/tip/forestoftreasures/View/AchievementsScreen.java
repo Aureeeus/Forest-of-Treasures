@@ -33,7 +33,7 @@ public class AchievementsScreen implements Screen {
     // Constants
     // -----------------------------------------------------------------------
 
-    private static final int ACHIEVEMENT_COUNT = 13;
+    private static final int ACHIEVEMENT_COUNT = 14;
 
     /** Pixel size of the achievement icon box. */
     private static final float ICON_SIZE = 100f;
@@ -58,7 +58,8 @@ public class AchievementsScreen implements Screen {
             "icons/Achievements/Achievement Treasure of Harmony.png",
             "icons/Achievements/Achievement Treasure of Riches.png",
             "icons/Achievements/Achievement Wait for it.png",
-            "icons/Achievements/Achievement_Blessing_of_the_Sprite.png"
+            "icons/Achievements/Achievement_Blessing_of_the_Sprite.png",
+            "icons/Achievements/Achievement Gruesome Farewell.png"
     };
 
     private static final String[] ACHIEVEMENT_TITLES = {
@@ -74,7 +75,8 @@ public class AchievementsScreen implements Screen {
             "Treasure of Harmony",
             "Treasure of Riches",
             "Wait for it...",
-            "Blessing of the Sprite"
+            "Blessing of the Sprite",
+            "Gruesome Farewell"
     };
 
     private static final String[] ACHIEVEMENT_DESCRIPTIONS = {
@@ -90,7 +92,8 @@ public class AchievementsScreen implements Screen {
             "Restore balance to the spirits of the forest.",
             "Gather an unimaginable amount of gold coins.",
             "Talk Less! Smile More!",
-            "Receive a magical blessing from the forest sprites."
+            "Receive a magical blessing from the forest sprites.",
+            "Meet a terrible and gruesome end."
     };
 
     // -----------------------------------------------------------------------
