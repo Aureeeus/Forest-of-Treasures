@@ -46,6 +46,13 @@ public abstract class Entity {
   }
 
   /**
+   * Restores this entity's HP back to maximum.
+   */
+  public void restoreFullHp() {
+    this.hp = this.maxHp;
+  }
+
+  /**
    * Executes this entity's attack against a target.
    * Each subclass defines its own damage calculation and effects.
    *

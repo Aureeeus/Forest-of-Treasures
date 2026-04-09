@@ -115,7 +115,7 @@
       {
         "id": "d1_line5",
         "type": "line",
-        "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues.",
+        "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues. {WAIT=2}",
         "texture": "scenarios/day1/day1_end.png",
         "next": null
       }
@@ -123,7 +123,27 @@
   },
   "day2": {
     "entryNode": "d2_line1",
-    "achievements": [],
+    "achievements": [
+      {
+        "id": "Greedy Water Boy",
+        "description": "Better safe than sorry, I suppose...",
+        "requiredChoiceSequence": [0]
+      },
+      {
+        "id": "Wait for it...",
+        "description": "Talk Less! Smile More!",
+        "requiredChoiceSequence": [-1, 0, 1]
+      },
+      {
+        "id": "Into the Unknown",
+        "description": "Take a leap of faith into unexplored territories.",
+        "requiredChoiceSequence": [-1, 0, -1, 1, 1]
+      },
+      {
+        "id": "Gruesome Farewell",
+        "description": "You take your final breath assessing the choices you made."
+      }
+    ],
     "nodes": [
       {
         "id": "d2_line1",
@@ -195,7 +215,7 @@
         "type": "line",
         "text": "\nI cast a spell to clear the bushes in front of me. Luckily, I went with my gut and chopped out these bushes, or else I would've fallen into this {SHAKE}{COLOR=RED}cavern{ENDCOLOR}{ENDSHAKE}. If this forest is to be cleared out, the kingdom should send an expedition team. Caverns are not suited for research mages such as I.",
         "texture": null,
-        "next": null
+        "next": "d2_line4"
       },
       {
         "id": "d2_bush_choice_line2",
@@ -209,7 +229,7 @@
         "id": "d2_cavern_line1",
         "type": "line",
         "text": "\nI am stuck here with no light whatsoever except the light from the {COLOR=RED}sinkhole{ENDCOLOR} I fell in. My breaths echoed, which only meant one thing - this {COLOR=RED}ravine{ENDCOLOR} is wide enough for me to explore.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/ravine.png",
         "next": "d2_cavern_line2"
       },
       {
@@ -238,7 +258,7 @@
         "id": "d2_observation_roll",
         "type": "manual_roll",
         "text": "\nI inspected the {RAINBOW}bioluminescent moss{ENDRAINBOW}. It was rare to me as I do not fall into caves often, nor do I voluntarily explore them. {WAVE}Water dripped on my shoulder{ENDWAVE}. It doesn't feel like normal water. I looked up to see where it came from.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/bioluminescent_moss.png",
         "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
         "threshold": 15,
         "successNext": "d2_observation_success_line",
@@ -368,7 +388,7 @@
         "id": "d2_observation1_roll",
         "type": "manual_roll",
         "text": "\n{BOUNCY}\"{RAINBOW}Save me from the steel of the steed{ENDRAINBOW}\"{ENDBOUNCY} A voice echoed directly in my head.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/cavern_heart.png",
         "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
         "threshold": 15,
         "successNext": "d2_observation1_success_line",
@@ -454,15 +474,21 @@
       {
         "id": "d2_cavern_choice_line1",
         "type": "line",
-        "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}",
+        "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}{WAIT=2}",
         "texture": null,
-        "next": "d2_cavern_line15"
+        "next": "d2_knights_battle_minigame"
       },
       {
         "id": "d2_cavern_choice_line2",
         "type": "line",
         "text": "\n{COLOR=RED}They say you've been gone for a month. Drakeswood believes that the forest has absorbed you as its food. However, they do not want you to know that to eliminate the forest was their true goal. Without hesitation, their captain swings at you. A fierce boss battle starts. The heart does not help you on this one.{ENDCOLOR}",
         "texture": null,
+        "next": "d2_cavern_line15"
+      },
+      {
+        "id": "d2_knights_battle_minigame",
+        "type": "minigame",
+        "screenKey": "knights_battle_minigame",
         "next": "d2_cavern_line15"
       },
       {
@@ -478,6 +504,315 @@
         "text": "\nWhether I succeed or don't, I shall return to this forest and guard it.{WAIT=3}",
         "texture": null,
         "triggerGameEnd": true,
+        "next": null
+      }, 
+      {
+        "id": "d2_line4",
+        "type": "line",
+        "text": "\nThe expedition went on as expected until I was greeted with a local hobgoblin settlement. A campfire is set ablaze in the middle of this settlement, with these goblins dancing around it. I've been told that this is a ritual to choose another hobgoblin chief. Should I..?",
+        "texture": null,
+        "next": "d2_settlement_choice"
+      },
+      {
+        "id": "d2_settlement_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "ENTER THE SETTLEMENT AND OBSERVE",
+            "next": "d2_settlement_choice_line1"
+          },
+          {
+            "label": "OBSERVE THE RITUAL FROM AFAR",
+            "next": "d2_settlement_choice_line2"
+          }
+        ]
+      },
+      {
+        "id": "d2_settlement_choice_line1",
+        "type": "line",
+        "text": "\nHobgoblins are docile creatures; they won't attack unless I agitate them with combat. I entered the settlement to observe. Research is research anyway.",
+        "texture": null,
+        "next": "d2_line5"
+      },
+      {
+        "id": "d2_settlement_choice_line2",
+        "type": "line",
+        "text": "\nI'd better stay here. I don't think I should get involved with local customs.",
+        "texture": null,
+        "next": "d2_line5"
+      },
+      {
+        "id": "d2_line5",
+        "type": "line",
+        "text": "\nBandits rush the gate. With a quick, wide glance you counted five bandits in a V-formation with their seeming squad leader speaking:",
+        "texture": null,
+        "next": "d2_line6"
+      },
+      {
+        "id": "d2_line6",
+        "type": "line",
+        "text": "\n\"Bring me your newly elected chief!\" In fluent hobgoblin dialect.",
+        "texture": null,
+        "next": "d2_line7"
+      },
+      {
+        "id": "d2_line7",
+        "type": "line",
+        "text": "\nI don't know what to do. These hobgoblins just had their chief elected. These poor creatures are being harassed by these bandits! I should…",
+        "texture": null,
+        "next": "d2_bandits_choice"
+      },
+      {
+        "id": "d2_bandits_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "APPLY DIPLOMACY",
+            "next": "d2_bandits_choice_line1"
+          },
+          {
+            "label": "FIGHT THE BANDITS",
+            "next": "d2_bandit_battle_minigame"
+          }
+        ]
+      },
+      {
+        "id": "d2_bandits_choice_line1",
+        "type": "line",
+        "text": "\nI tried talking them out. These bandits must have an agenda. I sure hope they do not intend anything bad.",
+        "texture": null,
+        "next": null
+      },
+      {
+        "id": "d2_bandit_battle_minigame",
+        "type": "minigame",
+        "screenKey": "bandit_battle_minigame",
+        "next": "d2_bandits_choice_line2"
+      },
+      {
+        "id": "d2_bandits_choice_line2",
+        "type": "line",
+        "text": "\nI injured the bandit leader and saved the hobgoblins from the trouble. I went near to his heavily wounded body to finish what I started. Under his breath, he said his final words:",
+        "texture": null,
+        "next": "d2_line8"
+      },
+      {
+        "id": "d2_line8",
+        "type": "line",
+        "text": "\n\"You should not have meddled.\"",
+        "texture": null,
+        "next": "d2_line9"
+      },
+      {
+        "id": "d2_line9",
+        "type": "line",
+        "text": "\nI investigate the camp that the goblins evacuated. It seems like these hobgoblins are more civilized than I thought. They use cooking ware like pots and pans. They use tools like they're second nature to them. I explored the village further and noticed a church-like structure. It was mostly decorated with stones with various paintings and colors. I'm starting to see an interesting pattern here in the forest.",
+        "texture": null,
+        "next": "d2_line10"
+      },
+      {
+        "id": "d2_line10",
+        "type": "line",
+        "text": "\nI kept staring at this smoke pillar. I am beyond curious on what I'll encounter. If there's something I always liked with this job, it's the uncertainty. The sun had started to set which told me I have to start walking.",
+        "texture": null,
+        "next": "d2_line11"
+      },
+      {
+        "id": "d2_line11",
+        "type": "line",
+        "text": "\nThe closer I get, the more torches I notice. Whatever this place is, it's a civilized one.",
+        "texture": null,
+        "next": "d2_line12"
+      },
+      {
+        "id": "d2_line12",
+        "type": "line",
+        "text": "\nThere are smoke pillars near here, seemingly from another settlement. I took the time to venture into it. A path was seemingly made towards it. Without a second thought, I followed it. The path led me to a wooden gate with two towers on each side. Beside each tower is a wall, studded with torches. I approached the gate and was met by a voice.",
+        "texture": null,
+        "next": "d2_line13"
+      },
+      {
+        "id": "d2_line13",
+        "type": "line",
+        "text": "\n\"State your name and name your business.\"",
+        "texture": null,
+        "next": "d2_line14"
+      },
+      {
+        "id": "d2_line14",
+        "type": "line",
+        "text": "\nIt was the voice of a hobgoblin and… in their dialect. It seems I have been deeply affected by that spore. I can now understand hobgoblins, I guess. I just hope it's permanent. Should I?",
+        "texture": null,
+        "next": "d2_goblin_city_choice"
+      },
+      {
+        "id": "d2_goblin_city_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "LEAVE",
+            "next": "d2_leave_arc_line1"
+          },
+          {
+            "label": "ASK PERMISSION FOR ENTRANCE",
+            "next": "d2_goblin_city_choice_line1"
+          }
+        ]
+      },
+      {
+        "id": "d2_goblin_city_choice_line1",
+        "type": "line",
+        "text": "\n\"I am a harmless researcher. I would like to enter this gate.\"",
+        "texture": null,
+        "next": "d2_line15"
+      },
+      {
+        "id": "d2_line15",
+        "type": "line",
+        "text": "\nThe hobgoblin jumps from his tower and lands in front of me. The creature is clothed in heavy metal armor. It held its spear in front of me with obvious intent to kill.",
+        "texture": null,
+        "next": "d2_line16"
+      },
+      {
+        "id": "d2_line16",
+        "type": "line",
+        "text": "\n\"Prove it.\" the hobgoblin snarled.",
+        "texture": null,
+        "next": "d2_line17"
+      },
+      {
+        "id": "d2_line17",
+        "type": "line",
+        "text": "\nHow should I prove it?",
+        "texture": null,
+        "next": "d2_hobgoblin_guard_choice"
+      },
+      {
+        "id": "d2_hobgoblin_guard_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "ATTACK THE GUARD",
+            "next": "d2_attack_arc_line1"
+          },
+          {
+            "label": "DROP YOUR WEAPONS AND RAISE YOUR HANDS",
+            "next": "d2_hobgoblin_guard_choice_line1"
+          }
+        ]
+      },
+      {
+        "id": "d2_attack_arc_line1",
+        "type": "line",
+        "text": "\nWithout any second thoughts, you killed the guard. The other watchtower's hobgoblin sounded the gong. Shocked with what you've done, your knees shake as an army of hobgoblin warriors make chase to you riding their giant bullfrogs. Should I?",
+        "texture": null,
+        "next": "d2_attack_arc_hobgoblin_warriors_choice"
+      },
+      {
+        "id": "d2_attack_arc_hobgoblin_warriors_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "FIGHT THE BULLFROG SOLDIERS FROM AFAR",
+            "next": "d2_attack_arc_line2"
+          },
+          {
+            "label": "CAST A SPELL ON YOURSELF TO ESCAPE THE MOB",
+            "next": "d2_attack_arc_line5"
+          }
+        ]
+      },
+      {
+        "id": "d2_attack_arc_line2",
+        "type": "line",
+        "text": "\nYou casted a spell in an attempt to thin down the soldiers making chase as you, yourself, run with haste.",
+        "texture": null,
+        "next": "d2_attack_arc_line3"
+      },
+      {
+        "id": "d2_attack_arc_line3",
+        "type": "line",
+        "text": "\nThe bullfrogs are coated with magic-resisting bodily fluids. The attack fizzles out and enrages the bullfrogs. It leaps and crushes your spine. The hobgoblins loot your belongings and your dying corpse was left by the soldiers to rot.",
+        "texture": null,
+        "next": "d2_attack_arc_line4"
+      },
+      {
+        "id": "d2_attack_arc_line4",
+        "type": "line",
+        "text": "\nYou take your final breath assessing the choices you made.",
+        "texture": null,
+        "obtainableAchievement": "Gruesome Farewell",
+        "next": null
+      },
+      {
+        "id": "d2_attack_arc_line5",
+        "type": "line",
+        "text": "\nThe spell succeeds but the watchtower's mage casted an invisible barrier, that traps you several meters outside the gates. You slam in it, head first. Ending your life in a quick, gruesome death.",
+        "texture": null,
+        "obtainableAchievement": "Gruesome Farewell",
+        "next": null
+      },
+      {
+        "id": "d2_hobgoblin_guard_choice_line1",
+        "type": "line",
+        "text": "\nThe guard picks your weapon up and hands it to you. The gates open and a neatly dressed hobgoblin welcomes you to the city.",
+        "texture": null,
+        "next": "d2_line18"
+      },
+      {
+        "id": "d2_line18",
+        "type": "line",
+        "text": "\nThe city is wide and bright. Torches light the place up and the pillars of every building in the city are made of gold. The hobgoblins treat me with a warm welcome with everyone waving and bowing to me. These hobgoblins are way more civilized and smart from those hobgoblins in other places. I could not ask for more. My hobgoblin companion asked me to join their dinner. They guided me to their meal hall where every single hobgoblin eats together. The doors of the hall opened and I was met with the Hobgoblin King. The hall was then silent as the king stood and walked in front of me.",
+        "texture": null,
+        "next": "d2_line19"
+      },
+      {
+        "id": "d2_line19",
+        "type": "line",
+        "text": "\nHe was towering and intimidating. His cape is what you would expect a royal would have. Grand, big, and red. His staff was studded with gold. Which, in hobgoblin culture, meant high status.",
+        "texture": null,
+        "next": "d2_line20"
+      },
+      {
+        "id": "d2_line20",
+        "type": "line",
+        "text": "\n\"Welcome! Short Shaman!\" The king screamed with a voice of welcoming excitement. \"I am Schakh O'yanezoon and we welcome you to our country!\"",
+        "texture": null,
+        "next": "d2_line21"
+      },
+      {
+        "id": "d2_line21",
+        "type": "line",
+        "text": "\n\"Treat this Short Shaman as one of us! For a visitor is rare to come!\"",
+        "texture": null,
+        "next": "d2_line22"
+      },
+      {
+        "id": "d2_line22",
+        "type": "line",
+        "text": "\nThe hall rejoiced and hobgoblins servants placed plates for every seat in the hall with equal portions. What weirds me out is that though I am taller than every hobgoblin here, I am referred to as a Short Shaman. Regardless, I enjoy my meal along with the citizens of this hobgoblin city.",
+        "texture": null,
+        "next": "d2_line23"
+      },
+      {
+        "id": "d2_line23",
+        "type": "line",
+        "text": "\nAfter a luxurious dinner, the king invited me to his throne room. I believe he has sensed that I come with a purpose. I am in luck as I needed his presence for this concern.",
+        "texture": null,
+        "next": "d2_line24"
+      },
+      {
+        "id": "d2_line24",
+        "type": "line",
+        "text": "\n\"My king. I am here with a purpose.\" I pleaded. \"A nearby kingdom sends me to study this forest - which I believe is your dominion. This kingdom wants to put you in its border or demolish this forest. I want your blessing and opinions on what I should do.\"",
+        "texture": null,
+        "next": null
+      },
+      {
+        "id": "d2_leave_arc_line1",
+        "type": "line",
+        "text": "\nShocked by the fact that you can understand hobgoblins and skeptical whether these creatures can understand you, you leave the gates and march around the settlement.  As you traverse around the walled city, you finally understand how large the place really is. Two hours of walking just got you around the west gate of the city.",
+        "texture": null,
         "next": null
       }
     ]

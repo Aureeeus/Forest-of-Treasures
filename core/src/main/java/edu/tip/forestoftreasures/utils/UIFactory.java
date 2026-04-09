@@ -3,9 +3,12 @@ package edu.tip.forestoftreasures.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.Container;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
@@ -139,6 +142,29 @@ public final class UIFactory {
           // Scale width proportionally so knobs keep their pixel-art shape without skewing horizontally.
           return height * originalAspect;
       }
+  }
+
+  /**
+   * Applies a yellow highlight to the selected cell or resets it to white.
+   *
+   * @param cell       the container whose actor should be tinted
+   * @param isSelected true to highlight, false to reset to white
+   */
+  public static void tintCell(Container<?> cell, boolean isSelected) {
+    if (cell.getActor() == null) return;
+    cell.getActor().setColor(isSelected ? Color.valueOf("#FFDB51") : Color.WHITE);
+  }
+
+  /**
+   * Returns a new Image instance of the shared selection arrow icon.
+   *
+   * @param game The GameLauncher reference to access the AssetManager.
+   * @return A styled arrow icon for selection UI.
+   */
+  public static Image getSelectionArrowIcon(GameLauncher game) {
+    Texture sheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
+    TextureRegion region = new TextureRegion(sheet, 448, 384, 64, 64);
+    return new Image(region);
   }
 
   /**

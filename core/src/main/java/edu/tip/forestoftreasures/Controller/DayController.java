@@ -7,7 +7,6 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -19,7 +18,6 @@ import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
 import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
-import com.github.tommyettinger.textra.TypingAdapter;
 import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
@@ -38,6 +36,8 @@ import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.View.mazeBossScreen;
+import edu.tip.forestoftreasures.utils.DialogueUtils;
+import edu.tip.forestoftreasures.utils.UIFactory;
 
 public class DayController implements DialogueRunner.DisplayHandler {
   // --- Developer Options ---
@@ -49,7 +49,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
-  private int currentDay = 1;
+  private int currentDay = 2;
 
   private final GameLauncher game;
   private final DayScreen screen;
@@ -100,10 +100,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.dialogueWidgetTable = screen.getDialogueWidgetTable();
     this.settingsIcon = screen.getSettingsIcon();
 
-    Texture selectIconSheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
-    TextureRegion selectChoiceTexture = new TextureRegion(selectIconSheet, 448, 384, 64, 64);
-
-    this.selectChoiceIcon = new Image(selectChoiceTexture);
+    this.selectChoiceIcon = UIFactory.getSelectionArrowIcon(game);
     this.dialogueFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
     dialogueFont.adjustLineHeight(1.3f);
     this.selectChoiceFont = new Font(Gdx.files.internal("fonts/DotGothic16-Medium.fnt"));
@@ -132,6 +129,10 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * @param dayKey The key for the day in the story_schema.json file.
    */
   private void loadAndStartDay(String dayKey) {
+    // Reset player HP back to its original state (max allowed HP)
+    screen.getPlayer().restoreFullHp();
+    screen.updatePlayerStats();
+
     DayData day = DialogueLoader.load(STORY_FILE, dayKey);
 
     this.storyRoot = day.rootNode();
@@ -159,7 +160,6 @@ public class DayController implements DialogueRunner.DisplayHandler {
     }
 
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
-    typingLabel.setWrap(true);
 
     if (node.damage > 0) {
       screen.getPlayer().takeDamage((float) node.damage);
@@ -173,16 +173,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
       }
     }
 
-    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
-    if (!typingLabel.hasEnded() && isSkipDialogueEnabled) typingLabel.skipToTheEnd();
-
-    // Notify the runner when the typing animation finishes so the graph advances
-    typingLabel.setTypingListener(new TypingAdapter() {
-      @Override
-      public void end() {
-        runner.onLineFinished();
-      }
-    });
+    DialogueUtils.configureTypingLabel(typingLabel, game, runner::onLineFinished);
 
     textDialogueTable.add(typingLabel)
         .growX()
@@ -201,38 +192,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * table.
    */
   private void trimDialogueOverflow() {
-    textDialogueTable.validate();
-
-    float tableHeight = textDialogueTable.getHeight();
-    if (tableHeight <= 0) {
-      pendingOverflowTrim = true; // layout not ready yet, retry next frame //
-      return;
-    }
-
-    // Check if any cell actor height is still unresolved — layout not fully settled
-    for (var cell : textDialogueTable.getCells()) {
-      if (cell.getActorHeight() <= 0) {
-        pendingOverflowTrim = true; // defer until all actors are properly measured
-        return;
-      }
-    }
-
-    pendingOverflowTrim = false;
-
-    while (textDialogueTable.getChildren().size > 1) {
-      float contentHeight = textDialogueTable.getPadTop() + textDialogueTable.getPadBottom();
-
-      for (var cell : textDialogueTable.getCells()) {
-        contentHeight += cell.getActorHeight() + cell.getPadTop() + cell.getPadBottom();
-      }
-
-      if (contentHeight <= tableHeight)
-        break; // fits, stop trimming
-
-      textDialogueTable.removeActorAt(0, true); // remove oldest line
-      textDialogueTable.invalidateHierarchy();
-      textDialogueTable.validate();
-    }
+    pendingOverflowTrim = !DialogueUtils.trimDialogueOverflow(textDialogueTable);
   }
 
   /**
@@ -283,17 +243,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
     }
 
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
-    typingLabel.setWrap(true);
-
-    boolean isSkipDialogueEnabled = game.settingsConfig.getGameSettings().isSkipDialogueEnabled();
-    if (!typingLabel.hasEnded() && isSkipDialogueEnabled) typingLabel.skipToTheEnd();
-
-    typingLabel.setTypingListener(new TypingAdapter() {
-      @Override
-      public void end() {
-        renderManualRollWidget(node);
-        screen.getStage().setKeyboardFocus(dialogueWidgetTable);
-      }
+    DialogueUtils.configureTypingLabel(typingLabel, game, () -> {
+      renderManualRollWidget(node);
+      screen.getStage().setKeyboardFocus(dialogueWidgetTable);
     });
 
     textDialogueTable.add(typingLabel)
@@ -335,15 +287,13 @@ public class DayController implements DialogueRunner.DisplayHandler {
    */
   @Override
   public void onDialogueEnd() {
-    Gdx.app.log("DayController", "Day complete. Checking achievements...");
-    checkAchievements();
+    Gdx.app.log("DayController", "Day complete.");
     onDayEnd();
   }
 
   @Override
   public void forceGameEnd() {
     Gdx.app.log("DayController", "Game ending triggered. Transitioning to credits.");
-    checkAchievements();
     game.setScreen(new CreditsScreen(game));
   }
 
@@ -380,7 +330,11 @@ public class DayController implements DialogueRunner.DisplayHandler {
     // Determines whether the minigame involves entity combat, requiring a stat
     // refresh on return. Now includes cavern creature battle.
     boolean isBattleMinigame = switch (screenKey) {
-      case "bandit_battle_minigame", "cavern_creature_battle_minigame" -> true;
+      case "bandit_battle_minigame", 
+           "cavern_creature_battle_minigame", 
+           "centipede_battle_minigame", 
+           "leviathan_battle_minigame",
+           "knights_battle_minigame" -> true;
       default -> false;
     };
 
@@ -415,7 +369,11 @@ public class DayController implements DialogueRunner.DisplayHandler {
       // Add new minigame screens here as cases
       case "maze_minigame" -> new mazeBossScreen(game, onComplete);
       // Both battle minigame variants use the EntityBattleScreen with specific routing via screenKey
-      case "bandit_battle_minigame", "cavern_creature_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
+      case "bandit_battle_minigame", 
+           "cavern_creature_battle_minigame", 
+           "centipede_battle_minigame", 
+           "leviathan_battle_minigame",
+           "knights_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
           "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
     };
@@ -437,7 +395,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     dialogueCell0.setActor(selectChoiceIcon);
     dialogueCell1.setActor(choice0Label);
     dialogueCell1.fill();
-    tintCell(dialogueCell1, true);
+    UIFactory.tintCell(dialogueCell1, true);
 
     dialogueWidgetTable.add(dialogueCell0).size(30f).padRight(20f).padBottom(20f);
     dialogueWidgetTable.add(dialogueCell1).growX().align(Align.left | Align.center).padBottom(20f).row();
@@ -447,7 +405,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     choice1Label.setAlignment(Align.left);
     dialogueCell3.setActor(choice1Label);
     dialogueCell3.fill();
-    tintCell(dialogueCell3, false);
+    UIFactory.tintCell(dialogueCell3, false);
 
     dialogueWidgetTable.add(dialogueCell2).size(30f).padRight(20f);
     dialogueWidgetTable.add(dialogueCell3).growX().align(Align.left | Align.center);
@@ -463,7 +421,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     dialogueCell0.setActor(selectChoiceIcon);
     dialogueCell1.setActor(promptLabel);
     dialogueCell1.fill();
-    tintCell(dialogueCell1, true);
+    UIFactory.tintCell(dialogueCell1, true);
 
     dialogueWidgetTable.add(dialogueCell0).size(30f).padRight(20f).padBottom(20f);
     dialogueWidgetTable.add(dialogueCell1).growX().align(Align.left | Align.center).padBottom(20f).row();
@@ -488,52 +446,61 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * Moves the arrow icon to the selected row and applies color tinting.
    */
   private void refreshSelection() {
-    if (selectedRow == 0) {
-      dialogueCell0.setActor(selectChoiceIcon);
-      dialogueCell2.setActor(null);
-      tintCell(dialogueCell1, true);
-      tintCell(dialogueCell3, false);
-    } else {
-      dialogueCell0.setActor(null);
-      dialogueCell2.setActor(selectChoiceIcon);
-      tintCell(dialogueCell3, true);
-      tintCell(dialogueCell1, false);
+    boolean isRow0 = (selectedRow == 0);
+
+    // Update selection arrows
+    dialogueCell0.setActor(isRow0 ? selectChoiceIcon : null);
+    dialogueCell2.setActor(isRow0 ? null : selectChoiceIcon);
+
+    // Update label tints
+    UIFactory.tintCell(dialogueCell1, isRow0);
+    UIFactory.tintCell(dialogueCell3, !isRow0);
+  }
+
+  /**
+   * Called automatically whenever a player selection is finalized.
+   * Runs an Exact Match check against all sequence-based achievements.
+   */
+  @Override
+  public void onChoiceFinalized() {
+    for (Achievement achievement : achievements) {
+      // Automatic detection: Only check achievements that HAVE a sequence
+      if (!achievement.requiredChoiceSequence.isEmpty()) {
+        // Exact Match Logic: Path length MUST match sequence length
+        if (runner.getPlayerPath().size() == achievement.requiredChoiceSequence.size()) {
+          if (achievementVerifier.verify(achievement, runner.getPlayerPath(), storyRoot)) {
+            Gdx.app.log("DayController", "Achievement unlocked: [" 
+                + achievement.id + "] " + achievement.description);
+          }
+        }
+      }
     }
   }
 
   /**
-   * Applies a yellow highlight to the selected cell or resets it to white.
+   * Called immediately when the runner reaches a LineNode tagged with an
+   * obtainableAchievement. Only processes Reach-Only achievements.
    *
-   * @param cell       The container whose actor should be tinted.
-   * @param isSelected True to highlight, false to reset to white.
+   * @param achievementId The achievement id declared on the LineNode.
    */
-  private void tintCell(Container<?> cell, boolean isSelected) {
-    if (cell.getActor() == null)
-      return;
-    cell.getActor().setColor(isSelected ? Color.valueOf("#FFDB51") : Color.WHITE);
-  }
+  @Override
+  public void onAchievementObtainable(String achievementId) {
+    Achievement target = achievements.stream()
+        .filter(a -> a.id.equals(achievementId))
+        .findFirst()
+        .orElse(null);
 
-  /**
-   * Checks all achievements loaded from JSON against the player's recorded path.
-   *
-   * AchievementVerifier runs BFS on the graph first to validate each achievement
-   * is reachable before checking the player's path. Invalid achievements are
-   * skipped with a warning log so one broken definition doesn't affect the rest.
-   */
-  private void checkAchievements() {
-    List<Achievement> unlocked = achievementVerifier.getUnlockedAchievements(
-        achievements,
-        runner.getPlayerPath(),
-        storyRoot);
-
-    if (unlocked.isEmpty()) {
-      Gdx.app.log("DayController", "No achievements unlocked.");
+    if (target == null) {
+      Gdx.app.error("DayController",
+          "obtainableAchievement '" + achievementId + "' not found in day achievements list.");
       return;
     }
 
-    for (Achievement achievement : unlocked) {
-      Gdx.app.log("DayController", "Unlocked: ["
-          + achievement.id + "] " + achievement.description);
+    // Manual detection: Only check achievements that DO NOT have a sequence (Reach-Only)
+    if (target.requiredChoiceSequence.isEmpty()) {
+      if (achievementVerifier.verify(target, runner.getPlayerPath(), storyRoot)) {
+        Gdx.app.log("DayController", "Achievement unlocked: [" + target.id + "] " + target.description);
+      }
     }
   }
 
