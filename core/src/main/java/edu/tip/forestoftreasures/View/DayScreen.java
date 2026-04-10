@@ -84,7 +84,7 @@ public class DayScreen implements Screen {
     this.sheet = game.assets.get("icons/stats_icons.png", Texture.class);
     sheet.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
 
-    this.player = new Player(48f, 10f, 0f, 30f, 12f, 12f);
+    this.player = game.getPlayer();
 
     this.playerStatsTitleFont = FontFactory
       .generateFont("fonts/PressStart2P-Regular.ttf", 30, Color.valueOf("#FFDB51"));

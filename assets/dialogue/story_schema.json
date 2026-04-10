@@ -58,6 +58,7 @@
         "type": "line",
         "text": "\n{COLOR=#66FF00}I checked my stats with an appraisal to find out that my Mana regenerates by 1-20% after each battle.{ENDCOLOR}",
         "texture": "scenarios/day1/deep_in_forest.png",
+        "increaseCharisma": 1,
         "next": "d1_line3"
       },
       {
@@ -94,6 +95,7 @@
         "text": "\n{COLOR=#66FF00}I battle the goblin's seeming perpetrator. I won and aided the goblin. I used one of my potions to heal it.{ENDCOLOR}\n{COLOR=RED}[[-1 Potion]{ENDCOLOR}",
         "texture": null,
         "obtainableAchievement": "First Blood",
+        "increaseCharisma": 1,
         "next": "d1_line4"
       },
       {
@@ -184,6 +186,7 @@
         "type": "line",
         "text": "\n{COLOR=#66FF00}I packed 10 bottles just in case. I don't know whether to feel glad that I found a stream this early or be scared that I might not find another place to get water. I packed water to fill the remaining space in my bag. Better safe than sorry.{ENDCOLOR}",
         "texture": null,
+        "increaseCharisma": -1,
         "next": "d2_line3"
       },
       {
@@ -479,7 +482,7 @@
       {
         "id": "d2_cavern_choice_line1",
         "type": "line",
-        "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}{WAIT=2}",
+        "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}{WAIT=1}",
         "texture": null,
         "next": "d2_knights_battle_minigame"
       },
@@ -488,12 +491,18 @@
         "type": "line",
         "text": "\n{COLOR=RED}They say you've been gone for a month. Drakeswood believes that the forest has absorbed you as its food. However, they do not want you to know that to eliminate the forest was their true goal. Without hesitation, their captain swings at you. A fierce boss battle starts. The heart does not help you on this one.{ENDCOLOR}",
         "texture": null,
-        "next": "d2_cavern_line15"
+        "next": "d2_knight_captain_battle_minigame"
       },
       {
         "id": "d2_knights_battle_minigame",
         "type": "minigame",
         "screenKey": "knights_battle_minigame",
+        "next": "d2_cavern_line15"
+      },
+      {
+        "id": "d2_knight_captain_battle_minigame",
+        "type": "minigame",
+        "screenKey": "knight_captain_battle_minigame",
         "next": "d2_cavern_line15"
       },
       {
@@ -506,7 +515,7 @@
       {
         "id": "d2_cavern_line16",
         "type": "line",
-        "text": "\nWhether I succeed or don't, I shall return to this forest and guard it.{WAIT=3}",
+        "text": "\nWhether I succeed or don't, I shall return to this forest and guard it.{WAIT=2}",
         "texture": null,
         "triggerGameEnd": true,
         "next": null
@@ -537,6 +546,7 @@
         "type": "line",
         "text": "\n{COLOR=RED}Hobgoblins{ENDCOLOR} are docile creatures; they won't attack unless I agitate them with combat. I entered the settlement to observe. {WAVE}Research is research anyway.{ENDWAVE}",
         "texture": null,
+        "increaseCharisma": 1,
         "next": "d2_line5"
       },
       {
@@ -586,6 +596,7 @@
         "type": "line",
         "text": "\nI tried talking them out. These {COLOR=RED}bandits{ENDCOLOR} must have an agenda. I sure hope they do not intend anything bad.",
         "texture": null,
+        "increaseCharisma": 1,
         "next": null
       },
       {
@@ -797,7 +808,7 @@
       {
         "id": "d2_line22",
         "type": "line",
-        "text": "\nThe hall rejoiced and hobgoblins servants placed plates for every seat in the hall with equal portions. What weirds me out is that though I am taller than every hobgoblin here, I am referred to as a {COLOR=RED}Short Shaman{ENDCOLOR}. Regardless, I enjoy my meal along with the citizens of this hobgoblin city. {WAIT=1}",
+        "text": "\nThe hall rejoiced and hobgoblins servants placed plates for every seat in the hall with equal portions. What weirds me out is that though I am taller than every hobgoblin here, I am referred to as a {COLOR=RED}Short Shaman{ENDCOLOR}. Regardless, I enjoy my meal along with the citizens of this hobgoblin city.{WAIT=1}",
         "texture": null,
         "next": "d2_line23"
       },
@@ -813,7 +824,7 @@
         "type": "line",
         "text": "\n\"My king. I am here with a purpose.\" I pleaded. \"A nearby kingdom sends me to study this forest - which I believe is your dominion. This kingdom wants to put you in its border or demolish this forest. I want your blessing and opinions on what I should do.\"",
         "texture": null,
-        "next": null
+        "next": "d2_line25"
       },
       {
         "id": "d2_leave_arc_line1",
@@ -863,6 +874,143 @@
         "text": "\nOne wyvern dives onto you but you were swift in killing it with a {COLOR=RED}headshot{ENDCOLOR}. Enraged, the alpha dives in and a hobgoblin assailant {COLOR=RED}slits the wyvern's throat{ENDCOLOR}. The assailant takes the spoils of war to have it processed back at home. The assailant allows you to come home with it.",
         "texture": null,
         "next": "d2_line18"
+      },
+      {
+        "id": "d2_line25",
+        "type": "line",
+        "text": "\n\"Why are you here?\"",
+        "texture": null,
+        "next": "d2_dating_sim_choice1"
+      },
+      {
+        "id": "d2_dating_sim_choice1",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "TO KNOW MORE ABOUT YOUR CULTURE",
+            "next": "d2_dating_sim_line1",
+            "increaseCharisma": 3
+          },
+          {
+            "label": "THE KINGDOM SENT ME",
+            "next": "d2_dating_sim_line1",
+            "increaseCharisma": -1
+          }
+        ]
+      },
+      {
+        "id": "d2_dating_sim_line1",
+        "type": "line",
+        "text": "\n\"Why should I hear you?\"",
+        "texture": null,
+        "next": "d2_dating_sim_choice2"
+      },
+      {
+        "id": "d2_dating_sim_choice2",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "FOR THE BETTERMENT OF THIS FOREST",
+            "next": "d2_dating_sim_line2",
+            "increaseCharisma": 2
+          },
+          {
+            "label": "FOR THE KINGDOM AND YOUR MUTUAL BENEFIT",
+            "next": "d2_dating_sim_line2",
+            "increaseCharisma": -3
+          }
+        ]
+      },
+      {
+        "id": "d2_dating_sim_line2",
+        "type": "line",
+        "text": "\n\"How will that help us?\"",
+        "texture": null,
+        "next": "d2_dating_sim_choice3"
+      },
+      {
+        "id": "d2_dating_sim_choice3",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "THE KINGDOM WILL HELP YOU THRIVE",
+            "next": "d2_dating_sim_line3",
+            "increaseCharisma": -2
+          },
+          {
+            "label": "YOU'LL GAIN CONTROL OVER THIS FOREST",
+            "next": "d2_dating_sim_line3",
+            "increaseCharisma": -5
+          }
+        ]
+      },
+      {
+        "id": "d2_dating_sim_line3",
+        "type": "line",
+        "text": "\n\"What do the bandits want?\"",
+        "texture": null,
+        "next": "d2_dating_sim_choice4"
+      },
+      {
+        "id": "d2_dating_sim_choice4",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "THE BANDITS WANT PEACE AND TO DETHRONE THE KINGDOM",
+            "next": "d2_dating_sim_line4",
+            "increaseCharisma": 10
+          },
+          {
+            "label": "I DON'T KNOW",
+            "next": "d2_dating_sim_line4",
+            "increaseCharisma": -4
+          }
+        ]
+      },
+      {
+        "id": "d2_dating_sim_line4",
+        "type": "line",
+        "text": "\n\"If I were to give you permission, how certain are you that it will ensure my kingdom's safety?\"",
+        "texture": null,
+        "next": "d2_dating_sim_choice5"
+      },
+      {
+        "id": "d2_dating_sim_choice5",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "I AM 100% SURE",
+            "next": "d2_dating_sim_evaluate_stats",
+            "increaseCharisma": 5
+          },
+          {
+            "label": "I'LL DO MY BEST WITHOUT ANY CERTAINTIES",
+            "next": "d2_dating_sim_evaluate_stats",
+            "increaseCharisma": -5
+          }
+        ]
+      },
+      {
+        "id": "d2_dating_sim_evaluate_stats",
+        "type": "evaluate_stats",
+        "threshold": 30,
+        "successNext": "d2_dating_sim_line5",
+        "failNext": "d2_dating_sim_line6"
+      },
+      {
+        "id": "d2_dating_sim_line5",
+        "type": "line",
+        "text": "\n\"I've heard enough. Do as you wish, little shaman.\"",
+        "texture": null,
+        "next": null
+      },
+      {
+        "id": "d2_dating_sim_line6",
+        "type": "line",
+        "text": "\n{COLOR=RED}{SHAKE}The king strikes you dead on the spot.{ENDSHAKE}{ENDCOLOR}{WAIT=1}",
+        "texture": null,
+        "triggerGameOver": true,
+        "next": null
       }
     ]
   }

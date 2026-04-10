@@ -17,7 +17,7 @@ public class Centipede extends Entity {
   private final Sound attackSound;
 
   public Centipede(float initiative, Texture texture, Sound attackSound) {
-    super(85f, 10f, initiative);
+    super(50f, 10f, initiative);
     this.texture = texture;
     this.attackSound = attackSound;
   }

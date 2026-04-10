@@ -30,6 +30,7 @@ Standard text presentation.
 - `texture`: path to the background image in `assets/scenarios/` (or `null` to retain the current image).
 - `damage` (Optional): An integer specifying HP deduction when the line appears. Defaults to `0`.
 - `triggerGameEnd` (Optional): Boolean. If `true`, transitions to the Credits screen after this line finishes typing. Defaults to `false`.
+- `triggerGameOver` (Optional): Boolean. If `true`, transitions to the Game Over screen after this line finishes typing and resets progress. Defaults to `false`.
 - `obtainableAchievement` (Optional): A string matching an achievement `id` from the day's `achievements` array. When the runner reaches this line, it immediately runs BFS verification against the player's recorded choices to determine if the achievement is unlocked.
 - `increaseCharisma` (Optional): An integer specifying the amount to increase the player's charisma stat. If null or omitted, no change occurs.
 - `next`: The ID of the next node (or `null` to end the day).
@@ -61,6 +62,12 @@ A prompt demanding player action to perform a D20 check.
 - `threshold`: The value (1-20) required for a success.
 - `successNext`: The node ID if roll is `>= threshold`.
 - `failNext`: The node ID if roll is `< threshold`.
+
+### 6. Evaluate Stats Node (`type: "evaluate_stats"`)
+An automatic, silent background check against the player's accumulated charisma stat.
+- `threshold`: The charisma value required for success.
+- `successNext`: The node ID if the player's charisma is `>= threshold`.
+- `failNext`: The node ID if the player's charisma is `< threshold`.
 
 ## Text Formatting
 
@@ -120,6 +127,17 @@ The system uses [TextraTypist](https://github.com/tommyettinger/textra) tags for
   "threshold": 12,
   "successNext": "top_of_tree",
   "failNext": "fall_down"
+}
+```
+
+### Evaluate Stats Sequence (Silent Charisma Check)
+```json
+{
+  "id": "persuasion_gate",
+  "type": "evaluate_stats",
+  "threshold": 5,
+  "successNext": "council_accepts",
+  "failNext": "council_rejects"
 }
 ```
 

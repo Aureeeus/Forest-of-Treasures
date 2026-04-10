@@ -17,7 +17,7 @@ public class Leviathan extends Entity {
   private final Sound attackSound;
 
   public Leviathan(float initiative, Texture texture, Sound attackSound) {
-    super(80f, 20f, initiative);
+    super(60f, 20f, initiative);
     this.texture = texture;
     this.attackSound = attackSound;
   }

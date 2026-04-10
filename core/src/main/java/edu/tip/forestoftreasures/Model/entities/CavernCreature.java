@@ -24,7 +24,7 @@ public class CavernCreature extends Entity {
    * @param attackSound  Optional sound effect (currently null).
    */
   public CavernCreature(float initiative, Texture texture, Sound attackSound) {
-    super(65f, 18f, initiative);
+    super(45f, 18f, initiative);
     this.texture = texture;
     this.attackSound = attackSound;
   }

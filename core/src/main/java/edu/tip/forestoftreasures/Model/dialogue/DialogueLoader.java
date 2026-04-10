@@ -113,6 +113,7 @@ public class DialogueLoader {
         case "minigame" -> createMinigameNode(nodeJson);
         case "automatic_roll" -> createAutomaticRollNode(nodeJson);
         case "manual_roll" -> createManualRollNode(nodeJson);
+        case "evaluate_stats" -> createEvaluateStatsNode(nodeJson);
         default -> throw new RuntimeException(
             "[DialogueLoader] Unknown node type '" + type + "' on id '" + id + "' in " + dayKey
         );
@@ -139,11 +140,12 @@ public class DialogueLoader {
     String texturePath     = nodeJson.getString("texture", null); // null if absent
     int damage             = nodeJson.getInt("damage", 0);
     boolean triggerGameEnd = nodeJson.getBoolean("triggerGameEnd", false);
+    boolean triggerGameOver = nodeJson.getBoolean("triggerGameOver", false);
     String obtainableAchievement = nodeJson.getString("obtainableAchievement", null);
     Integer increaseCharisma = nodeJson.has("increaseCharisma")
         ? nodeJson.getInt("increaseCharisma") : null;
 
-    return new LineNode(text, texturePath, damage, triggerGameEnd, obtainableAchievement, increaseCharisma);
+    return new LineNode(text, texturePath, damage, triggerGameEnd, triggerGameOver, obtainableAchievement, increaseCharisma);
   }
 
   /**
@@ -152,6 +154,14 @@ public class DialogueLoader {
   private static AutomaticRollNode createAutomaticRollNode(JsonValue nodeJson) {
     int threshold = nodeJson.getInt("threshold");
     return new AutomaticRollNode(threshold);
+  }
+
+  /**
+   * Creates an unlinked EvaluateStatsNode from a JSON node object.
+   */
+  private static EvaluateStatsNode createEvaluateStatsNode(JsonValue nodeJson) {
+    int threshold = nodeJson.getInt("threshold");
+    return new EvaluateStatsNode(threshold);
   }
 
   /**
@@ -224,6 +234,8 @@ public class DialogueLoader {
         linkAutomaticRollNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
       } else if (nodeJson.getString("type").equals("manual_roll")) {
         linkManualRollNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
+      } else if (nodeJson.getString("type").equals("evaluate_stats")) {
+        linkEvaluateStatsNode(nodeJson, nodeJson.getString("id"), nodeMap, dayKey);
       }
     }
   }
@@ -256,6 +268,22 @@ public class DialogueLoader {
     ManualRollNode node = (ManualRollNode) nodeMap.get(id);
     node.setNexts(
       successNextId != null ? resolveNode(successNextId, nodeMap, id, dayKey) : null, 
+      failNextId != null ? resolveNode(failNextId, nodeMap, id, dayKey) : null
+    );
+  }
+
+  private static void linkEvaluateStatsNode(
+    JsonValue nodeJson,
+    String id,
+    Map<String, DialogueNode> nodeMap,
+    String dayKey
+  ) {
+    String successNextId = nodeJson.getString("successNext", null);
+    String failNextId = nodeJson.getString("failNext", null);
+
+    EvaluateStatsNode node = (EvaluateStatsNode) nodeMap.get(id);
+    node.setNexts(
+      successNextId != null ? resolveNode(successNextId, nodeMap, id, dayKey) : null,
       failNextId != null ? resolveNode(failNextId, nodeMap, id, dayKey) : null
     );
   }

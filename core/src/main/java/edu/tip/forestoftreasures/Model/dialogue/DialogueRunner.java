@@ -1,5 +1,7 @@
 package edu.tip.forestoftreasures.Model.dialogue;
 
+import edu.tip.forestoftreasures.Model.entities.Player;
+
 import java.util.List;
 
 import edu.tip.forestoftreasures.Model.PlayerPathTracker;
@@ -69,12 +71,27 @@ public class DialogueRunner {
     public void forceGameEnd();
 
     /**
+     * Called when the game should trigger a game over via narrative trigger.
+     * Transitions the game to the game over screen and resets player data.
+     */
+    public void triggerGameOver();
+
+    /**
      * Called when a node or choice grants a charisma increase.
      * The handler should apply the increase to the player and refresh the UI.
      *
      * @param amount The charisma points to add.
      */
     void onCharismaIncreased(int amount);
+
+    /**
+     * Provides the current Player instance for stat evaluation nodes.
+     * Called when the runner encounters an {@link EvaluateStatsNode}
+     * and needs access to the player's stats for threshold comparison.
+     *
+     * @return The active Player instance.
+     */
+    Player getPlayer();
   }
 
   // --- Instance variables ---
@@ -116,7 +133,13 @@ public class DialogueRunner {
 
     if (current instanceof AutomaticRollNode roll) {
       current = roll.evaluate();
-      step(); // instantly transition
+      step();
+      return;
+    }
+
+    if (current instanceof EvaluateStatsNode eval) {
+      current = eval.evaluate(displayHandler.getPlayer());
+      step();
       return;
     }
 
@@ -143,9 +166,15 @@ public class DialogueRunner {
    * If the finished line has triggerGameEnd set, the game ends immediately.
    */
   public void onLineFinished() {
-    if (current instanceof LineNode line && line.triggerGameEnd) {
-      displayHandler.forceGameEnd();
-      return;
+    if (current instanceof LineNode line) {
+      if (line.triggerGameEnd) {
+        displayHandler.forceGameEnd();
+        return;
+      }
+      if (line.triggerGameOver) {
+        displayHandler.triggerGameOver();
+        return;
+      }
     }
     current = current.getNext();
     step();

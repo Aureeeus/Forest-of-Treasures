@@ -22,6 +22,9 @@ public class LineNode extends DialogueNode {
   /** If true, the game transitions to the credits/ending screen after this line. */
   public final boolean triggerGameEnd;
 
+  /** If true, the game transitions to the game over screen after this line and resets progress. */
+  public final boolean triggerGameOver;
+
   /** The ID of an achievement to check for when this line is reached. Null for none. */
   public final String obtainableAchievement;
 
@@ -38,28 +41,30 @@ public class LineNode extends DialogueNode {
    * @param texturePath           The asset path for the background (e.g., "scenarios/forest.png").
    * @param damage                Amount of HP the player loses upon reaching this node.
    * @param triggerGameEnd        Whether this is the final line of the game.
+   * @param triggerGameOver       Whether this line leads to a game over.
    * @param obtainableAchievement The ID of an achievement to verify.
    * @param increaseCharisma      Amount to increment the player's charisma stat.
    */
-  public LineNode(String text, String texturePath, int damage, boolean triggerGameEnd,
+  public LineNode(String text, String texturePath, int damage, boolean triggerGameEnd, boolean triggerGameOver,
                   String obtainableAchievement, Integer increaseCharisma) {
     this.text = text;
     this.texturePath = texturePath;
     this.damage = damage;
     this.triggerGameEnd = triggerGameEnd;
+    this.triggerGameOver = triggerGameOver;
     this.obtainableAchievement = obtainableAchievement;
     this.increaseCharisma = increaseCharisma;
   }
 
   /**
    * Constructs a simple LineNode for standard dialogue without side effects.
-   * Default values: 0 damage, no game end, no achievement, and no charisma gain.
+   * Default values: 0 damage, no game end, no game over, no achievement, and no charisma gain.
    *
    * @param text        The narrative text to display.
    * @param texturePath The asset path for the background, or null to retain current.
    */
   public LineNode(String text, String texturePath) {
-    this(text, texturePath, 0, false, null, null);
+    this(text, texturePath, 0, false, false, null, null);
   }
   
   /**

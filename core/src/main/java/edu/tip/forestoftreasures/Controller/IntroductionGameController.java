@@ -10,6 +10,7 @@ import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.View.DayScreen;
 // import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
+import edu.tip.forestoftreasures.Model.entities.Player;
 
 public class IntroductionGameController {
   private final GameLauncher game;
@@ -55,6 +56,13 @@ public class IntroductionGameController {
           if (!typingLabel.hasEnded()) {
             typingLabel.skipToTheEnd();
           } else {
+            game.getPlayer().resetStats(
+              Player.STARTING_HP, 
+              Player.STARTING_STR, 
+              Player.STARTING_INT, 
+              Player.STARTING_DEX, 
+              Player.STARTING_CHA
+            );
             game.setScreen(new DayScreen(game));
             screen.dispose();
           }
