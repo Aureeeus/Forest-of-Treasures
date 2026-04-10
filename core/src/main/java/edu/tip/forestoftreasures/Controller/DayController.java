@@ -49,7 +49,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
-  private int currentDay = 2;
+  private int currentDay = 1;
 
   private final GameLauncher game;
   private final DayScreen screen;
@@ -334,6 +334,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "cavern_creature_battle_minigame", 
            "centipede_battle_minigame", 
            "leviathan_battle_minigame",
+           "wyvern_battle_minigame",
            "knights_battle_minigame" -> true;
       default -> false;
     };
@@ -373,6 +374,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "cavern_creature_battle_minigame", 
            "centipede_battle_minigame", 
            "leviathan_battle_minigame",
+           "wyvern_battle_minigame",
            "knights_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
           "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
@@ -502,6 +504,12 @@ public class DayController implements DialogueRunner.DisplayHandler {
         Gdx.app.log("DayController", "Achievement unlocked: [" + target.id + "] " + target.description);
       }
     }
+  }
+
+  @Override
+  public void onCharismaIncreased(int amount) {
+    screen.getPlayer().increaseCharisma(amount);
+    screen.updatePlayerStats();
   }
 
   /**

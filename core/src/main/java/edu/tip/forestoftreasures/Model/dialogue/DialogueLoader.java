@@ -140,8 +140,10 @@ public class DialogueLoader {
     int damage             = nodeJson.getInt("damage", 0);
     boolean triggerGameEnd = nodeJson.getBoolean("triggerGameEnd", false);
     String obtainableAchievement = nodeJson.getString("obtainableAchievement", null);
+    Integer increaseCharisma = nodeJson.has("increaseCharisma")
+        ? nodeJson.getInt("increaseCharisma") : null;
 
-    return new LineNode(text, texturePath, damage, triggerGameEnd, obtainableAchievement);
+    return new LineNode(text, texturePath, damage, triggerGameEnd, obtainableAchievement, increaseCharisma);
   }
 
   /**
@@ -178,7 +180,9 @@ public class DialogueLoader {
 
     for (JsonValue choiceJson = choicesJson.child; choiceJson != null; choiceJson = choiceJson.next) {
       String label = choiceJson.getString("label");
-      choices.add(new ChoiceNode.Choice(label, null)); // next resolved in Pass 2
+      Integer increaseCharisma = choiceJson.has("increaseCharisma")
+          ? choiceJson.getInt("increaseCharisma") : null;
+      choices.add(new ChoiceNode.Choice(label, null, increaseCharisma)); // next resolved in Pass 2
     }
 
     return new ChoiceNode(choices.toArray(new ChoiceNode.Choice[0]));
@@ -357,7 +361,9 @@ public class DialogueLoader {
     for (JsonValue choiceJson = choicesJson.child; choiceJson != null; choiceJson = choiceJson.next) {
       String label  = choiceJson.getString("label");
       String nextId = choiceJson.getString("next");
-      linkedChoices.add(new ChoiceNode.Choice(label, resolveNode(nextId, nodeMap, id, dayKey)));
+      Integer increaseCharisma = choiceJson.has("increaseCharisma")
+          ? choiceJson.getInt("increaseCharisma") : null;
+      linkedChoices.add(new ChoiceNode.Choice(label, resolveNode(nextId, nodeMap, id, dayKey), increaseCharisma));
     }
 
     ChoiceNode node = (ChoiceNode) nodeMap.get(id);

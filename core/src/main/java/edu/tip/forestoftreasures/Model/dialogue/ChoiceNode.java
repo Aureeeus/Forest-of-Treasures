@@ -3,7 +3,7 @@ package edu.tip.forestoftreasures.Model.dialogue;
 import java.util.List;
 
 public class ChoiceNode extends DialogueNode {
-  public record Choice(String label, DialogueNode next) {};
+  public record Choice(String label, DialogueNode next, Integer increaseCharisma) {};
 
   public List<Choice> choices;
 

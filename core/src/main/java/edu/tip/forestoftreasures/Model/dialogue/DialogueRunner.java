@@ -63,10 +63,18 @@ public class DialogueRunner {
     public void onDialogueEnd();
 
     /**
-     * Called when a LineNode with triggerGameEnd is reached.
+     * Called when the game should end via narrative trigger.
      * Transitions the game to the credits/ending screen.
      */
     public void forceGameEnd();
+
+    /**
+     * Called when a node or choice grants a charisma increase.
+     * The handler should apply the increase to the player and refresh the UI.
+     *
+     * @param amount The charisma points to add.
+     */
+    void onCharismaIncreased(int amount);
   }
 
   // --- Instance variables ---
@@ -116,6 +124,9 @@ public class DialogueRunner {
       if (line.obtainableAchievement != null) {
         displayHandler.onAchievementObtainable(line.obtainableAchievement);
       }
+      if (line.increaseCharisma != null) {
+        displayHandler.onCharismaIncreased(line.increaseCharisma);
+      }
       displayHandler.showLine(line);
     } else if (current instanceof ChoiceNode choice) {
       displayHandler.showChoices(choice);
@@ -150,9 +161,16 @@ public class DialogueRunner {
    */
   public void onChoiceSelected(int index) {
     ChoiceNode choiceNode = (ChoiceNode) current;
+    ChoiceNode.Choice selected = choiceNode.choices.get(index);
+
     pathTracker.record(choiceNode, index);  // record before advancing
     displayHandler.onChoiceFinalized();     // notify handler for auto-achievement detection
-    current = choiceNode.choices.get(index).next();
+
+    if (selected.increaseCharisma() != null) {
+      displayHandler.onCharismaIncreased(selected.increaseCharisma());
+    }
+
+    current = selected.next();
     step();
   }
 

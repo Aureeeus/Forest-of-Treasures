@@ -62,6 +62,10 @@ public class Player extends Entity {
     return this.charisma;
   }
 
+  public void increaseCharisma(int amount) {
+    this.charisma += amount;
+  }
+
   public String getSkill1() {
     return this.skill1;
   }
