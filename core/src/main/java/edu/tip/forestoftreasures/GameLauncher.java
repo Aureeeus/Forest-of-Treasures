@@ -129,6 +129,11 @@ public class GameLauncher extends Game {
         
         // --- Day 2 UI ---
         assets.load("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/bioluminescent_moss.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/cavern_heart.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/centipede.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/leviathan.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/ravine.png", Texture.class);
         assets.load("scenarios/day2/leave_arc/wyvern.png", Texture.class);
         assets.finishLoading();
 
