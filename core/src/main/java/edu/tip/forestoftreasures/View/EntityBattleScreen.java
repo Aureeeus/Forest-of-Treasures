@@ -71,10 +71,17 @@ public class EntityBattleScreen implements Screen {
 
   // UI Components to refresh
   private TextraLabel enemyHpLabel;
+  private TextraLabel enemyStrengthLabel;
+  private TextraLabel enemyInitiativeLabel;
   private TextraLabel playerHpLabel;
+  private TextraLabel playerInitiativeLabel;
   private Music battleMusic;
   private float prevPlayerHp;
   private float prevEnemyHp;
+
+  // Batching state
+  private boolean isBatchingEnemyHp = false;
+  private boolean isBatchingPlayerHp = false;
 
   public EntityBattleScreen(GameLauncher game, MinigameNode node, Player player, Runnable onComplete) {
     this.game = game;
@@ -159,24 +166,137 @@ public class EntityBattleScreen implements Screen {
   public void updateEnemyHealth() {
     if (enemyHpLabel != null && controller != null) {
       float currentHp = controller.getEnemy().getHp();
-      float diff = currentHp - prevEnemyHp;
-      if (diff != 0) {
-        StatFeedbackUtils.showStatFeedback(stage, enemyHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
-        prevEnemyHp = currentHp;
+      
+      // If NOT batching, show feedback immediately
+      if (!isBatchingEnemyHp) {
+        float diff = currentHp - prevEnemyHp;
+        if (diff != 0) {
+          // Ensure layout is current before calculating coordinates for feedback
+          screenTable.validate();
+          StatFeedbackUtils.showStatFeedback(stage, enemyHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
+          prevEnemyHp = currentHp;
+        }
       }
+      
       enemyHpLabel.setText(formatStat(currentHp));
+    }
+  }
+
+  /**
+   * Refreshes the entire enemy stats display (HP, Strength, Initiative)
+   * and the enemy texture. Used during smooth transitions in multi-enemy battles.
+   */
+  public void refreshEnemyStats() {
+    Entity enemy = controller.getEnemy();
+    if (enemy == null) return;
+
+    // Reset previous HP for feedback tracking
+    prevEnemyHp = enemy.getHp();
+
+    // Update labels
+    if (enemyHpLabel != null) enemyHpLabel.setText(formatStat(enemy.getHp()));
+    if (enemyStrengthLabel != null) enemyStrengthLabel.setText(formatStat(enemy.getStrength()));
+    if (enemyInitiativeLabel != null) enemyInitiativeLabel.setText(formatStat(enemy.getInitiative()));
+
+    // Refresh the texture if it exists
+    if (scenarioImageContentTable != null) {
+        scenarioImageContentTable.clearChildren();
+        if (enemy.getTexture() != null) {
+            Image enemyImage = new Image(enemy.getTexture());
+            enemyImage.setScaling(Scaling.fit);
+            scenarioImageContentTable.add(enemyImage).grow();
+        }
     }
   }
 
   public void updatePlayerHealth() {
     if (playerHpLabel != null && controller != null) {
       float currentHp = controller.getPlayer().getHp();
-      float diff = currentHp - prevPlayerHp;
+      
+      // If NOT batching, show feedback immediately
+      if (!isBatchingPlayerHp) {
+        float diff = currentHp - prevPlayerHp;
+        if (diff != 0) {
+          // Ensure layout is current before calculating coordinates for feedback
+          screenTable.validate();
+          StatFeedbackUtils.showStatFeedback(stage, playerHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
+          prevPlayerHp = currentHp;
+        }
+      }
+      
+      playerHpLabel.setText(formatStat(currentHp));
+    }
+  }
+
+  /**
+   * Refreshes the player's stat display (HP, Initiative).
+   * Used during battle transitions to reflect healing and new initiative rolls.
+   */
+  public void refreshPlayerStats() {
+    Player player = controller.getPlayer();
+    if (player == null) return;
+
+    // Reset previous HP for feedback tracking
+    prevPlayerHp = player.getHp();
+
+    // Update labels
+    if (playerHpLabel != null) playerHpLabel.setText(formatStat(player.getHp()));
+    if (playerInitiativeLabel != null) playerInitiativeLabel.setText(formatStat(player.getInitiative()));
+  }
+
+  /**
+   * Starts batching enemy HP changes. Subsequent calls to updateEnemyHealth()
+   * will update the UI label but defer the floating feedback.
+   */
+  public void startEnemyHpBatch() {
+    isBatchingEnemyHp = true;
+  }
+
+  /**
+   * Finalizes the enemy HP batch. Calculates the total delta since the batch started
+   * and displays a single merged feedback label.
+   */
+  public void endEnemyHpBatch() {
+    isBatchingEnemyHp = false;
+    if (enemyHpLabel != null && controller != null) {
+      float currentHp = controller.getEnemy().getHp();
+      float diff = currentHp - prevEnemyHp;
+      
+      // Ensure the label content is updated BEFORE layout and coordinate calculation
+      enemyHpLabel.setText(formatStat(currentHp));
+      
       if (diff != 0) {
+        screenTable.validate();
+        StatFeedbackUtils.showStatFeedback(stage, enemyHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
+        prevEnemyHp = currentHp;
+      }
+    }
+  }
+
+  /**
+   * Starts batching player HP changes.
+   */
+  public void startPlayerHpBatch() {
+    isBatchingPlayerHp = true;
+  }
+
+  /**
+   * Finalizes the player HP batch and displays merged feedback.
+   */
+  public void endPlayerHpBatch() {
+    isBatchingPlayerHp = false;
+    if (playerHpLabel != null && controller != null) {
+      float currentHp = controller.getPlayer().getHp();
+      float diff = currentHp - prevPlayerHp;
+      
+      // Ensure the label content is updated BEFORE layout and coordinate calculation
+      playerHpLabel.setText(formatStat(currentHp));
+      
+      if (diff != 0) {
+        screenTable.validate();
         StatFeedbackUtils.showStatFeedback(stage, playerHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
         prevPlayerHp = currentHp;
       }
-      playerHpLabel.setText(formatStat(currentHp));
     }
   }
 
@@ -251,16 +371,16 @@ public class EntityBattleScreen implements Screen {
 
     Table strengthRowTable = new Table();
     TextraLabel strengthPrefix = new TextraLabel("Strength: ", statsFont);
-    TextraLabel strengthLabel = new TextraLabel(formatStat(enemy.getStrength()), statsFont);
+    enemyStrengthLabel = new TextraLabel(formatStat(enemy.getStrength()), statsFont);
     strengthRowTable.add(strengthPrefix).left();
-    strengthRowTable.add(strengthLabel).left();
+    strengthRowTable.add(enemyStrengthLabel).left();
     statsTable.add(strengthRowTable).left().padBottom(10f).row();
 
     Table initiativeRowTable = new Table();
     TextraLabel initiativePrefix = new TextraLabel("Initiative: ", statsFont);
-    TextraLabel initiativeLabel = new TextraLabel(formatStat(enemy.getInitiative()), statsFont);
+    enemyInitiativeLabel = new TextraLabel(formatStat(enemy.getInitiative()), statsFont);
     initiativeRowTable.add(initiativePrefix).left();
-    initiativeRowTable.add(initiativeLabel).left();
+    initiativeRowTable.add(enemyInitiativeLabel).left();
     statsTable.add(initiativeRowTable).left().row();
 
     enemyStatsContentTable.add(statsTable)
@@ -321,9 +441,9 @@ public class EntityBattleScreen implements Screen {
 
     Table initiativeRowTable = new Table();
     TextraLabel initiativePrefix = new TextraLabel("Initiative: ", statsFont);
-    TextraLabel initiativeLabel = new TextraLabel(formatStat(player.getInitiative()), statsFont);
+    playerInitiativeLabel = new TextraLabel(formatStat(player.getInitiative()), statsFont);
     initiativeRowTable.add(initiativePrefix).left();
-    initiativeRowTable.add(initiativeLabel).left();
+    initiativeRowTable.add(playerInitiativeLabel).left();
     statsTable.add(initiativeRowTable).left().row();
 
     playerStatsContentTable.add(statsTable)

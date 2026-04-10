@@ -15,6 +15,12 @@ import edu.tip.forestoftreasures.Model.mechanics.StatusEffect;
  * across the game, so initiative can be re-rolled via setter at each battle start.
  */
 public class Player extends Entity {
+  // Default starting stats
+  public static final float STARTING_HP = 48f;
+  public static final float STARTING_STR = 10f;
+  public static final float STARTING_INT = 30f;
+  public static final float STARTING_DEX = 12f;
+  public static final float STARTING_CHA = 12f;
 
   /**
    * Determines how frequently the player is healed after completing a knight battle.
@@ -66,6 +72,29 @@ public class Player extends Entity {
     this.charisma += amount;
   }
 
+  /**
+   * Resets all player stats and progress data to the specified initial values.
+   * Used during a Game Over to restart the player's journey from scratch.
+   *
+   * @param hp           the initial max and current HP
+   * @param strength     the initial strength
+   * @param intelligence the initial intelligence
+   * @param dexterity    the initial dexterity
+   * @param charisma     the initial charisma
+   */
+  public void resetStats(float hp, float strength, float intelligence, float dexterity, float charisma) {
+    this.maxHp = hp;
+    this.hp = hp;
+    this.strength = strength;
+    this.intelligence = intelligence;
+    this.dexterity = dexterity;
+    this.charisma = charisma;
+    this.initiative = 0;
+    this.blessingTier = BlessingTier.NONE;
+    this.knightBattlesCompleted = 0;
+    clearStatusEffect();
+  }
+
   public String getSkill1() {
     return this.skill1;
   }
@@ -95,6 +124,10 @@ public class Player extends Entity {
 
   public BlessingTier getBlessingTier() {
     return blessingTier;
+  }
+
+  public int getKnightBattlesCompleted() {
+    return knightBattlesCompleted;
   }
 
   /**

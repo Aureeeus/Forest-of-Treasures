@@ -8,6 +8,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import edu.tip.forestoftreasures.Model.entities.Player;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
 import edu.tip.forestoftreasures.View.AchievementsScreen;
@@ -24,6 +25,7 @@ import edu.tip.forestoftreasures.utils.UIFactory;
 public class GameLauncher extends Game {
     public AssetManager assets;
     public SettingsConfiguration settingsConfig;
+    private Player player;
 
     // Cached Screens
     private MainMenuScreen mainMenuScreen;
@@ -50,6 +52,10 @@ public class GameLauncher extends Game {
             achievementsScreen = new AchievementsScreen(this);
         }
         return achievementsScreen;
+    }
+
+    public Player getPlayer() {
+        return player;
     }
 
     @Override
@@ -134,10 +140,23 @@ public class GameLauncher extends Game {
         assets.load("scenarios/day2/cavern_arc/centipede.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/leviathan.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/ravine.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/knights.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/knight_captain.png", Texture.class);
         assets.load("scenarios/day2/leave_arc/wyvern.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
+        
+        // Initialize persistent player with default stats
+        player = new Player(
+            Player.STARTING_HP, 
+            Player.STARTING_STR, 
+            0f, 
+            Player.STARTING_INT, 
+            Player.STARTING_DEX, 
+            Player.STARTING_CHA
+        );
+
         this.setScreen(getMainMenuScreen());
     }
 

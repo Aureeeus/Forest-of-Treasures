@@ -36,6 +36,7 @@ import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.View.mazeBossScreen;
+import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DialogueUtils;
 import edu.tip.forestoftreasures.utils.UIFactory;
 
@@ -49,7 +50,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
-  private int currentDay = 1;
+  private int currentDay = 2;
 
   private final GameLauncher game;
   private final DayScreen screen;
@@ -297,6 +298,22 @@ public class DayController implements DialogueRunner.DisplayHandler {
     game.setScreen(new CreditsScreen(game));
   }
 
+  @Override
+  public void triggerGameOver() {
+    Gdx.app.log("DayController", "Narrative Game Over triggered. Resetting progress.");
+    currentDay = 1;
+    // Initial stats defined as constants in Player.java
+    screen.getPlayer().resetStats(
+      Player.STARTING_HP, 
+      Player.STARTING_STR, 
+      Player.STARTING_INT, 
+      Player.STARTING_DEX, 
+      Player.STARTING_CHA
+    );
+    screen.updatePlayerStats();
+    game.setScreen(new GameOverScreen(game));
+  }
+
   /**
    * Called to transition logic to the next day.
    */
@@ -335,7 +352,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "centipede_battle_minigame", 
            "leviathan_battle_minigame",
            "wyvern_battle_minigame",
-           "knights_battle_minigame" -> true;
+           "knights_battle_minigame",
+           "knight_captain_battle_minigame" -> true;
       default -> false;
     };
 
@@ -375,7 +393,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "centipede_battle_minigame", 
            "leviathan_battle_minigame",
            "wyvern_battle_minigame",
-           "knights_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
+           "knights_battle_minigame",
+           "knight_captain_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
           "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
     };
@@ -510,6 +529,11 @@ public class DayController implements DialogueRunner.DisplayHandler {
   public void onCharismaIncreased(int amount) {
     screen.getPlayer().increaseCharisma(amount);
     screen.updatePlayerStats();
+  }
+
+  @Override
+  public Player getPlayer() {
+    return screen.getPlayer();
   }
 
   /**

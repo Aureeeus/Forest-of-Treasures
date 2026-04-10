@@ -21,6 +21,8 @@ import edu.tip.forestoftreasures.Model.entities.CavernCreature;
 import edu.tip.forestoftreasures.Model.entities.Centipede;
 import edu.tip.forestoftreasures.Model.entities.Leviathan;
 import edu.tip.forestoftreasures.Model.entities.Wyvern;
+import edu.tip.forestoftreasures.Model.entities.Knight;
+import edu.tip.forestoftreasures.Model.entities.KnightCaptain;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
@@ -72,6 +74,7 @@ public class EntityBattleController {
   // Status effect tracking
   private int enemySleepCounter = 0;
   private static final int MAX_SLEEP_TURNS = 2;
+  private boolean enemyAppliedStatusThisTurn = false; // Tracking flag for immediate ticks in the current round
 
   // UI references from screen
   private Image selectSkillIcon;
@@ -197,6 +200,20 @@ public class EntityBattleController {
         this.enemy = new Wyvern(initiative, wyvernTexture, null);
         this.enemyName = "Wyvern";
       }
+      case "knights_battle_minigame" -> {
+        Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
+        Sound knightSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+
+        this.enemy = new Knight(initiative, knightTexture, knightSlashSound);
+        this.enemyName = "Knight";
+      }
+      case "knight_captain_battle_minigame" -> {
+        Texture captainTexture = game.assets.get("scenarios/day2/cavern_arc/knight_captain.png", Texture.class);
+        Sound captainSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+
+        this.enemy = new KnightCaptain(initiative, captainTexture, captainSlashSound);
+        this.enemyName = "Knight Captain";
+      }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
       );
@@ -277,12 +294,24 @@ public class EntityBattleController {
     String flavorText = "";
     float sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
     
+    screen.startEnemyHpBatch();
+    
+    // Aggressive Merging: If the enemy ALREADY has a damaging status, tick it now so it merges with the skill
+    if (enemy.hasStatusEffect()) {
+        StatusEffect currentEffect = enemy.getActiveStatus();
+        if (currentEffect == StatusEffect.POISON || currentEffect == StatusEffect.BURN) {
+            currentEffect.applyPerTurn(enemy);
+            enemyAppliedStatusThisTurn = true; 
+        }
+    }
+
     switch (selectedSkillRow) {
       case 0 -> {
         AttackResult result = player.useCryOfMisery(enemy);
         flavorText = result.flavorText();
         if (result.tier() != DamageTier.MISS) {
           game.assets.get("audio/sfx/Cry of Misery.mp3", Sound.class).play(sfxVolume);
+          screen.updateEnemyHealth();
         }
       }
       case 1 -> {
@@ -290,6 +319,14 @@ public class EntityBattleController {
         flavorText = result.flavorText();
         if (result.applied()) {
           game.assets.get("audio/sfx/Intense Aura.wav", Sound.class).play(sfxVolume);
+          
+          // If we just applied a NEW status (and it wasn't already ticking via the aggressive merge above)
+          StatusEffect effect = result.statusEffect();
+          if (!enemyAppliedStatusThisTurn && (effect == StatusEffect.POISON || effect == StatusEffect.BURN)) {
+             effect.applyPerTurn(enemy);
+             enemyAppliedStatusThisTurn = true; 
+          }
+          screen.updateEnemyHealth();
         }
       }
       case 2 -> {
@@ -297,11 +334,11 @@ public class EntityBattleController {
         flavorText = result.flavorText();
         if (result.tier() != DamageTier.MISS) {
           game.assets.get("audio/sfx/Lullaby Of Obedience.wav", Sound.class).play(sfxVolume);
+          screen.updateEnemyHealth();
         }
       }
     }
-
-    screen.updateEnemyHealth();
+    screen.endEnemyHpBatch();
     addDialogueLine(flavorText, this::onPlayerTurnEnded);
   }
 
@@ -312,11 +349,46 @@ public class EntityBattleController {
    */
   private void onPlayerTurnEnded() {
     if (!enemy.isAlive()) {
+      if ("knights_battle_minigame".equals(screenKey)) {
+        player.onKnightBattleCompleted();
+        screen.updatePlayerHealth(); // Refresh with any blessing heal
+        
+        if (player.getKnightBattlesCompleted() < 10) {
+          setupNextKnight();
+          return;
+        }
+      }
+      
       state = BattleState.BATTLE_END;
       addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", this::endBattle);
     } else {
       executeEnemyTurn();
     }
+  }
+
+  /**
+   * Sets up the next knight in the 10-battle sequence without disposing the screen.
+   * Re-instantiates the enemy, rolls initiative, and refreshes the UI.
+   */
+  private void setupNextKnight() {
+    state = BattleState.ANIMATING_DIALOGUE;
+    
+    // Create the next Knight
+    float knightInitiative = calculateEnemyInitiative(null);
+    Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
+    Sound knightSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+    this.enemy = new Knight(knightInitiative, knightTexture, knightSlashSound);
+    
+    // Re-roll player initiative for the new battle
+    player.setInitiative(Dice.roll());
+    
+    // Refresh the View for both sides to show new initiatives and any blessing heals
+    screen.refreshEnemyStats();
+    screen.refreshPlayerStats();
+    
+    addDialogueLine("\n{COLOR=GREEN}The Knight is defeated!{ENDCOLOR} {WAVE}Another Knight steps forward to challenge you!{ENDWAVE}\n", () -> {
+        addDialogueLine(getInitiativeFlavorText(), this::beginFirstTurn);
+    });
   }
 
   /**
@@ -334,8 +406,16 @@ public class EntityBattleController {
     // Evaluate status effects before deciding what to do
     if (enemy.hasStatusEffect()) {
       StatusEffect currentStatus = enemy.getActiveStatus();
-      skipTurn = currentStatus.applyPerTurn(enemy);
-      screen.updateEnemyHealth();
+      
+      // Skip the tick if it was already processed immediately upon application this round
+      if (!enemyAppliedStatusThisTurn) {
+        screen.startEnemyHpBatch();
+        skipTurn = currentStatus.applyPerTurn(enemy);
+        screen.updateEnemyHealth();
+        screen.endEnemyHpBatch();
+      }
+      
+      enemyAppliedStatusThisTurn = false; // Reset flag after processing turn start logic
 
       if (currentStatus == StatusEffect.SLEEP) {
         enemySleepCounter++;
@@ -383,6 +463,16 @@ public class EntityBattleController {
           
           AttackResult result = wyvern.attackWithFlavor(player);
           flavorText = result.flavorText();
+        } else if (enemy instanceof Knight knight) {
+          knight.playAttackSound(sfxVolume);
+          
+          AttackResult result = knight.attackWithFlavor(player);
+          flavorText = result.flavorText();
+        } else if (enemy instanceof KnightCaptain captain) {
+          captain.playAttackSound(sfxVolume);
+          
+          AttackResult result = captain.attackWithFlavor(player);
+          flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies
           float dmg = enemy.attack(player);
@@ -393,9 +483,13 @@ public class EntityBattleController {
     
     flavorText = "\n{COLOR=RED}It's the " + enemyName + "'s turn!{ENDCOLOR}\n" + flavorText;
     
-    screen.updatePlayerHealth();
+    screen.startPlayerHpBatch();
+    screen.updatePlayerHealth(); // Refresh with any damage dealt during the enemy's attack resolving
+    screen.endPlayerHpBatch();
     
     addDialogueLine(flavorText, () -> {
+      enemyAppliedStatusThisTurn = false; // Reset flag after interaction finishes, ready for next turn
+      
       if (!enemy.isAlive()) {
         state = BattleState.BATTLE_END;
         addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR}{WAIT=1}", this::endBattle);
@@ -417,10 +511,9 @@ public class EntityBattleController {
   private void endBattle() {
     screen.dispose();
 
-    // Apply the blessing heal callback exclusively for knight battles
-    if ("knights_battle_minigame".equals(screenKey) && player.isAlive()) {
-      player.onKnightBattleCompleted();
-    }
+    // The blessing heal and battle counter are now handled internally during the loop,
+    // but we can ensure one final increment if needed, or if it was the last fight.
+    // However, onKnightBattleCompleted() is already called in onPlayerTurnEnded for the 10-loop.
     
     // If player died, go to GameOverScreen; otherwise resume dialogue
     if (!player.isAlive()) {
