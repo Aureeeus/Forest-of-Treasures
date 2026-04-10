@@ -31,6 +31,7 @@ Standard text presentation.
 - `damage` (Optional): An integer specifying HP deduction when the line appears. Defaults to `0`.
 - `triggerGameEnd` (Optional): Boolean. If `true`, transitions to the Credits screen after this line finishes typing. Defaults to `false`.
 - `obtainableAchievement` (Optional): A string matching an achievement `id` from the day's `achievements` array. When the runner reaches this line, it immediately runs BFS verification against the player's recorded choices to determine if the achievement is unlocked.
+- `increaseCharisma` (Optional): An integer specifying the amount to increase the player's charisma stat. If null or omitted, no change occurs.
 - `next`: The ID of the next node (or `null` to end the day).
 
 ### 2. Choice Node (`type: "choice"`)
@@ -38,6 +39,7 @@ A decision point for the player.
 - `choices`: An array of player options:
   - `label`: The text shown on the choice button.
   - `next`: The node ID to advance to if selected.
+  - `increaseCharisma` (Optional): An integer specifying the amount to increase the player's charisma stat upon selecting this choice.
 
 ### 3. Minigame Node (`type: "minigame"`)
 Triggers an external gameplay sequence.
@@ -118,6 +120,37 @@ The system uses [TextraTypist](https://github.com/tommyettinger/textra) tags for
   "threshold": 12,
   "successNext": "top_of_tree",
   "failNext": "fall_down"
+}
+```
+
+### Charisma Increase Patterns
+You can reward the player with charisma for certain dialogue lines or choices.
+
+```json
+{
+  "id": "persuaded_well",
+  "type": "choice",
+  "choices": [
+    {
+      "label": "POLITELY ASK FOR HELP",
+      "next": "d1_help_line",
+      "increaseCharisma": 5
+    },
+    {
+      "label": "DEMAND ASSISTANCE",
+      "next": "d1_rude_line"
+    }
+  ]
+}
+```
+
+```json
+{
+  "id": "wisdom_words",
+  "type": "line",
+  "text": "\n\"You speak with the grace of the elders,\" the sprite whispers.",
+  "increaseCharisma": 2,
+  "next": "d1_sprite_gift"
 }
 ```
 

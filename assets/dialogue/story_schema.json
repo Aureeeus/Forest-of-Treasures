@@ -8,23 +8,26 @@
         "requiredChoiceSequence": [1]
       },
       {
+        "id": "First Blood",
+        "description": "Defeat your first enemy and claim dominance."
+      },
+      {
         "id": "Lovely Labyrinth",
-        "description": "You navigated the twisting corridors of the Great Maze and emerged on the other side with your wits-and your sneakers-intact. Not even a dead end could stop you.",
-        "requiredChoiceSequence": [-1, 0]
+        "description": "Successfully navigate the trickiest of mazes."
       }
     ],
     "nodes": [
       {
         "id": "d1_line1",
         "type": "line",
-        "text": "The forest seems normal. Goblins, bugs, and fairies roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because it's high noon and the trees, so far, are normal.",
+        "text": "{WAVE}The forest seems normal.{ENDWAVE} {COLOR=RED}Goblins, bugs, and fairies{ENDCOLOR} roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because it's high noon and the trees, so far, are normal.{WAIT=1}",
         "texture": "scenarios/day1/forest_intro.png",
         "next": "d1_line2"
       },
       {
         "id": "d1_line2",
         "type": "line",
-        "text": "{WAIT=1}\nA sprite lands on my shoulder. Rumors say these sprites have been blessed, and their touch can grant blessings or take them away from me. {COLOR=#FFDB51}Should I shoo it away?{ENDCOLOR}",
+        "text": "{WAIT=1}\nA {COLOR=RED}sprite{ENDCOLOR} lands on my shoulder. {SHAKE}Rumors say these sprites have been blessed{ENDSHAKE}, and their touch can grant {RAINBOW}blessings{ENDRAINBOW} or take them away from me. {COLOR=#FFDB51}Should I shoo it away?{ENDCOLOR}",
         "texture": "scenarios/day1/forest_sprite.png",
         "next": "d1_sprite_choice"
       },
@@ -46,7 +49,7 @@
       {
         "id": "d1_sprite_choice_line1",
         "type": "line",
-        "text": "\nThe sprite left. Seemingly unagitated by my skeptical attitude towards it.",
+        "text": "\nThe {COLOR=RED}sprite{ENDCOLOR} left. Seemingly {WAVE}unagitated{ENDWAVE} by my skeptical attitude towards it.",
         "texture": "scenarios/day1/deep_in_forest.png",
         "next": "d1_line3"
       },
@@ -60,7 +63,7 @@
       {
         "id": "d1_line3",
         "type": "line",
-        "text": "\nI've been documenting the species I've come across, and so far, these life forms can be relocated to a nearby ecosystem outside the forest. The forest was indeed teeming with life. A few meters after the sprite encounter, I saw {COLOR=RED}a bloodied hobgoblin{ENDCOLOR}. Hobgoblins are considered the bottom of the food chain. However, its left hand was cut off - not with a bite mark, but a sweeping cut, seemingly of a sword. {COLOR=#FFDB51}Should I help him?{ENDCOLOR}",
+        "text": "\nI've been documenting the species I've come across, and so far, these life forms can be relocated to a nearby ecosystem outside the forest. The forest was indeed teeming with life. A few meters after the sprite encounter, I saw {COLOR=RED}a bloodied hobgoblin{ENDCOLOR}. {COLOR=RED}Hobgoblins{ENDCOLOR} are considered the bottom of the food chain. However, its left hand was cut off - not with a bite mark, but {SHAKE}a sweeping cut{ENDSHAKE}, seemingly of a sword. {COLOR=#FFDB51}Should I help him?{ENDCOLOR}",
         "texture": "scenarios/day1/hobgoblin_hurt.png",
         "next": "d1_hobgoblin_battle_choice"
       },
@@ -90,19 +93,20 @@
         "type": "line",
         "text": "\n{COLOR=#66FF00}I battle the goblin's seeming perpetrator. I won and aided the goblin. I used one of my potions to heal it.{ENDCOLOR}\n{COLOR=RED}[[-1 Potion]{ENDCOLOR}",
         "texture": null,
+        "obtainableAchievement": "First Blood",
         "next": "d1_line4"
       },
       {
         "id": "d1_hobgoblin_battle_choice_line2",
         "type": "line",
-        "text": "\nI dont think this is part of my job. I dont want the hobgoblins' perpetrators to be after me. I turned a blind eye to the creature and continued venturing.",
+        "text": "\nI dont think this is part of my job. I dont want the {COLOR=RED}hobgoblins' perpetrators{ENDCOLOR} to be after me. {WAVE}I turned a blind eye{ENDWAVE} to the creature and continued venturing.",
         "texture": null,
         "next": "d1_line4"
       },
       {
         "id": "d1_line4",
         "type": "line",
-        "text": "\nAs I ventured further, all of a sudden, I felt a tree branch stop me in my tracks. I thought I stumbled on a branch, but I couldn't lift my foot as the branch completely wrapped around my foot. I looked back and saw a tree with a pattern of a face. {COLOR=#FFDB51}Is this what they call a Treant?{ENDCOLOR}{WAIT=1}",
+        "text": "\nAs I ventured further, all of a sudden, {SHAKE}I felt a tree branch stop me in my tracks{ENDSHAKE}. I thought I stumbled on a branch, but I couldn't lift my foot as the branch completely wrapped around my foot. I looked back and saw a tree with a pattern of a face. {COLOR=#FFDB51}Is this what they call a {COLOR=RED}Treant{ENDCOLOR}?{ENDCOLOR}{WAIT=1}",
         "texture": "scenarios/day1/forest_treant.png",
         "next": "d1_maze_minigame"
       },
@@ -117,6 +121,7 @@
         "type": "line",
         "text": "\nThe sun starts setting after a couple of meters of walking. Honestly, my legs are getting tired. Luckily, {COLOR=#66FF00}I heard a stream nearby{ENDCOLOR}, which I immediately chased after. I set up camp and sent a letter to the capital through my letter bird. Attached to the letter are the creatures I came across today. I've used one of my food packs for dinner tonight before casting a barrier cloak to protect my camp and leave it invisible. I've settled into my spot in my sleeping bag and dozed off without any issues. {WAIT=2}",
         "texture": "scenarios/day1/day1_end.png",
+        "obtainableAchievement": "Lovely Labyrinth",
         "next": null
       }
     ]
@@ -141,14 +146,14 @@
       },
       {
         "id": "Gruesome Farewell",
-        "description": "You take your final breath assessing the choices you made."
+        "description": "Meet a terrible and gruesome end."
       }
     ],
     "nodes": [
       {
         "id": "d2_line1",
         "type": "line",
-        "text": "I've been awakened by {SHAKE}faint rustling{ENDSHAKE} outside the camp. {WAIT=1}I did not fear for my safety as my barrier still stands. I peeked outside my sleeping bag to see {COLOR=RED}Salamanders{ENDCOLOR} drinking from the stream. Normally, {COLOR=RED}salamanders{ENDCOLOR} are found in swamps. Quite interesting how these {COLOR=RED}salamanders{ENDCOLOR} are {SICK}green and not red{ENDSICK}. Their spine is much more protruded, and their eyes shut from side-to-side. Had I not known anything, I'd say they were {COLOR=RED}baby dragons{ENDCOLOR}. After drinking from the stream, {WAVE}they swam along its flow{ENDWAVE}. Truly a curious creature indeed. They'll make my notes for sure. I'm starting to think that maybe {COLOR=RED}this forest should be left alone{ENDCOLOR}.",
+        "text": "I've been awakened by {SHAKE}faint rustling{ENDSHAKE} outside the camp. {WAIT=1}I did not fear for my safety as my barrier still stands. I peeked outside my sleeping bag to see {COLOR=RED}Salamanders{ENDCOLOR} drinking from the stream. Normally, {COLOR=RED}salamanders{ENDCOLOR} are found in swamps. Quite interesting how these {COLOR=RED}salamanders{ENDCOLOR} are {SICK}green and not red{ENDSICK}. Their spine is much more protruded, and their eyes shut from side-to-side. Had I not known anything, I'd say they were {COLOR=RED}baby dragons{ENDCOLOR}. After drinking from the stream, {WAVE}they swam along its flow{ENDWAVE}. Truly a curious creature indeed. They'll make my notes for sure. {WAIT=1}I'm starting to think that maybe {COLOR=RED}this forest should be left alone{ENDCOLOR}.",
         "texture": null,
         "next": "d2_line2"
       },
@@ -191,7 +196,7 @@
       {
         "id": "d2_line3",
         "type": "line",
-        "text": "\nAs the adventure pushed through, the trees became much taller and wider. The forest looked dimmer, so I started etching lines on trees to mark the places I've been to. The bushes start thickening and growing higher. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "text": "\nAs the adventure pushed through, the {WAVE}trees became much taller and wider{ENDWAVE}. The forest looked dimmer, so I started etching lines on trees to mark the places I've been to. The bushes start thickening and growing higher. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
         "texture": null,
         "next": "d2_bush_choice"
       },
@@ -228,7 +233,7 @@
       {
         "id": "d2_cavern_line1",
         "type": "line",
-        "text": "\nI am stuck here with no light whatsoever except the light from the {COLOR=RED}sinkhole{ENDCOLOR} I fell in. My breaths echoed, which only meant one thing - this {COLOR=RED}ravine{ENDCOLOR} is wide enough for me to explore.",
+        "text": "\nI am stuck here with no light whatsoever except the light from the {COLOR=RED}sinkhole{ENDCOLOR} I fell in. {WAVE}My breaths echoed{ENDWAVE}, which only meant one thing - this {COLOR=RED}ravine{ENDCOLOR} is wide enough for me to explore.",
         "texture": "scenarios/day2/cavern_arc/ravine.png",
         "next": "d2_cavern_line2"
       },
@@ -259,7 +264,7 @@
         "type": "manual_roll",
         "text": "\nI inspected the {RAINBOW}bioluminescent moss{ENDRAINBOW}. It was rare to me as I do not fall into caves often, nor do I voluntarily explore them. {WAVE}Water dripped on my shoulder{ENDWAVE}. It doesn't feel like normal water. I looked up to see where it came from.",
         "texture": "scenarios/day2/cavern_arc/bioluminescent_moss.png",
-        "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
+        "label": "TAKE A SECOND TO OBSERVE",
         "threshold": 15,
         "successNext": "d2_observation_success_line",
         "failNext": "d2_observation_fail_line"
@@ -302,9 +307,9 @@
       {
         "id": "d2_magic_roll",
         "type": "manual_roll",
-        "text": "\nAs I venture deeper, the {RAINBOW}luminescent moss{ENDRAINBOW} starts thickening — gradually lighting this once dark abyss. Flowers that look like corals crawl across the floor and upward the walls. However, what shocked me was these {WAVE}fish-like creatures{ENDWAVE}, hovering as if they were swimming.",
+        "text": "\nAs I venture deeper, the {RAINBOW}luminescent moss{ENDRAINBOW} starts thickening — gradually lighting this once dark abyss. Flowers that look like corals crawl across the floor and upward the walls. However, what shocked me was these {COLOR=RED}fish-like creatures{ENDCOLOR}, {WAVE}hovering as if they were swimming{ENDWAVE}.",
         "texture": null,
-        "label": "{COLOR=#FFDB51}FEEL THE MAGIC OF THIS PLACE{ENDCOLOR}",
+        "label": "FEEL THE MAGIC OF THIS PLACE",
         "threshold": 15,
         "successNext": "d2_magic_success_line",
         "failNext": "d2_magic_fail_line"
@@ -319,7 +324,7 @@
       {
         "id": "d2_magic_fail_line",
         "type": "line",
-        "text": "\nYour sensation to mana does not connect in this place. Something might be blocking this connection.",
+        "text": "\nYour sensation to {RAINBOW}mana{ENDRAINBOW} does not connect in this place. {SHAKE}Something might be blocking this connection.{ENDSHAKE}",
         "texture": null,
         "next": "d2_cavern_line4"
       },
@@ -339,7 +344,7 @@
       {
         "id": "d2_cavern_line5",
         "type": "line",
-        "text": "\nAfter a couple steps, I hear {SHAKE}a terrifying scream{ENDSHAKE} - not of a human, but of a beast. I don't know whether to be glad or scared as I remember this war cry. It was of a {COLOR=RED}Leviathan{ENDCOLOR}. {COLOR=RED}Leviathans{ENDCOLOR} normally inhabit deep sea trenches but the cavern lacks the size to handle it. However, I was mistaken. After taking a left at a place resembling a crossroad, the already large ravine just changed the game. A deep, and wide cliff reveals itself to me. The cliff was so deep and wide that a {SHAKE}{COLOR=RED}large lava pool{ENDCOLOR}{ENDSHAKE} engulfs the majority of this cavern's floor. I look up and I see the {COLOR=RED}Leviathan{ENDCOLOR} hovering over the lava pool.",
+        "text": "\nAfter a couple steps, I hear {SHAKE}a terrifying scream{ENDSHAKE} - not of a human, but of a beast. I don't know whether to be glad or scared as I remember this war cry. It was of a {COLOR=RED}Leviathan{ENDCOLOR}. {COLOR=RED}Leviathans{ENDCOLOR} normally inhabit deep sea trenches but the cavern lacks the size to handle it. However, I was mistaken. After taking a left at a place resembling a crossroad, the already large ravine just changed the game. A deep, and wide cliff reveals itself to me. The cliff was so deep and wide that a {SHAKE}{COLOR=RED}large lava pool{ENDCOLOR}{ENDSHAKE} engulfs the majority of this cavern's floor. I look up and I see the {COLOR=RED}{WAVE}Leviathan{ENDWAVE}{ENDCOLOR} hovering over the lava pool.",
         "texture": null,
         "next": "d2_lightstep_roll"
       },
@@ -387,9 +392,9 @@
       {
         "id": "d2_observation1_roll",
         "type": "manual_roll",
-        "text": "\n{BOUNCY}\"{RAINBOW}Save me from the steel of the steed{ENDRAINBOW}\"{ENDBOUNCY} A voice echoed directly in my head.",
+        "text": "\n{BOUNCY}{RAINBOW}Save me from the steel of the steed{ENDRAINBOW}{ENDBOUNCY} A voice echoed directly in my head.",
         "texture": "scenarios/day2/cavern_arc/cavern_heart.png",
-        "label": "{COLOR=#FFDB51}TAKE A SECOND TO OBSERVE{ENDCOLOR}",
+        "label": "TAKE A SECOND TO OBSERVE",
         "threshold": 15,
         "successNext": "d2_observation1_success_line",
         "failNext": "d2_observation1_fail_line"
@@ -439,7 +444,7 @@
       {
         "id": "d2_cavern_line12",
         "type": "line",
-        "text": "\n{BOUNCY}\"{RAINBOW}Save me from the steel of the steed.{ENDRAINBOW}\"{ENDBOUNCY} The core repeated again and again. The cave was pulsing, and the \"heart\" seemed to be beating.",
+        "text": "\n{BOUNCY}{RAINBOW}Save me from the steel of the steed.{ENDRAINBOW}{ENDBOUNCY} The core repeated again and again. The cave was pulsing, and the \"heart\" seemed to be beating.",
         "texture": null,
         "next": "d2_cavern_line13"
       },
@@ -509,7 +514,7 @@
       {
         "id": "d2_line4",
         "type": "line",
-        "text": "\nThe expedition went on as expected until I was greeted with a local hobgoblin settlement. A campfire is set ablaze in the middle of this settlement, with these goblins dancing around it. I've been told that this is a ritual to choose another hobgoblin chief. Should I..?",
+        "text": "\nThe expedition went on as expected until I was greeted with a local {COLOR=RED}hobgoblin settlement{ENDCOLOR}. A campfire is set ablaze in the middle of this settlement, with these {COLOR=RED}goblins{ENDCOLOR} {WAVE}dancing around it{ENDWAVE}. I've been told that this is a ritual to choose another {COLOR=RED}hobgoblin chief{ENDCOLOR}. {COLOR=#FFDB51}Should I..?{ENDCOLOR}",
         "texture": null,
         "next": "d2_settlement_choice"
       },
@@ -530,7 +535,7 @@
       {
         "id": "d2_settlement_choice_line1",
         "type": "line",
-        "text": "\nHobgoblins are docile creatures; they won't attack unless I agitate them with combat. I entered the settlement to observe. Research is research anyway.",
+        "text": "\n{COLOR=RED}Hobgoblins{ENDCOLOR} are docile creatures; they won't attack unless I agitate them with combat. I entered the settlement to observe. {WAVE}Research is research anyway.{ENDWAVE}",
         "texture": null,
         "next": "d2_line5"
       },
@@ -544,21 +549,21 @@
       {
         "id": "d2_line5",
         "type": "line",
-        "text": "\nBandits rush the gate. With a quick, wide glance you counted five bandits in a V-formation with their seeming squad leader speaking:",
+        "text": "\n{COLOR=RED}Bandits{ENDCOLOR} rush the gate. With a quick, wide glance you counted {COLOR=RED}five bandits{ENDCOLOR} in a V-formation with their seeming {COLOR=RED}squad leader{ENDCOLOR} speaking:",
         "texture": null,
         "next": "d2_line6"
       },
       {
         "id": "d2_line6",
         "type": "line",
-        "text": "\n\"Bring me your newly elected chief!\" In fluent hobgoblin dialect.",
+        "text": "\n\"Bring me your newly elected chief!\" In fluent {COLOR=RED}hobgoblin dialect{ENDCOLOR}.",
         "texture": null,
         "next": "d2_line7"
       },
       {
         "id": "d2_line7",
         "type": "line",
-        "text": "\nI don't know what to do. These hobgoblins just had their chief elected. These poor creatures are being harassed by these bandits! I should…",
+        "text": "\nI don't know what to do. These {COLOR=RED}hobgoblins{ENDCOLOR} just had their chief elected. These poor creatures are being processed by these {COLOR=RED}bandits{ENDCOLOR}! I should…",
         "texture": null,
         "next": "d2_bandits_choice"
       },
@@ -579,7 +584,7 @@
       {
         "id": "d2_bandits_choice_line1",
         "type": "line",
-        "text": "\nI tried talking them out. These bandits must have an agenda. I sure hope they do not intend anything bad.",
+        "text": "\nI tried talking them out. These {COLOR=RED}bandits{ENDCOLOR} must have an agenda. I sure hope they do not intend anything bad.",
         "texture": null,
         "next": null
       },
@@ -592,21 +597,21 @@
       {
         "id": "d2_bandits_choice_line2",
         "type": "line",
-        "text": "\nI injured the bandit leader and saved the hobgoblins from the trouble. I went near to his heavily wounded body to finish what I started. Under his breath, he said his final words:",
+        "text": "\n{COLOR=#66FF00}I injured the bandit leader and saved the hobgoblins from the trouble{ENDCOLOR}. I went near to his heavily wounded body to finish what I started. Under his breath, he said his final words:",
         "texture": null,
         "next": "d2_line8"
       },
       {
         "id": "d2_line8",
         "type": "line",
-        "text": "\n\"You should not have meddled.\"",
+        "text": "\n{SHAKE}\"You should not have meddled.\"{ENDSHAKE}",
         "texture": null,
         "next": "d2_line9"
       },
       {
         "id": "d2_line9",
         "type": "line",
-        "text": "\nI investigate the camp that the goblins evacuated. It seems like these hobgoblins are more civilized than I thought. They use cooking ware like pots and pans. They use tools like they're second nature to them. I explored the village further and noticed a church-like structure. It was mostly decorated with stones with various paintings and colors. I'm starting to see an interesting pattern here in the forest.",
+        "text": "\nI investigate the camp that the {COLOR=RED}goblins{ENDCOLOR} evacuated. It seems like these {COLOR=RED}hobgoblins{ENDCOLOR} are more civilized than I thought. They use cooking ware like pots and pans. They use tools like they're second nature to them. I explored the village further and noticed a church-like structure. It was mostly decorated with stones with various paintings and colors. I'm starting to see an interesting pattern here in the forest.",
         "texture": null,
         "next": "d2_line10"
       },
@@ -627,7 +632,7 @@
       {
         "id": "d2_line12",
         "type": "line",
-        "text": "\nThere are smoke pillars near here, seemingly from another settlement. I took the time to venture into it. A path was seemingly made towards it. Without a second thought, I followed it. The path led me to a wooden gate with two towers on each side. Beside each tower is a wall, studded with torches. I approached the gate and was met by a voice.",
+        "text": "\nThere are smoke pillars near here, seemingly from another settlement. I took the time to venture into it. A path was seemingly made towards it. Without a second thought, I followed it. The path led me to a {SHAKE}wooden gate{ENDSHAKE} with two towers on each side. Beside each tower is a wall, studded with torches. I approached the gate and was met by a voice.",
         "texture": null,
         "next": "d2_line13"
       },
@@ -641,7 +646,7 @@
       {
         "id": "d2_line14",
         "type": "line",
-        "text": "\nIt was the voice of a hobgoblin and… in their dialect. It seems I have been deeply affected by that spore. I can now understand hobgoblins, I guess. I just hope it's permanent. Should I?",
+        "text": "\nIt was the voice of a {COLOR=RED}hobgoblin{ENDCOLOR} and… in their dialect. It seems I have been deeply affected by that {RAINBOW}spore{ENDRAINBOW}. I can now understand {COLOR=RED}hobgoblins{ENDCOLOR}, I guess. I just hope it's permanent. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
         "texture": null,
         "next": "d2_goblin_city_choice"
       },
@@ -676,14 +681,14 @@
       {
         "id": "d2_line16",
         "type": "line",
-        "text": "\n\"Prove it.\" the hobgoblin snarled.",
+        "text": "\n{COLOR=RED}\"Prove it.\"{ENDCOLOR} the {COLOR=RED}hobgoblin{ENDCOLOR} snarled.",
         "texture": null,
         "next": "d2_line17"
       },
       {
         "id": "d2_line17",
         "type": "line",
-        "text": "\nHow should I prove it?",
+        "text": "\n{COLOR=#FFDB51}How should I prove it?{ENDCOLOR}",
         "texture": null,
         "next": "d2_hobgoblin_guard_choice"
       },
@@ -704,7 +709,7 @@
       {
         "id": "d2_attack_arc_line1",
         "type": "line",
-        "text": "\nWithout any second thoughts, you killed the guard. The other watchtower's hobgoblin sounded the gong. Shocked with what you've done, your knees shake as an army of hobgoblin warriors make chase to you riding their giant bullfrogs. Should I?",
+        "text": "\nWithout any second thoughts, you killed the guard. The other watchtower's {COLOR=RED}hobgoblin{ENDCOLOR} sounded the gong. Shocked with what you've done, your knees {SHAKE}shake{ENDSHAKE} as an army of {COLOR=RED}hobgoblin warriors{ENDCOLOR} make chase to you riding their {COLOR=RED}{SHAKE}giant bullfrogs{ENDSHAKE}{ENDCOLOR}. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
         "texture": null,
         "next": "d2_attack_arc_hobgoblin_warriors_choice"
       },
@@ -732,72 +737,74 @@
       {
         "id": "d2_attack_arc_line3",
         "type": "line",
-        "text": "\nThe bullfrogs are coated with magic-resisting bodily fluids. The attack fizzles out and enrages the bullfrogs. It leaps and crushes your spine. The hobgoblins loot your belongings and your dying corpse was left by the soldiers to rot.",
+        "text": "\nThe {COLOR=RED}bullfrogs{ENDCOLOR} are coated with magic-resisting bodily fluids. The attack fizzles out and enrages the {COLOR=RED}bullfrogs{ENDCOLOR}. It leaps and {SHAKE}crushes your spine{ENDSHAKE}. The {COLOR=RED}hobgoblins{ENDCOLOR} loot your belongings and your dying corpse was left by the soldiers to rot.",
         "texture": null,
         "next": "d2_attack_arc_line4"
       },
       {
         "id": "d2_attack_arc_line4",
         "type": "line",
-        "text": "\nYou take your final breath assessing the choices you made.",
+        "text": "\nYou take your final breath assessing the choices you made.{WAIT=2}",
         "texture": null,
+        "triggerGameEnd": true,
         "obtainableAchievement": "Gruesome Farewell",
         "next": null
       },
       {
         "id": "d2_attack_arc_line5",
         "type": "line",
-        "text": "\nThe spell succeeds but the watchtower's mage casted an invisible barrier, that traps you several meters outside the gates. You slam in it, head first. Ending your life in a quick, gruesome death.",
+        "text": "\nThe spell succeeds but the watchtower's mage casted an invisible barrier, that traps you several meters outside the gates. You slam in it, {SHAKE}head first{ENDSHAKE}. Ending your life in a quick, {COLOR=RED}gruesome death{ENDCOLOR}.{WAIT=2}",
         "texture": null,
+        "triggerGameEnd": true,
         "obtainableAchievement": "Gruesome Farewell",
         "next": null
       },
       {
         "id": "d2_hobgoblin_guard_choice_line1",
         "type": "line",
-        "text": "\nThe guard picks your weapon up and hands it to you. The gates open and a neatly dressed hobgoblin welcomes you to the city.",
+        "text": "\nThe guard picks your weapon up and hands it to you. The gates open and a neatly dressed {COLOR=RED}hobgoblin{ENDCOLOR} welcomes you to the city.",
         "texture": null,
         "next": "d2_line18"
       },
       {
         "id": "d2_line18",
         "type": "line",
-        "text": "\nThe city is wide and bright. Torches light the place up and the pillars of every building in the city are made of gold. The hobgoblins treat me with a warm welcome with everyone waving and bowing to me. These hobgoblins are way more civilized and smart from those hobgoblins in other places. I could not ask for more. My hobgoblin companion asked me to join their dinner. They guided me to their meal hall where every single hobgoblin eats together. The doors of the hall opened and I was met with the Hobgoblin King. The hall was then silent as the king stood and walked in front of me.",
+        "text": "\nThe city is wide and bright. Torches light the place up and the pillars of every building in the city are made of {COLOR=#FFDB51}gold{ENDCOLOR}. The hobgoblins treat me with a warm welcome with everyone waving and bowing to me. These hobgoblins are way more civilized and smart from those hobgoblins in other places. I could not ask for more. My hobgoblin companion asked me to join their dinner. They guided me to their meal hall where every single hobgoblin eats together. The doors of the hall opened and I was met with the {BOUNCY}{COLOR=RED}Hobgoblin King{ENDCOLOR}{ENDBOUNCY}. The hall was then silent as the king stood and walked in front of me.",
         "texture": null,
         "next": "d2_line19"
       },
       {
         "id": "d2_line19",
         "type": "line",
-        "text": "\nHe was towering and intimidating. His cape is what you would expect a royal would have. Grand, big, and red. His staff was studded with gold. Which, in hobgoblin culture, meant high status.",
+        "text": "\nHe was towering and intimidating. His cape is what you would expect a royal would have. {COLOR=RED}Grand, big, and red{ENDCOLOR}. His staff was studded with {COLOR=#FFDB51}gold{ENDCOLOR}. Which, in hobgoblin culture, meant high status.",
         "texture": null,
         "next": "d2_line20"
       },
       {
         "id": "d2_line20",
         "type": "line",
-        "text": "\n\"Welcome! Short Shaman!\" The king screamed with a voice of welcoming excitement. \"I am Schakh O'yanezoon and we welcome you to our country!\"",
+        "text": "\n{BOUNCY}\"Welcome! Short Shaman!\"{ENDBOUNCY} The king screamed with a voice of welcoming excitement. \"I am Schakh O'yanezoon and we welcome you to our country!\"",
         "texture": null,
         "next": "d2_line21"
       },
       {
         "id": "d2_line21",
         "type": "line",
-        "text": "\n\"Treat this Short Shaman as one of us! For a visitor is rare to come!\"",
+        "text": "\n{BOUNCY}\"Treat this Short Shaman as one of us! For a visitor is rare to come!\"{ENDBOUNCY}",
         "texture": null,
         "next": "d2_line22"
       },
       {
         "id": "d2_line22",
         "type": "line",
-        "text": "\nThe hall rejoiced and hobgoblins servants placed plates for every seat in the hall with equal portions. What weirds me out is that though I am taller than every hobgoblin here, I am referred to as a Short Shaman. Regardless, I enjoy my meal along with the citizens of this hobgoblin city.",
+        "text": "\nThe hall rejoiced and hobgoblins servants placed plates for every seat in the hall with equal portions. What weirds me out is that though I am taller than every hobgoblin here, I am referred to as a {COLOR=RED}Short Shaman{ENDCOLOR}. Regardless, I enjoy my meal along with the citizens of this hobgoblin city. {WAIT=1}",
         "texture": null,
         "next": "d2_line23"
       },
       {
         "id": "d2_line23",
         "type": "line",
-        "text": "\nAfter a luxurious dinner, the king invited me to his throne room. I believe he has sensed that I come with a purpose. I am in luck as I needed his presence for this concern.",
+        "text": "\nAfter a {WAVE}luxurious dinner{ENDWAVE}, the {BOUNCY}king{ENDBOUNCY} invited me to his throne room. I believe he has sensed that I come with a purpose. I am in luck as I needed his presence for this concern.",
         "texture": null,
         "next": "d2_line24"
       },
@@ -811,9 +818,51 @@
       {
         "id": "d2_leave_arc_line1",
         "type": "line",
-        "text": "\nShocked by the fact that you can understand hobgoblins and skeptical whether these creatures can understand you, you leave the gates and march around the settlement.  As you traverse around the walled city, you finally understand how large the place really is. Two hours of walking just got you around the west gate of the city.",
+        "text": "\nShocked by the fact that you can understand {COLOR=RED}hobgoblins{ENDCOLOR} and skeptical whether these creatures can understand you, you leave the gates and march around the settlement. As you traverse around the walled city, you finally understand how large the place really is. Two hours of walking just got you around the west gate of the city.",
         "texture": null,
-        "next": null
+        "next": "d2_leave_arc_line2"
+      },
+      {
+        "id": "d2_leave_arc_line2",
+        "type": "line",
+        "text": "\nThe night falls in all its glory. The {WAVE}smell of the city{ENDWAVE} reminds you of a hearty meal back at home. However, it seems like you weren't the only one attracted by the {COLOR=RED}hobgoblins' dinner{ENDCOLOR}. A pack of {COLOR=RED}{SHAKE}Wyverns{ENDSHAKE}{ENDCOLOR} including their alpha approached you - {SHAKE}snarling, drooling, and aggressive{ENDSHAKE}. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_leave_arc_wyvern_encounter_choice"
+      },
+      {
+        "id": "d2_leave_arc_wyvern_encounter_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "RUN",
+            "next": "d2_leave_arc_wyvern_encounter_line1"
+          },
+          {
+            "label": "FIGHT",
+            "next": "d2_leave_arc_wyvern_battle_minigame"
+          }
+        ]
+      },
+      {
+        "id": "d2_leave_arc_wyvern_encounter_line1",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}{SHAKE}Wyverns{ENDSHAKE}{ENDCOLOR} took flight and gave chase. As one catches up to you, a {COLOR=RED}hobgoblin archer{ENDCOLOR} from the west gate watchtower shoots it in the head, cleanly killing it. Enraged, the Alpha rushed down to you. {COLOR=#66FF00}You aimed and cleared the Alpha without any effort{ENDCOLOR}. The Archer warmly invites you back into the gates.",
+        "texture": null,
+        "obtainableAchievement": "Gruesome Farewell",
+        "next": "d2_line18"
+      },
+      {
+        "id": "d2_leave_arc_wyvern_battle_minigame",
+        "type": "minigame",
+        "screenKey": "wyvern_battle_minigame",
+        "next": "d2_leave_arc_line3"
+      },
+      {
+        "id": "d2_leave_arc_line3",
+        "type": "line",
+        "text": "\nOne wyvern dives onto you but you were swift in killing it with a {COLOR=RED}headshot{ENDCOLOR}. Enraged, the alpha dives in and a hobgoblin assailant {COLOR=RED}slits the wyvern's throat{ENDCOLOR}. The assailant takes the spoils of war to have it processed back at home. The assailant allows you to come home with it.",
+        "texture": null,
+        "next": "d2_line18"
       }
     ]
   }
