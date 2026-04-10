@@ -183,8 +183,8 @@ public class CreditsScreen implements Screen {
         creditsTable.pack();
         contentHeight = creditsTable.getPrefHeight();
 
-        // Start just below the bottom of the screen
-        scrollY = -Gdx.graphics.getHeight();
+        // Start exactly at the bottom offset of the screen so top line appears immediately
+        scrollY = -contentHeight;
         creditsTable.setPosition(
                 (Gdx.graphics.getWidth() - creditsTable.getPrefWidth()) / 2f,
                 scrollY
@@ -218,7 +218,7 @@ public class CreditsScreen implements Screen {
         creditsMusic.setVolume(game.settingsConfig.getGameSettings().bgMusicVolume());
 
         // Reset scroll so credits always start fresh when the screen is shown
-        scrollY = -Gdx.graphics.getHeight();
+        scrollY = -contentHeight;
 
         if (!creditsMusic.isPlaying()) {
             creditsMusic.play();
@@ -234,6 +234,11 @@ public class CreditsScreen implements Screen {
         // Advance scroll position
         scrollY += SCROLL_SPEED * delta;
         creditsTable.setY(scrollY);
+
+        // Auto-exit once all text has scrolled fully past the top
+        if (isScrollComplete()) {
+            game.setScreen(game.getMainMenuScreen());
+        }
 
         stage.act(delta);
         stage.draw();
@@ -297,6 +302,6 @@ public class CreditsScreen implements Screen {
      * of the screen — can be used by the controller to auto-return to menu.
      */
     public boolean isScrollComplete() {
-        return scrollY > contentHeight + Gdx.graphics.getHeight();
+        return scrollY > Gdx.graphics.getHeight();
     }
 }

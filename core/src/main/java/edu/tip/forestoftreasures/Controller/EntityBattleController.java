@@ -20,6 +20,7 @@ import edu.tip.forestoftreasures.Model.entities.Bandit;
 import edu.tip.forestoftreasures.Model.entities.CavernCreature;
 import edu.tip.forestoftreasures.Model.entities.Centipede;
 import edu.tip.forestoftreasures.Model.entities.Leviathan;
+import edu.tip.forestoftreasures.Model.entities.Wyvern;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
@@ -189,6 +190,12 @@ public class EntityBattleController {
 
         this.enemy = new Leviathan(initiative, leviathanTexture, null);
         this.enemyName = "Leviathan";
+      }
+      case "wyvern_battle_minigame" -> {
+        Texture wyvernTexture = game.assets.get("scenarios/day2/leave_arc/wyvern.png", Texture.class);
+
+        this.enemy = new Wyvern(initiative, wyvernTexture, null);
+        this.enemyName = "Wyvern";
       }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
@@ -370,6 +377,11 @@ public class EntityBattleController {
           leviathan.playAttackSound(sfxVolume);
           
           AttackResult result = leviathan.attackWithFlavor(player);
+          flavorText = result.flavorText();
+        } else if (enemy instanceof Wyvern wyvern) {
+          wyvern.playAttackSound(sfxVolume);
+          
+          AttackResult result = wyvern.attackWithFlavor(player);
           flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies

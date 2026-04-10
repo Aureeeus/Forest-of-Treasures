@@ -101,10 +101,10 @@ public class GameLauncher extends Game {
         assets.load("audio/sfx/maze_enter.mp3", Sound.class);
 
         // --- Battle SFX ---
-        assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
         assets.load("audio/sfx/Cry of Misery.mp3", Sound.class);
         assets.load("audio/sfx/Intense Aura.wav", Sound.class);
         assets.load("audio/sfx/Lullaby Of Obedience.wav", Sound.class);
+        assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
 
         // --- Particle Effects ---
         assets.load("particles/autumn_leaf.p", ParticleEffect.class);
@@ -129,6 +129,7 @@ public class GameLauncher extends Game {
         
         // --- Day 2 UI ---
         assets.load("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
+        assets.load("scenarios/day2/leave_arc/wyvern.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
