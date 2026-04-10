@@ -5,6 +5,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -21,6 +22,7 @@ import edu.tip.forestoftreasures.Controller.DayController;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.StatFeedbackUtils;
 
 public class DayScreen implements Screen {
   private final Stage stage;
@@ -62,6 +64,13 @@ public class DayScreen implements Screen {
   private TextraLabel dexterityLabel;
   private TextraLabel charismaLabel;
 
+  // Track previous stat values for floating feedback
+  private float prevHp;
+  private float prevStrength;
+  private float prevIntelligence;
+  private float prevDexterity;
+  private float prevCharisma;
+
   // --- Right Panel Color Configuration ---
   Color rightBorderColor = Color.valueOf("#2a2a2a");
   Color rightContentColor = Color.valueOf("#212121");
@@ -96,6 +105,13 @@ public class DayScreen implements Screen {
     this.skill3Texture = game.assets.get("icons/skill3_icon.png", Texture.class);
     
     this.stage = new Stage(new ScreenViewport());
+
+    // Initialize previous stat values to current player stats
+    this.prevHp = player.getHp();
+    this.prevStrength = player.getStrength();
+    this.prevIntelligence = player.getIntelligence();
+    this.prevDexterity = player.getDexterity();
+    this.prevCharisma = player.getCharisma();
   }
 
   @Override
@@ -154,55 +170,54 @@ public class DayScreen implements Screen {
         .row();
   
       Image hpIcon = new Image(heartTexture);
-      hpLabel = new TextraLabel(String.format(": %s", formatStat(player.getHp())), playerStatsTextFont);
-      rightContentTable.add(hpIcon)
-        .size(90f)
-        .left()
-        .padRight(10f);
-      rightContentTable.add(hpLabel)
-        .growX()
-        .left()
-        .row();
+      TextraLabel hpPrefix = new TextraLabel(": ", playerStatsTextFont);
+      hpLabel = new TextraLabel(formatStat(player.getHp()), playerStatsTextFont);
+      rightContentTable.add(hpIcon).size(90f).left().padRight(10f);
+      
+      Table hpRowTable = new Table();
+      hpRowTable.add(hpPrefix).left();
+      hpRowTable.add(hpLabel).left();
+      rightContentTable.add(hpRowTable).left().row();
   
       Image strengthIcon = new Image(strengthTexture);
-      strengthLabel = new TextraLabel(String.format(": %s", formatStat(player.getStrength())), playerStatsTextFont);
-      rightContentTable.add(strengthIcon)
-        .size(90f)
-        .left();
-      rightContentTable.add(strengthLabel)
-        .growX()
-        .left()
-        .row();
+      TextraLabel strengthPrefix = new TextraLabel(": ", playerStatsTextFont);
+      strengthLabel = new TextraLabel(formatStat(player.getStrength()), playerStatsTextFont);
+      rightContentTable.add(strengthIcon).size(90f).left().padRight(10f);
+      
+      Table strengthRowTable = new Table();
+      strengthRowTable.add(strengthPrefix).left();
+      strengthRowTable.add(strengthLabel).left();
+      rightContentTable.add(strengthRowTable).left().row();
   
       Image intelligenceIcon = new Image(intelligenceTexture);
-      intelligenceLabel = new TextraLabel(String.format(": %s", formatStat(player.getIntelligence())), playerStatsTextFont);
-      rightContentTable.add(intelligenceIcon)
-        .size(90f)
-        .left();
-      rightContentTable.add(intelligenceLabel)
-        .growX()
-        .left()
-        .row();
+      TextraLabel intelligencePrefix = new TextraLabel(": ", playerStatsTextFont);
+      intelligenceLabel = new TextraLabel(formatStat(player.getIntelligence()), playerStatsTextFont);
+      rightContentTable.add(intelligenceIcon).size(90f).left().padRight(10f);
+      
+      Table intelligenceRowTable = new Table();
+      intelligenceRowTable.add(intelligencePrefix).left();
+      intelligenceRowTable.add(intelligenceLabel).left();
+      rightContentTable.add(intelligenceRowTable).left().row();
       
       Image dexterityIcon = new Image(dexterityTexture);
-      dexterityLabel = new TextraLabel(String.format(": %s", formatStat(player.getDexterity())), playerStatsTextFont);
-      rightContentTable.add(dexterityIcon)
-        .size(90f)
-        .left();
-      rightContentTable.add(dexterityLabel)
-        .growX()
-        .left()
-        .row();
+      TextraLabel dexterityPrefix = new TextraLabel(": ", playerStatsTextFont);
+      dexterityLabel = new TextraLabel(formatStat(player.getDexterity()), playerStatsTextFont);
+      rightContentTable.add(dexterityIcon).size(90f).left().padRight(10f);
+      
+      Table dexterityRowTable = new Table();
+      dexterityRowTable.add(dexterityPrefix).left();
+      dexterityRowTable.add(dexterityLabel).left();
+      rightContentTable.add(dexterityRowTable).left().row();
   
       Image charismaIcon = new Image(charismateTexture);
-      charismaLabel = new TextraLabel(String.format(": %s", formatStat(player.getCharisma())), playerStatsTextFont);
-      rightContentTable.add(charismaIcon)
-        .size(90f)
-        .left();
-      rightContentTable.add(charismaLabel)
-        .growX()
-        .left()
-        .row();
+      TextraLabel charismaPrefix = new TextraLabel(": ", playerStatsTextFont);
+      charismaLabel = new TextraLabel(formatStat(player.getCharisma()), playerStatsTextFont);
+      rightContentTable.add(charismaIcon).size(90f).left().padRight(10f);
+      
+      Table charismaRowTable = new Table();
+      charismaRowTable.add(charismaPrefix).left();
+      charismaRowTable.add(charismaLabel).left();
+      rightContentTable.add(charismaRowTable).left().row();
       
       // Divider
       Image horizontalLineBottom = DrawableFactory.createDivider(Color.WHITE);
@@ -403,11 +418,71 @@ public class DayScreen implements Screen {
    * Called after returning from a battle minigame where stats (especially HP) may have changed.
    */
   public void updatePlayerStats() {
-    if (hpLabel != null) hpLabel.setText(": " + formatStat(player.getHp()));
-    if (strengthLabel != null) strengthLabel.setText(": " + formatStat(player.getStrength()));
-    if (intelligenceLabel != null) intelligenceLabel.setText(": " + formatStat(player.getIntelligence()));
-    if (dexterityLabel != null) dexterityLabel.setText(": " + formatStat(player.getDexterity()));
-    if (charismaLabel != null) charismaLabel.setText(": " + formatStat(player.getCharisma()));
+    if (hpLabel != null) {
+      float diff = player.getHp() - prevHp;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(
+          stage, 
+          hpLabel.localToStageCoordinates(new Vector2(0, 0)), 
+          diff, 
+          playerStatsTextFont
+        );
+        prevHp = player.getHp();
+      }
+      hpLabel.setText(formatStat(player.getHp()));
+    }
+    if (strengthLabel != null) {
+      float diff = player.getStrength() - prevStrength;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(
+          stage, 
+          strengthLabel.localToStageCoordinates(new Vector2(0, 0)), 
+          diff, 
+          playerStatsTextFont
+        );
+        prevStrength = player.getStrength();
+      }
+      strengthLabel.setText(formatStat(player.getStrength()));
+    }
+    if (intelligenceLabel != null) {
+      float diff = player.getIntelligence() - prevIntelligence;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(
+          stage, 
+          intelligenceLabel.localToStageCoordinates(new Vector2(0, 0)), 
+          diff, 
+          playerStatsTextFont
+        );
+        prevIntelligence = player.getIntelligence();
+      }
+      intelligenceLabel.setText(formatStat(player.getIntelligence()));
+    }
+    if (dexterityLabel != null) {
+      float diff = player.getDexterity() - prevDexterity;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(
+          stage, 
+          dexterityLabel.localToStageCoordinates(new Vector2(0, 0)), 
+          diff, 
+          playerStatsTextFont
+        );
+        prevDexterity = player.getDexterity();
+      }
+      dexterityLabel.setText(formatStat(player.getDexterity()));
+    }
+    if (charismaLabel != null) {
+      float diff = player.getCharisma() - prevCharisma;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(
+          stage, 
+          charismaLabel.localToStageCoordinates(new Vector2(0, 0)), 
+          diff, 
+          playerStatsTextFont
+        );
+        prevCharisma = player.getCharisma();
+      }
+      charismaLabel.setText(formatStat(player.getCharisma()));
+    }
   }
 
   /**

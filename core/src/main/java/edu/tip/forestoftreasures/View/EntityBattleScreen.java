@@ -3,6 +3,7 @@ package edu.tip.forestoftreasures.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
@@ -23,6 +24,7 @@ import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.StatFeedbackUtils;
 
 /**
  * View for the entity battle screen. Responsible only for rendering UI.
@@ -71,6 +73,8 @@ public class EntityBattleScreen implements Screen {
   private TextraLabel enemyHpLabel;
   private TextraLabel playerHpLabel;
   private Music battleMusic;
+  private float prevPlayerHp;
+  private float prevEnemyHp;
 
   public EntityBattleScreen(GameLauncher game, MinigameNode node, Player player, Runnable onComplete) {
     this.game = game;
@@ -95,6 +99,13 @@ public class EntityBattleScreen implements Screen {
         }
     } catch (Exception e) {
         // Skip playing if not properly loaded
+    }
+
+    if (controller != null && controller.getPlayer() != null) {
+        prevPlayerHp = controller.getPlayer().getHp();
+    }
+    if (controller != null && controller.getEnemy() != null) {
+        prevEnemyHp = controller.getEnemy().getHp();
     }
 
     drawUI();
@@ -147,13 +158,25 @@ public class EntityBattleScreen implements Screen {
 
   public void updateEnemyHealth() {
     if (enemyHpLabel != null && controller != null) {
-      enemyHpLabel.setText("Health: " + formatStat(controller.getEnemy().getHp()));
+      float currentHp = controller.getEnemy().getHp();
+      float diff = currentHp - prevEnemyHp;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(stage, enemyHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
+        prevEnemyHp = currentHp;
+      }
+      enemyHpLabel.setText(formatStat(currentHp));
     }
   }
 
   public void updatePlayerHealth() {
     if (playerHpLabel != null && controller != null) {
-      playerHpLabel.setText("Health: " + formatStat(controller.getPlayer().getHp()));
+      float currentHp = controller.getPlayer().getHp();
+      float diff = currentHp - prevPlayerHp;
+      if (diff != 0) {
+        StatFeedbackUtils.showStatFeedback(stage, playerHpLabel.localToStageCoordinates(new Vector2(0, 0)), diff, statsFont);
+        prevPlayerHp = currentHp;
+      }
+      playerHpLabel.setText(formatStat(currentHp));
     }
   }
 
@@ -219,25 +242,26 @@ public class EntityBattleScreen implements Screen {
     // Stats container (vertically centered in remaining space, left-aligned)
     Table statsTable = new Table();
 
-    enemyHpLabel = new TextraLabel(
-      "Health: " + formatStat(enemy.getHp()), statsFont);
-    statsTable.add(enemyHpLabel)
-      .left()
-      .padBottom(10f)
-      .row();
+    Table hpRowTable = new Table();
+    TextraLabel enemyHpPrefix = new TextraLabel("Health: ", statsFont);
+    enemyHpLabel = new TextraLabel(formatStat(enemy.getHp()), statsFont);
+    hpRowTable.add(enemyHpPrefix).left();
+    hpRowTable.add(enemyHpLabel).left();
+    statsTable.add(hpRowTable).left().padBottom(10f).row();
 
-    TextraLabel strengthLabel = new TextraLabel(
-      "Strength: " + formatStat(enemy.getStrength()), statsFont);
-    statsTable.add(strengthLabel)
-      .left()
-      .padBottom(10f)
-      .row();
+    Table strengthRowTable = new Table();
+    TextraLabel strengthPrefix = new TextraLabel("Strength: ", statsFont);
+    TextraLabel strengthLabel = new TextraLabel(formatStat(enemy.getStrength()), statsFont);
+    strengthRowTable.add(strengthPrefix).left();
+    strengthRowTable.add(strengthLabel).left();
+    statsTable.add(strengthRowTable).left().padBottom(10f).row();
 
-    TextraLabel initiativeLabel = new TextraLabel(
-      "Initiative: " + formatStat(enemy.getInitiative()), statsFont);
-    statsTable.add(initiativeLabel)
-      .left()
-      .row();
+    Table initiativeRowTable = new Table();
+    TextraLabel initiativePrefix = new TextraLabel("Initiative: ", statsFont);
+    TextraLabel initiativeLabel = new TextraLabel(formatStat(enemy.getInitiative()), statsFont);
+    initiativeRowTable.add(initiativePrefix).left();
+    initiativeRowTable.add(initiativeLabel).left();
+    statsTable.add(initiativeRowTable).left().row();
 
     enemyStatsContentTable.add(statsTable)
       .expand()
@@ -281,25 +305,26 @@ public class EntityBattleScreen implements Screen {
     // Stats container (vertically centered in remaining space, left-aligned)
     Table statsTable = new Table();
 
-    playerHpLabel = new TextraLabel(
-      "Health: " + formatStat(player.getHp()), statsFont);
-    statsTable.add(playerHpLabel)
-      .left()
-      .padBottom(10f)
-      .row();
+    Table hpRowTable = new Table();
+    TextraLabel playerHpPrefix = new TextraLabel("Health: ", statsFont);
+    playerHpLabel = new TextraLabel(formatStat(player.getHp()), statsFont);
+    hpRowTable.add(playerHpPrefix).left();
+    hpRowTable.add(playerHpLabel).left();
+    statsTable.add(hpRowTable).left().padBottom(10f).row();
 
-    TextraLabel intelligenceLabel = new TextraLabel(
-      "Intelligence: " + formatStat(player.getIntelligence()), statsFont);
-    statsTable.add(intelligenceLabel)
-      .left()
-      .padBottom(10f)
-      .row();
+    Table intelligenceRowTable = new Table();
+    TextraLabel intelligencePrefix = new TextraLabel("Intelligence: ", statsFont);
+    TextraLabel intelligenceLabel = new TextraLabel(formatStat(player.getIntelligence()), statsFont);
+    intelligenceRowTable.add(intelligencePrefix).left();
+    intelligenceRowTable.add(intelligenceLabel).left();
+    statsTable.add(intelligenceRowTable).left().padBottom(10f).row();
 
-    TextraLabel initiativeLabel = new TextraLabel(
-      "Initiative: " + formatStat(player.getInitiative()), statsFont);
-    statsTable.add(initiativeLabel)
-      .left()
-      .row();
+    Table initiativeRowTable = new Table();
+    TextraLabel initiativePrefix = new TextraLabel("Initiative: ", statsFont);
+    TextraLabel initiativeLabel = new TextraLabel(formatStat(player.getInitiative()), statsFont);
+    initiativeRowTable.add(initiativePrefix).left();
+    initiativeRowTable.add(initiativeLabel).left();
+    statsTable.add(initiativeRowTable).left().row();
 
     playerStatsContentTable.add(statsTable)
       .expand()
