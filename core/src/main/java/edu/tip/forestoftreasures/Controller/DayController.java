@@ -51,7 +51,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   // Data of the Dialogue depending on the day
   private static final String STORY_FILE = "dialogue/story_schema.json";
-  private int currentDay = 2;
+  private int currentDay = 1;
 
   private final GameLauncher game;
   private final DayScreen screen;
@@ -330,7 +330,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     switch (currentDay) {
       case 2 -> loadAndStartDay("day" + currentDay);
-      // case 3 -> loadAndStartDay("day" + currentDay); // Re-enable when day3 exists in story_schema.json
+      case 3 -> loadAndStartDay("day" + currentDay);
       default -> {
         Gdx.app.log("DayController", "End of Game! Day: " + currentDay);
         game.setScreen(new CreditsScreen(game));
