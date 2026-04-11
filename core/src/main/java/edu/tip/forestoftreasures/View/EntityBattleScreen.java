@@ -22,6 +22,7 @@ import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
+import java.util.function.Consumer;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 import edu.tip.forestoftreasures.utils.StatFeedbackUtils;
@@ -83,7 +84,7 @@ public class EntityBattleScreen implements Screen {
   private boolean isBatchingEnemyHp = false;
   private boolean isBatchingPlayerHp = false;
 
-  public EntityBattleScreen(GameLauncher game, MinigameNode node, Player player, Runnable onComplete) {
+  public EntityBattleScreen(GameLauncher game, MinigameNode node, Player player, Consumer<Boolean> onComplete) {
     this.game = game;
     statsFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 32, Color.WHITE);
     controller = new EntityBattleController(this.game, this, player, node, onComplete);

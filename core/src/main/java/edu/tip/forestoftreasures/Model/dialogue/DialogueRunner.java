@@ -218,13 +218,23 @@ public class DialogueRunner {
   }
 
   /**
-   * Advances the graph after the player successfully passes a minigame.
+   * Advances the graph after the player completes a minigame.
    *
-   * Called by the minigame screen once the win condition is met.
-   * Transitions to the node linked via MinigameNode.then().
+   * Called by the minigame screen once the minigame ends.
+   *
+   * @param success Whether the player passed or failed the minigame.
    */
-  public void onMinigameFinished() {
-    current = current.getNext();
+  public void onMinigameFinished(boolean success) {
+    if (success) {
+      current = current.getNext();
+    } else if (current instanceof MinigameNode minigame && minigame.getFailNext() != null) {
+      current = minigame.getFailNext();
+    } else {
+      // DEFAULT: Transition to Game Over handled by screens if not success 
+      // and no failNext provided. But if we are here, we just notify the handler.
+      displayHandler.triggerGameOver();
+      return;
+    }
     step();
   }
 }

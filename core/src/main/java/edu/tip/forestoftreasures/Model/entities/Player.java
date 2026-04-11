@@ -16,7 +16,7 @@ import edu.tip.forestoftreasures.Model.mechanics.StatusEffect;
  */
 public class Player extends Entity {
   // Default starting stats
-  public static final float STARTING_HP = 48f;
+  public static final float STARTING_HP = 70f;
   public static final float STARTING_STR = 10f;
   public static final float STARTING_INT = 30f;
   public static final float STARTING_DEX = 12f;
@@ -128,6 +128,10 @@ public class Player extends Entity {
 
   public int getKnightBattlesCompleted() {
     return knightBattlesCompleted;
+  }
+
+  public void resetKnightCounter() {
+    this.knightBattlesCompleted = 0;
   }
 
   /**

@@ -359,10 +359,17 @@ public class DialogueLoader {
     String dayKey
   ) {
     String nextId = nodeJson.getString("next", null);
-    if (nextId == null) return;
+    String failNextId = nodeJson.getString("failNext", null);
 
     MinigameNode minigameNode = (MinigameNode) nodeMap.get(id);
-    minigameNode.then(resolveNode(nextId, nodeMap, id, dayKey));
+
+    if (nextId != null) {
+      minigameNode.then(resolveNode(nextId, nodeMap, id, dayKey));
+    }
+
+    if (failNextId != null) {
+      minigameNode.linkFailNext(resolveNode(failNextId, nodeMap, id, dayKey));
+    }
   }
 
   /**

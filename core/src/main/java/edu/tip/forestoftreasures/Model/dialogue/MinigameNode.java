@@ -17,6 +17,9 @@ public class MinigameNode extends DialogueNode {
    /** The node to transition to after the player passes the minigame. */
   private DialogueNode next;
 
+  /** The node to transition to if the player fails the minigame. */
+  private DialogueNode failNext;
+
 
   /**
    * Constructs a MinigameNode with the given screen key and turn override.
@@ -40,8 +43,8 @@ public class MinigameNode extends DialogueNode {
     return this;
   }
 
-  /**
-   * Returns the next node after the minigame is completed.
+   /**
+   * Returns the next node after the minigame is completed successfully.
    * Returns null if then() was never called (terminal node).
    *
    * @return The next DialogueNode, or null.
@@ -49,5 +52,25 @@ public class MinigameNode extends DialogueNode {
   @Override
   public DialogueNode getNext() {
     return next;
+  }
+
+  /**
+   * Links this node to the failure node in the graph after the minigame ends in a loss.
+   *
+   * @param failNext The node to transition to if the minigame is failed.
+   * @return This MinigameNode instance, for method chaining.
+   */
+  public MinigameNode linkFailNext(DialogueNode failNext) {
+    this.failNext = failNext;
+    return this;
+  }
+
+  /**
+   * Returns the node to transition to if the minigame is failed.
+   *
+   * @return The failNext DialogueNode, or null.
+   */
+  public DialogueNode getFailNext() {
+    return failNext;
   }
 }

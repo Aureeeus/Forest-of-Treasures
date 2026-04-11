@@ -1,6 +1,7 @@
 package edu.tip.forestoftreasures.Controller;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -139,6 +140,12 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.storyRoot = day.rootNode();
     this.achievements = day.achievements();
 
+    // Add static centered Day label
+    TextraLabel dayLabel = new TextraLabel("[#FFDB51][[DAY " + currentDay + "][]", dialogueFont);
+    dayLabel.setName("dayLabel");
+    dayLabel.setAlignment(Align.center);
+    textDialogueTable.add(dayLabel).growX().center().padBottom(10f).row();
+
     runner.start(storyRoot);
   }
 
@@ -273,7 +280,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   public void showMinigame(MinigameNode node) {
     if (DEV_SKIP_MINIGAMES) {
       Gdx.app.log("DayController", "[DEV MODE] Auto-skipping/winning minigame: " + node.screenKey);
-      createMinigameCompletionCallback(node.screenKey).run();
+      createMinigameCompletionCallback(node.screenKey).accept(true);
       return;
     }
 
@@ -336,14 +343,14 @@ public class DayController implements DialogueRunner.DisplayHandler {
   // ---------------------------------------------------------------------------
 
   /**
-   * Creates the callback executed when a minigame is successfully completed.
+   * Creates the callback executed when a minigame is completed.
    * Handles returning from the minigame screen back to the DayScreen and
-   * resuming the dialogue flow.
+   * resuming the dialogue flow based on the result.
    *
    * @param screenKey The identifier for the minigame to resolve specific logic.
-   * @return A Runnable containing the on-complete logic.
+   * @return A Consumer accepting a boolean (success) containing the completion logic.
    */
-  private Runnable createMinigameCompletionCallback(String screenKey) {
+  private Consumer<Boolean> createMinigameCompletionCallback(String screenKey) {
     // Determines whether the minigame involves entity combat, requiring a stat
     // refresh on return. Now includes cavern creature battle.
     boolean isBattleMinigame = switch (screenKey) {
@@ -353,11 +360,13 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "leviathan_battle_minigame",
            "wyvern_battle_minigame",
            "knights_battle_minigame",
-           "knight_captain_battle_minigame" -> true;
+           "knight_captain_battle_minigame",
+           "goblin_king_battle_minigame",
+           "3knights_battle_minigame" -> true;
       default -> false;
     };
 
-    return () -> {
+    return (success) -> {
       game.setScreen(screen); // return to DayScreen — state is preserved
       setPendingOverflowTrim(true);
 
@@ -365,7 +374,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
         screen.updatePlayerStats();
       }
 
-      runner.onMinigameFinished(); // resume dialogue graph from next node
+      runner.onMinigameFinished(success); // resume dialogue graph with result
     };
   }
 
@@ -382,11 +391,11 @@ public class DayController implements DialogueRunner.DisplayHandler {
    * @return The minigame Screen to transition to.
    */
   private Screen resolveMinigameScreen(MinigameNode node) {
-    Runnable onComplete = createMinigameCompletionCallback(node.screenKey);
+    Consumer<Boolean> onComplete = createMinigameCompletionCallback(node.screenKey);
 
     return switch (node.screenKey) {
       // Add new minigame screens here as cases
-      case "maze_minigame" -> new mazeBossScreen(game, onComplete);
+      case "maze_minigame" -> new mazeBossScreen(game, node, onComplete);
       // Both battle minigame variants use the EntityBattleScreen with specific routing via screenKey
       case "bandit_battle_minigame", 
            "cavern_creature_battle_minigame", 
@@ -394,7 +403,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "leviathan_battle_minigame",
            "wyvern_battle_minigame",
            "knights_battle_minigame",
-           "knight_captain_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
+           "knight_captain_battle_minigame",
+           "goblin_king_battle_minigame",
+           "3knights_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
           "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
     };

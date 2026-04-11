@@ -115,7 +115,13 @@ public final class DialogueUtils {
         table.clearChildren();
         
         for (Actor a : activeActors) {
-          table.add(a).growX().bottom().left().padBottom(5f).row();
+          var cell = table.add(a).growX().bottom().padBottom(5f);
+          if ("dayLabel".equals(a.getName())) {
+            cell.center();
+          } else {
+            cell.left();
+          }
+          cell.row();
         }
       }
 

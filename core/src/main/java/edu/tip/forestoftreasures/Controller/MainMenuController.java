@@ -96,7 +96,7 @@ public class MainMenuController {
       public void changed(ChangeEvent event, Actor actor) {
         selectSound.play(sfxVolume);
         screen.stopMusic();
-        game.setScreen(new mazeBossScreen(game, null));
+        game.setScreen(new mazeBossScreen(game, null, null));
       }
     });
   }

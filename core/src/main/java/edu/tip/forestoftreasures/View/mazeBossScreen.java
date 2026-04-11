@@ -22,6 +22,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.mazeBossController;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import java.util.function.Consumer;
+import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 
 public class mazeBossScreen implements Screen {
   private Stage stage;
@@ -61,10 +63,12 @@ public class mazeBossScreen implements Screen {
   private Sound enterSound;
   private boolean hasPlayedEnter = false;
 
-  private final Runnable onComplete;
+  private final Consumer<Boolean> onComplete;
+  private final MinigameNode node;
 
-  public mazeBossScreen(GameLauncher game, Runnable onComplete) {
+  public mazeBossScreen(GameLauncher game, MinigameNode node, Consumer<Boolean> onComplete) {
     this.game = game;
+    this.node = node;
     this.onComplete = onComplete;
     this.controller = new mazeBossController();
   }
@@ -120,13 +124,22 @@ public class mazeBossScreen implements Screen {
 
     // If the player was killed by the enemy, go to Game Over
     if (controller.playerDead) {
-      game.setScreen(new GameOverScreen(game));
+      if (node != null && node.getFailNext() != null && onComplete != null) {
+        onComplete.accept(false); // notify runner of failure
+      } else {
+        game.setScreen(new GameOverScreen(game));
+      }
       return;
     }
 
     // Check exit BEFORE rendering — no point drawing if we're switching screens
     if (controller.isOnExit(mazeMap)) {
-      onComplete.run();
+      if (onComplete != null) {
+        onComplete.accept(true); // notify runner of success
+      } else {
+        // Fallback for standalone/test: return to main menu or just close
+        game.setScreen(new MainMenuScreen(game));
+      }
       return;
     }
 

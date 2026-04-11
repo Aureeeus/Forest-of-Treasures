@@ -110,7 +110,11 @@ public class GameLauncher extends Game {
         assets.load("audio/sfx/Cry of Misery.mp3", Sound.class);
         assets.load("audio/sfx/Intense Aura.wav", Sound.class);
         assets.load("audio/sfx/Lullaby Of Obedience.wav", Sound.class);
-        assets.load("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/cavern_creature_attack.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/leviathan_attack.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/wyvern_attack.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/goblin_king_attack.mp3", Sound.class);
 
         // --- Particle Effects ---
         assets.load("particles/autumn_leaf.p", ParticleEffect.class);
@@ -134,15 +138,28 @@ public class GameLauncher extends Game {
         assets.load("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
         
         // --- Day 2 UI ---
+        assets.load("scenarios/day2/main_arc/stream.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/bushes.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/goblin_settlement.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/goblin_being_harassed.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/goblin_city_gate.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/goblin_city_interior.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/bioluminescent_moss.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/cavern_heart.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/centipede.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/leviathan.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/ravine.png", Texture.class);
+        assets.load("scenarios/day2/cavern_arc/knight.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/knights.png", Texture.class);
         assets.load("scenarios/day2/cavern_arc/knight_captain.png", Texture.class);
         assets.load("scenarios/day2/leave_arc/wyvern.png", Texture.class);
+        assets.load("scenarios/day2/bandit_arc/goblin_king.png", Texture.class);
+        assets.load("scenarios/day2/attack_arc/bullfrog_soldiers.png", Texture.class);
+        assets.load("scenarios/day2/bandit_arc/bandit_encounter.png", Texture.class);
+        assets.load("scenarios/day2/bandit_arc/bandit_city_gate.png", Texture.class);
+        assets.load("scenarios/day2/bandit_arc/bandit_goblin_collab.png", Texture.class);
+        assets.load("scenarios/day2/bandit_arc/battle_scene.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
@@ -180,3 +197,5 @@ public class GameLauncher extends Game {
         UIFactory.dispose();
     }
 }
+
+// * TODO: Ask Manalo about the stats and pictures of hobgoblin king as well as its attack lines and also the ferocious battle bullshit. Java and Striped socks achievement also.

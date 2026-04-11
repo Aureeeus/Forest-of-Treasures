@@ -72,7 +72,7 @@ public class AchievementsScreen implements Screen {
             "The Treasure I Never Had",
             "The Treasure of Life",
             "Treasure of Aggression",
-            "Treasure of Harmony",
+            "The Treasure of Harmony",
             "Treasure of Riches",
             "Wait for it...",
             "Blessing of the Sprite",

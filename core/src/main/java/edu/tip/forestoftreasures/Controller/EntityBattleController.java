@@ -1,5 +1,6 @@
 package edu.tip.forestoftreasures.Controller;
 
+import java.util.function.Consumer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Sound;
@@ -23,6 +24,7 @@ import edu.tip.forestoftreasures.Model.entities.Leviathan;
 import edu.tip.forestoftreasures.Model.entities.Wyvern;
 import edu.tip.forestoftreasures.Model.entities.Knight;
 import edu.tip.forestoftreasures.Model.entities.KnightCaptain;
+import edu.tip.forestoftreasures.Model.entities.GoblinKing;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
@@ -63,9 +65,12 @@ public class EntityBattleController {
   private static final int BLESSING_THRESHOLD = 15;
   private String blessingFlavorText;
 
+  private int maxKnights = 1; // Default for standard battles
+
   // Enemy data
   private Entity enemy;
   private String enemyName;
+  private final MinigameNode node;
 
   // Skill selection state
   private int selectedSkillRow = 0;
@@ -90,7 +95,7 @@ public class EntityBattleController {
   private boolean pendingOverflowTrim = false;
   private Font dialogueFont;
 
-  private final Runnable onComplete;
+  private final Consumer<Boolean> onComplete;
 
   /**
    * @param game      the main game launcher holding the asset manager
@@ -104,10 +109,11 @@ public class EntityBattleController {
       EntityBattleScreen screen,
       Player player,
       MinigameNode node,
-      Runnable onComplete) {
+      Consumer<Boolean> onComplete) {
     this.game = game;
     this.screen = screen;
     this.player = player;
+    this.node = node;
     this.screenKey = node.screenKey;
     this.onComplete = onComplete;
     
@@ -119,9 +125,14 @@ public class EntityBattleController {
 
     resolveEnemy(node.screenKey, node.playerTurn);
 
-    // Dedicated blessing roll — only for the knights battle minigame
+    // Dynamic knight sequence setup
     if ("knights_battle_minigame".equals(screenKey)) {
+      this.maxKnights = 10;
+      player.resetKnightCounter();
       rollForBlessing();
+    } else if ("3knights_battle_minigame".equals(screenKey)) {
+      this.maxKnights = 3;
+      player.resetKnightCounter();
     }
 
     // Arrow icon from sprite sheet
@@ -171,15 +182,16 @@ public class EntityBattleController {
     switch (screenKey) {
       case "bandit_battle_minigame" -> {
         Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
-        Sound banditAttackSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+        Sound banditAttackSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
 
         this.enemy = new Bandit(initiative, banditTexture, banditAttackSound);
         this.enemyName = "Bandit";
       }
       case "cavern_creature_battle_minigame" -> {
         Texture creatureTexture = game.assets.get("scenarios/day2/cavern_arc/cavern_creature.png", Texture.class);
+        Sound creatureAttackSound = game.assets.get("audio/sfx/enemies/cavern_creature_attack.mp3", Sound.class);
 
-        this.enemy = new CavernCreature(initiative, creatureTexture, null);
+        this.enemy = new CavernCreature(initiative, creatureTexture, creatureAttackSound);
         this.enemyName = "Cavern Creature";
       }
       case "centipede_battle_minigame" -> {
@@ -190,29 +202,38 @@ public class EntityBattleController {
       }
       case "leviathan_battle_minigame" -> {
         Texture leviathanTexture = game.assets.get("scenarios/day2/cavern_arc/leviathan.png", Texture.class);
+        Sound leviathanAttackSound = game.assets.get("audio/sfx/enemies/leviathan_attack.mp3", Sound.class);
 
-        this.enemy = new Leviathan(initiative, leviathanTexture, null);
+        this.enemy = new Leviathan(initiative, leviathanTexture, leviathanAttackSound);
         this.enemyName = "Leviathan";
       }
       case "wyvern_battle_minigame" -> {
         Texture wyvernTexture = game.assets.get("scenarios/day2/leave_arc/wyvern.png", Texture.class);
+        Sound wyvernAttackSound = game.assets.get("audio/sfx/enemies/wyvern_attack.mp3", Sound.class);
 
-        this.enemy = new Wyvern(initiative, wyvernTexture, null);
+        this.enemy = new Wyvern(initiative, wyvernTexture, wyvernAttackSound);
         this.enemyName = "Wyvern";
       }
-      case "knights_battle_minigame" -> {
+      case "knights_battle_minigame", "3knights_battle_minigame" -> {
         Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
-        Sound knightSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+        Sound knightSlashSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
 
         this.enemy = new Knight(initiative, knightTexture, knightSlashSound);
         this.enemyName = "Knight";
       }
       case "knight_captain_battle_minigame" -> {
         Texture captainTexture = game.assets.get("scenarios/day2/cavern_arc/knight_captain.png", Texture.class);
-        Sound captainSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+        Sound captainSlashSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
 
         this.enemy = new KnightCaptain(initiative, captainTexture, captainSlashSound);
         this.enemyName = "Knight Captain";
+      }
+      case "goblin_king_battle_minigame" -> {
+        Texture goblinKingTexture = game.assets.get("scenarios/day2/bandit_arc/goblin_king.png", Texture.class);
+        Sound goblinKingAttackSound = game.assets.get("audio/sfx/enemies/goblin_king_attack.mp3", Sound.class);
+
+        this.enemy = new GoblinKing(initiative, goblinKingTexture, goblinKingAttackSound);
+        this.enemyName = "Goblin King";
       }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
@@ -349,11 +370,11 @@ public class EntityBattleController {
    */
   private void onPlayerTurnEnded() {
     if (!enemy.isAlive()) {
-      if ("knights_battle_minigame".equals(screenKey)) {
+      if ("knights_battle_minigame".equals(screenKey) || "3knights_battle_minigame".equals(screenKey)) {
         player.onKnightBattleCompleted();
         screen.updatePlayerHealth(); // Refresh with any blessing heal
         
-        if (player.getKnightBattlesCompleted() < 10) {
+        if (player.getKnightBattlesCompleted() < maxKnights) {
           setupNextKnight();
           return;
         }
@@ -376,7 +397,7 @@ public class EntityBattleController {
     // Create the next Knight
     float knightInitiative = calculateEnemyInitiative(null);
     Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
-    Sound knightSlashSound = game.assets.get("audio/sfx/bandit_sfx/slash.mp3", Sound.class);
+    Sound knightSlashSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
     this.enemy = new Knight(knightInitiative, knightTexture, knightSlashSound);
     
     // Re-roll player initiative for the new battle
@@ -473,6 +494,11 @@ public class EntityBattleController {
           
           AttackResult result = captain.attackWithFlavor(player);
           flavorText = result.flavorText();
+        } else if (enemy instanceof GoblinKing goblinKing) {
+          goblinKing.playAttackSound(sfxVolume);
+
+          AttackResult result = goblinKing.attackWithFlavor(player);
+          flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies
           float dmg = enemy.attack(player);
@@ -517,9 +543,13 @@ public class EntityBattleController {
     
     // If player died, go to GameOverScreen; otherwise resume dialogue
     if (!player.isAlive()) {
-      game.setScreen(new GameOverScreen(game));
+      if (node != null && node.getFailNext() != null) {
+        onComplete.accept(false); // notify runner of failure
+      } else {
+        game.setScreen(new GameOverScreen(game));
+      }
     } else if (onComplete != null) {
-      onComplete.run();
+      onComplete.accept(true); // notify runner of success
     }
   }
 

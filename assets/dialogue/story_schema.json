@@ -149,6 +149,18 @@
       {
         "id": "Gruesome Farewell",
         "description": "Meet a terrible and gruesome end."
+      },
+      {
+        "id": "The Most Ambitious Crossover",
+        "description": "You solved Racism, YAY!."
+      },
+      {
+        "id": "The Treasure of Harmony",
+        "description": "Restore balance to the spirits of the forest."
+      },
+      {
+        "id": "The Treasure I Never Had",
+        "description": "You fought hard, Mage."
       }
     ],
     "nodes": [
@@ -163,7 +175,7 @@
         "id": "d2_line2",
         "type": "line",
         "text": "\nI packed my belongings and dispelled the cloak. I have some space left in my bag for water. {COLOR=#FFDB51}Should I bring some from this stream?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/stream.png",
         "next": "d2_gather_water_choice"
       },
       {
@@ -192,7 +204,7 @@
       {
         "id": "d2_gather_water_choice_line2",
         "type": "line",
-        "text": "\nThis forest won't survive if this stream is the only water source this place has. I'd better save some space, or when I need it.",
+        "text": "\nThis {COLOR=RED}forest{ENDCOLOR} won't survive if this {WAVE}stream{ENDWAVE} is the only water source this place has. I'd better save some space, or when I need it.",
         "texture": null,
         "next": "d2_line3"
       },
@@ -200,7 +212,7 @@
         "id": "d2_line3",
         "type": "line",
         "text": "\nAs the adventure pushed through, the {WAVE}trees became much taller and wider{ENDWAVE}. The forest looked dimmer, so I started etching lines on trees to mark the places I've been to. The bushes start thickening and growing higher. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/bushes.png",
         "next": "d2_bush_choice"
       },
       {
@@ -276,14 +288,14 @@
         "id": "d2_observation_success_line",
         "type": "line",
         "text": "\n{COLOR=#66FF00}A cavern creature with glowing eyes was drooling. You managed to strike it first before it could lunge.{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/cavern_creature.png",
         "next": "d2_cavern_creature_battle_minigame_suc_obs"
       },
       {
         "id": "d2_observation_fail_line",
         "type": "line",
         "text": "\n{COLOR=RED}A cavern creature with glowing eyes was drooling. It lunges at you and takes the first turn.{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/cavern_creature.png",
         "next": "d2_cavern_creature_battle_minigame_fail_obs"
       },
       {
@@ -321,7 +333,7 @@
         "id": "d2_magic_success_line",
         "type": "line",
         "text": "\n{COLOR=#66FF00}Magic fills the place{ENDCOLOR}. You see {RAINBOW}Mana traces{ENDRAINBOW} so thick, it stuns you momentarily. Abusing the stun, a {COLOR=RED}centipede-like creature with gills{ENDCOLOR} snarl at you and attacks you.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/centipede.png",
         "next": "d2_centipede_battle_minigame"
       },
       {
@@ -348,7 +360,7 @@
         "id": "d2_cavern_line5",
         "type": "line",
         "text": "\nAfter a couple steps, I hear {SHAKE}a terrifying scream{ENDSHAKE} - not of a human, but of a beast. I don't know whether to be glad or scared as I remember this war cry. It was of a {COLOR=RED}Leviathan{ENDCOLOR}. {COLOR=RED}Leviathans{ENDCOLOR} normally inhabit deep sea trenches but the cavern lacks the size to handle it. However, I was mistaken. After taking a left at a place resembling a crossroad, the already large ravine just changed the game. A deep, and wide cliff reveals itself to me. The cliff was so deep and wide that a {SHAKE}{COLOR=RED}large lava pool{ENDCOLOR}{ENDSHAKE} engulfs the majority of this cavern's floor. I look up and I see the {COLOR=RED}{WAVE}Leviathan{ENDWAVE}{ENDCOLOR} hovering over the lava pool.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/leviathan.png",
         "next": "d2_lightstep_roll"
       },
       {
@@ -405,14 +417,14 @@
       {
         "id": "d2_observation1_success_line",
         "type": "line",
-        "text": "\nYour eyes quickly adjust in the darkness and lock eyes with a spherical mass of soil, root, and moss.",
+        "text": "\n{COLOR=#66FF00}Your eyes quickly adjust in the darkness and lock eyes with a spherical mass of soil, root, and moss.{ENDCOLOR}",
         "texture": null,
         "next": "d2_cavern_line8"
       },
       {
         "id": "d2_observation1_fail_line",
         "type": "line",
-        "text": "\n\"Protect me from the flames, young one.\" You hear once again. The cavern then glows for every syllable you heard.",
+        "text": "\n{WAVE}\"Protect me from the flames, young one.\"{ENDWAVE} You hear once again. The {COLOR=RED}cavern{ENDCOLOR} then {RAINBOW}glows{ENDRAINBOW} for every syllable you heard.",
         "texture": null,
         "next": "d2_cavern_line8"
       },
@@ -433,14 +445,14 @@
       {
         "id": "d2_cavern_line10",
         "type": "line",
-        "text": "\nI do not understand its poems, but its intentions were clear. It was the cavern - no, the forest speaks to me.",
+        "text": "\nI do not understand its poems, but its intentions were clear. It was the {COLOR=RED}cavern{ENDCOLOR} - no, the {COLOR=RED}forest{ENDCOLOR} {WAVE}speaks to me{ENDWAVE}.",
         "texture": null,
         "next": "d2_cavern_line11"
       },
       {
         "id": "d2_cavern_line11",
         "type": "line",
-        "text": "\nLights emit from the core of the cave. This sphere - resembling an egg - speaks to me in ways I cannot fathom.",
+        "text": "\n{RAINBOW}Lights emit from the core of the cave{ENDRAINBOW}. This sphere - resembling an {WAVE}egg{ENDWAVE} - speaks to me in ways I cannot fathom.",
         "texture": null,
         "next": "d2_cavern_line12"
       },
@@ -454,7 +466,7 @@
       {
         "id": "d2_cavern_line13",
         "type": "line",
-        "text": "\n\"What do you mean?\" I ask.",
+        "text": "\n{COLOR=#FFDB51}\"What do you mean?\"{ENDCOLOR} I ask.",
         "texture": null,
         "next": "d2_cavern_line14"
       },
@@ -462,7 +474,7 @@
         "id": "d2_cavern_line14",
         "type": "line",
         "text": "\nBefore the heart could react, I saw the {COLOR=RED}knights of Drakeswood{ENDCOLOR}, in full armor, line up at another one of the cavern's entrances.",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/knight.png",
         "next": "d2_cavern_choice"
       },
       {
@@ -483,14 +495,14 @@
         "id": "d2_cavern_choice_line1",
         "type": "line",
         "text": "\nThe knights aim their weapons at you. They tell you you know too much. {COLOR=RED}10 knights attack you.{ENDCOLOR}{WAIT=1}",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/knights.png",
         "next": "d2_knights_battle_minigame"
       },
       {
         "id": "d2_cavern_choice_line2",
         "type": "line",
         "text": "\n{COLOR=RED}They say you've been gone for a month. Drakeswood believes that the forest has absorbed you as its food. However, they do not want you to know that to eliminate the forest was their true goal. Without hesitation, their captain swings at you. A fierce boss battle starts. The heart does not help you on this one.{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/knight_captain.png",
         "next": "d2_knight_captain_battle_minigame"
       },
       {
@@ -509,13 +521,13 @@
         "id": "d2_cavern_line15",
         "type": "line",
         "text": "\n{COLOR=#66FF00}I won the fight, leaving the knights' bodies on the ground.{ENDCOLOR} The cave absorbs them for nutrients - even those who were still breathing. The forest takes, the forest survives. It fights for itself and chooses the righteous ones to help itself. I ask the forest to let me go to notify Drakeswood of its \"existence\".",
-        "texture": null,
+        "texture": "scenarios/day2/cavern_arc/cavern_heart.png",
         "next": "d2_cavern_line16"
       },
       {
         "id": "d2_cavern_line16",
         "type": "line",
-        "text": "\nWhether I succeed or don't, I shall return to this forest and guard it.{WAIT=2}",
+        "text": "\nWhether I succeed or don't, I shall return to this {COLOR=RED}forest{ENDCOLOR} and guard it.{WAIT=2}",
         "texture": null,
         "triggerGameEnd": true,
         "next": null
@@ -524,7 +536,7 @@
         "id": "d2_line4",
         "type": "line",
         "text": "\nThe expedition went on as expected until I was greeted with a local {COLOR=RED}hobgoblin settlement{ENDCOLOR}. A campfire is set ablaze in the middle of this settlement, with these {COLOR=RED}goblins{ENDCOLOR} {WAVE}dancing around it{ENDWAVE}. I've been told that this is a ritual to choose another {COLOR=RED}hobgoblin chief{ENDCOLOR}. {COLOR=#FFDB51}Should I..?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/goblin_settlement.png",
         "next": "d2_settlement_choice"
       },
       {
@@ -552,7 +564,7 @@
       {
         "id": "d2_settlement_choice_line2",
         "type": "line",
-        "text": "\nI'd better stay here. I don't think I should get involved with local customs.",
+        "text": "\nI'd better stay here. I don't think I should get involved with {WAVE}local customs{ENDWAVE}.",
         "texture": null,
         "next": "d2_line5"
       },
@@ -574,7 +586,7 @@
         "id": "d2_line7",
         "type": "line",
         "text": "\nI don't know what to do. These {COLOR=RED}hobgoblins{ENDCOLOR} just had their chief elected. These poor creatures are being processed by these {COLOR=RED}bandits{ENDCOLOR}! I should…",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/goblin_being_harassed.png",
         "next": "d2_bandits_choice"
       },
       {
@@ -597,6 +609,279 @@
         "text": "\nI tried talking them out. These {COLOR=RED}bandits{ENDCOLOR} must have an agenda. I sure hope they do not intend anything bad.",
         "texture": null,
         "increaseCharisma": 1,
+        "next": "d2_bandit_arc_line1"
+      },
+      {
+        "id": "d2_bandit_arc_line1",
+        "type": "line",
+        "text": "\n\"We wish no harm, {COLOR=RED}mage{ENDCOLOR}. But you are on the wrong side here. We may look like {COLOR=RED}bandits{ENDCOLOR}, but we are spies of another kingdom. We, the {COLOR=RED}Furusato{ENDCOLOR}, have been studying this {COLOR=RED}forest{ENDCOLOR}. This {COLOR=RED}forest{ENDCOLOR} isn't just some normal forest where creatures live. The {COLOR=RED}forest{ENDCOLOR} is alive, {COLOR=RED}mage{ENDCOLOR}, and we have to save it from {COLOR=RED}Drakeswood{ENDCOLOR}.\"",
+        "texture": "scenarios/day2/bandit_arc/bandit_encounter.png",
+        "next": "d2_bandit_arc_line2"
+      },
+      {
+        "id": "d2_bandit_arc_line2",
+        "type": "line",
+        "text": "\n{COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "texture": null,
+        "next": "d2_furusato_choice"
+      },
+      {
+        "id": "d2_furusato_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "SHOW DISTRUST",
+            "next": "d2_bandit_arc_choice_line1"
+          },
+          {
+            "label": "BELIEVE THE BANDIT",
+            "next": "d2_bandit_arc_line3"
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_choice_line1",
+        "type": "line",
+        "text": "\nYou attack the {COLOR=RED}bandit{ENDCOLOR}, and a {SHAKE}fight breaks out{ENDSHAKE}.",
+        "texture": null,
+        "next": "d2_bandit_battle_minigame"
+      },
+      {
+        "id": "d2_bandit_arc_line3",
+        "type": "line",
+        "text": "\nYou ask the {COLOR=RED}Furusato{ENDCOLOR} spy to explain further.",
+        "texture": null,
+        "next": "d2_bandit_arc_line4"
+      },
+      {
+        "id": "d2_bandit_arc_line4",
+        "type": "line",
+        "text": "\n\"{COLOR=RED}Drakeswood{ENDCOLOR} is a kingdom different than others. They have been using this thing called {SHAKE}'technology'{ENDSHAKE} and have been exterminating forces of the {RAINBOW}arcane{ENDRAINBOW} by extracting their {RAINBOW}mana{ENDRAINBOW} and using it to advance 'science'. I do not stand against any type of advancement, don't get me wrong, {COLOR=RED}Mage{ENDCOLOR}, but it is their methods I disagree with.\"",
+        "texture": null,
+        "next": "d2_bandit_arc_line5"
+      },
+      {
+        "id": "d2_bandit_arc_line5",
+        "type": "line",
+        "text": "\n{COLOR=#FFDB51}\"Why do you need to talk to those hobgoblin leaders anyway?\"{ENDCOLOR} I asked.",
+        "texture": null,
+        "next": "d2_bandit_arc_line6"
+      },
+      {
+        "id": "d2_bandit_arc_line6",
+        "type": "line",
+        "text": "\n\"We need the {COLOR=RED}chiefs{ENDCOLOR} to put in a good word for us spies. Sadly, this is the fifth settlement we've failed. It seems like the {COLOR=RED}Hobgoblins{ENDCOLOR} do not trust us - I guess that can be deduced by the way they ran away from us when they saw us. Similarly, you seem to not trust us. Quite judgmental, I must say.\"",
+        "texture": null,
+        "next": "d2_bandit_arc_line7"
+      },
+      {
+        "id": "d2_bandit_arc_line7",
+        "type": "line",
+        "text": "\nThe spy takes me into their colony deep in the woods. Northeast of a big {COLOR=RED}hobgoblin{ENDCOLOR} settlement. The colony was studded with leather camps, resembling a campsite. They have farms and livestock for sustenance. They seem to have been living in this {COLOR=RED}forest{ENDCOLOR} for quite some time now. After a few more steps into the colony, I am met by the spy leader who had just walked out of his tent. He greeted me and immediately sent me on a quest. I've been told to find an audience with the {COLOR=RED}Hobgoblin King{ENDCOLOR} - asking him to aid the spies to protect the {COLOR=RED}forest{ENDCOLOR} with them.",
+        "texture": "scenarios/day2/bandit_arc/bandit_city_gate.png",
+        "next": "d2_bandit_arc_line8"
+      },
+      {
+        "id": "d2_bandit_arc_line8",
+        "type": "line",
+        "text": "\nI've already dug a hole this big. I'm in too deep to walk out now. I walk at the gates - standing in front of a tall wooden gate surrounded by watchtowers attached to walls studded with torches. A {COLOR=RED}hobgoblin{ENDCOLOR} of short stature holding a crossbow jumped from his place at the watchtower. The creature spoke to me in a dialect I don't understand, but I know, with experience, that it's a {COLOR=RED}hobgoblin dialect{ENDCOLOR}.",
+        "texture": null,
+        "next": "d2_bandit_arc_line9"
+      },
+      {
+        "id": "d2_bandit_arc_line9",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}goblin{ENDCOLOR} seems to understand that a clear language barrier is at hand. He throws a dust-like substance at my face - I believe I even got some in my nose and in my mouth. I cough them up, but for reasons I can't explain, I could understand the {COLOR=RED}hobgoblin gentleman{ENDCOLOR} in front of me.",
+        "texture": null,
+        "next": "d2_bandit_arc_line10"
+      },
+      {
+        "id": "d2_bandit_arc_line10",
+        "type": "line",
+        "text": "\n\"Why are you here?\"",
+        "texture": "scenarios/day2/bandit_arc/goblin_king.png",
+        "next": "d2_bandit_arc_dating_sim_choice1"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_choice1",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "TO KNOW MORE ABOUT YOUR CULTURE",
+            "next": "d2_bandit_arc_dating_sim_line1",
+            "increaseCharisma": 3
+          },
+          {
+            "label": "THE KINGDOM SENT ME",
+            "next": "d2_bandit_arc_dating_sim_line1",
+            "increaseCharisma": -1
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line1",
+        "type": "line",
+        "text": "\n\"Why should I hear you?\"",
+        "texture": null,
+        "next": "d2_bandit_arc_dating_sim_choice2"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_choice2",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "FOR THE BETTERMENT OF THIS FOREST",
+            "next": "d2_bandit_arc_dating_sim_line2",
+            "increaseCharisma": 2
+          },
+          {
+            "label": "FOR THE KINGDOM AND YOUR MUTUAL BENEFIT",
+            "next": "d2_bandit_arc_dating_sim_line2",
+            "increaseCharisma": -3
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line2",
+        "type": "line",
+        "text": "\n\"How will that help us?\"",
+        "texture": null,
+        "next": "d2_bandit_arc_dating_sim_choice3"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_choice3",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "THE KINGDOM WILL HELP YOU THRIVE",
+            "next": "d2_bandit_arc_dating_sim_line3",
+            "increaseCharisma": -2
+          },
+          {
+            "label": "YOU'LL GAIN CONTROL OVER THIS FOREST",
+            "next": "d2_bandit_arc_dating_sim_line3",
+            "increaseCharisma": -5
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line3",
+        "type": "line",
+        "text": "\n\"What do the bandits want?\"",
+        "texture": null,
+        "next": "d2_bandit_arc_dating_sim_choice4"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_choice4",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "THE BANDITS WANT PEACE AND TO DETHRONE THE KINGDOM",
+            "next": "d2_bandit_arc_dating_sim_line4",
+            "increaseCharisma": 10
+          },
+          {
+            "label": "I DON'T KNOW",
+            "next": "d2_bandit_arc_dating_sim_line4",
+            "increaseCharisma": -4
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line4",
+        "type": "line",
+        "text": "\n\"If I were to give you permission, how certain are you that it will ensure my kingdom's safety?\"",
+        "texture": null,
+        "next": "d2_bandit_arc_dating_sim_choice5"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_choice5",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "I AM 100% SURE",
+            "next": "d2_bandit_arc_dating_sim_evaluate_stats",
+            "increaseCharisma": 5
+          },
+          {
+            "label": "I'LL DO MY BEST WITHOUT ANY CERTAINTIES",
+            "next": "d2_bandit_arc_dating_sim_evaluate_stats",
+            "increaseCharisma": -5
+          }
+        ]
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_evaluate_stats",
+        "type": "evaluate_stats",
+        "threshold": 30,
+        "successNext": "d2_bandit_arc_dating_sim_line5",
+        "failNext": "d2_bandit_arc_dating_sim_line6"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line5",
+        "type": "line",
+        "text": "\n\"I've heard enough. {WAVE}Do as you wish{ENDWAVE}, little {COLOR=RED}shaman{ENDCOLOR}.\"",
+        "texture": null,
+        "next": "d2_bandit_arc_line11"
+      },
+      {
+        "id": "d2_bandit_arc_dating_sim_line6",
+        "type": "line",
+        "text": "\n{COLOR=RED}{SHAKE}The king is irritated from your scrawny voice and challenges you into a fight.{ENDSHAKE}{ENDCOLOR}{WAIT=1}",
+        "texture": null,
+        "next": "d2_goblin_king_battle_minigame"
+      },
+      {
+        "id": "d2_goblin_king_battle_minigame",
+        "type": "minigame",
+        "screenKey": "goblin_king_battle_minigame",
+        "next": "d2_bandit_arc_line11"
+      },
+      {
+        "id": "d2_bandit_arc_line11",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}king{ENDCOLOR} heard me out and allowed me to invite the {COLOR=RED}bandits{ENDCOLOR} outside the city, inside the throne room. The {COLOR=RED}bandits{ENDCOLOR} warn the {COLOR=RED}king{ENDCOLOR} of the {COLOR=RED}hobgoblins{ENDCOLOR} about {COLOR=RED}Drakeswood{ENDCOLOR}. The {COLOR=RED}king{ENDCOLOR} was {SHAKE}enraged{ENDSHAKE} and told his soldiers to brace for battle.",
+        "texture": null,
+        "next": "d2_bandit_arc_line12"
+      },
+      {
+        "id": "d2_bandit_arc_line12",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}Furusato bandits{ENDCOLOR}, the {COLOR=RED}goblins{ENDCOLOR}, and I head out of the city. Ready to rush the {COLOR=RED}Drakeswood knights{ENDCOLOR}. However, before reaching the gates, at the edge of the {COLOR=RED}forest{ENDCOLOR}. The {COLOR=RED}Drakeswood knights{ENDCOLOR} have their full force.",
+        "texture": "scenarios/day2/bandit_arc/bandit_goblin_collab.png",
+        "obtainableAchievement": "The Most Ambitious Crossover",
+        "next": "d2_bandit_arc_line13"
+      },
+      {
+        "id": "d2_bandit_arc_line13",
+        "type": "line",
+        "text": "\nA {SHAKE}ferocious battle{ENDSHAKE} emerges.{WAIT=1}",
+        "texture": "scenarios/day2/bandit_arc/battle_scene.png",
+        "next": "d2_bandit_arc_3knights_battle_minigame"
+      },
+      {
+        "id": "d2_bandit_arc_3knights_battle_minigame",
+        "type": "minigame",
+        "screenKey": "3knights_battle_minigame",
+        "next": "d2_bandit_arc_line14",
+        "failNext": "d2_bandit_arc_3knights_fail_line"
+      },
+      {
+        "id": "d2_bandit_arc_line14",
+        "type": "line",
+        "text": "\nThe forces of {COLOR=RED}Drakeswood{ENDCOLOR} retreat as the {COLOR=RED}Goblins{ENDCOLOR} and the {COLOR=RED}Bandits{ENDCOLOR} {SHAKE}shout a deafening cry{ENDSHAKE} over their victory. Is this where {RAINBOW}peace{ENDRAINBOW} finally unfolds? Only time will tell.",
+        "texture": null,
+        "triggerGameEnd": true,
+        "obtainableAchievement": "The Treasure of Harmony",
+        "next": null
+      },
+      {
+        "id": "d2_bandit_arc_3knights_fail_line",
+        "type": "line",
+        "text": "\nAn {SHAKE}upset{ENDSHAKE} has happened and you {COLOR=RED}fatally lost{ENDCOLOR} an all-out war with {COLOR=RED}Drakeswood{ENDCOLOR}. You did your best.",
+        "texture": null,
+        "triggerGameEnd": true,
+        "obtainableAchievement": "The Treasure I Never Had",
         "next": null
       },
       {
@@ -623,7 +908,7 @@
         "id": "d2_line9",
         "type": "line",
         "text": "\nI investigate the camp that the {COLOR=RED}goblins{ENDCOLOR} evacuated. It seems like these {COLOR=RED}hobgoblins{ENDCOLOR} are more civilized than I thought. They use cooking ware like pots and pans. They use tools like they're second nature to them. I explored the village further and noticed a church-like structure. It was mostly decorated with stones with various paintings and colors. I'm starting to see an interesting pattern here in the forest.",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/goblin_settlement.png",
         "next": "d2_line10"
       },
       {
@@ -636,7 +921,7 @@
       {
         "id": "d2_line11",
         "type": "line",
-        "text": "\nThe closer I get, the more torches I notice. Whatever this place is, it's a civilized one.",
+        "text": "\nThe closer I get, the more {WAVE}torches{ENDWAVE} I notice. Whatever this place is, it's a civilized one.",
         "texture": null,
         "next": "d2_line12"
       },
@@ -650,7 +935,7 @@
       {
         "id": "d2_line13",
         "type": "line",
-        "text": "\n\"State your name and name your business.\"",
+        "text": "\n{COLOR=#FFDB51}\"State your name and name your business.\"{ENDCOLOR}",
         "texture": null,
         "next": "d2_line14"
       },
@@ -658,7 +943,7 @@
         "id": "d2_line14",
         "type": "line",
         "text": "\nIt was the voice of a {COLOR=RED}hobgoblin{ENDCOLOR} and… in their dialect. It seems I have been deeply affected by that {RAINBOW}spore{ENDRAINBOW}. I can now understand {COLOR=RED}hobgoblins{ENDCOLOR}, I guess. I just hope it's permanent. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/main_arc/goblin_city_gate.png",
         "next": "d2_goblin_city_choice"
       },
       {
@@ -678,14 +963,14 @@
       {
         "id": "d2_goblin_city_choice_line1",
         "type": "line",
-        "text": "\n\"I am a harmless researcher. I would like to enter this gate.\"",
+        "text": "\n\"I am a {WAVE}harmless researcher{ENDWAVE}. I would like to enter this gate.\"",
         "texture": null,
         "next": "d2_line15"
       },
       {
         "id": "d2_line15",
         "type": "line",
-        "text": "\nThe hobgoblin jumps from his tower and lands in front of me. The creature is clothed in heavy metal armor. It held its spear in front of me with obvious intent to kill.",
+        "text": "\nThe {COLOR=RED}hobgoblin{ENDCOLOR} jumps from his tower and lands in front of me. The creature is clothed in heavy metal armor. It held its spear in front of me with {SHAKE}obvious intent to kill{ENDSHAKE}.",
         "texture": null,
         "next": "d2_line16"
       },
@@ -721,7 +1006,7 @@
         "id": "d2_attack_arc_line1",
         "type": "line",
         "text": "\nWithout any second thoughts, you killed the guard. The other watchtower's {COLOR=RED}hobgoblin{ENDCOLOR} sounded the gong. Shocked with what you've done, your knees {SHAKE}shake{ENDSHAKE} as an army of {COLOR=RED}hobgoblin warriors{ENDCOLOR} make chase to you riding their {COLOR=RED}{SHAKE}giant bullfrogs{ENDSHAKE}{ENDCOLOR}. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/attack_arc/bullfrog_soldiers.png",
         "next": "d2_attack_arc_hobgoblin_warriors_choice"
       },
       {
@@ -741,7 +1026,7 @@
       {
         "id": "d2_attack_arc_line2",
         "type": "line",
-        "text": "\nYou casted a spell in an attempt to thin down the soldiers making chase as you, yourself, run with haste.",
+        "text": "\nYou {WAVE}casted a spell{ENDWAVE} in an attempt to thin down the soldiers making chase as you, yourself, run with haste.",
         "texture": null,
         "next": "d2_attack_arc_line3"
       },
@@ -780,15 +1065,15 @@
       {
         "id": "d2_line18",
         "type": "line",
-        "text": "\nThe city is wide and bright. Torches light the place up and the pillars of every building in the city are made of {COLOR=#FFDB51}gold{ENDCOLOR}. The hobgoblins treat me with a warm welcome with everyone waving and bowing to me. These hobgoblins are way more civilized and smart from those hobgoblins in other places. I could not ask for more. My hobgoblin companion asked me to join their dinner. They guided me to their meal hall where every single hobgoblin eats together. The doors of the hall opened and I was met with the {BOUNCY}{COLOR=RED}Hobgoblin King{ENDCOLOR}{ENDBOUNCY}. The hall was then silent as the king stood and walked in front of me.",
-        "texture": null,
+        "text": "\nThe {WAVE}city is wide and bright{ENDWAVE}. Torches light the place up and the pillars of every building in the city are made of {COLOR=#FFDB51}gold{ENDCOLOR}. The {COLOR=RED}hobgoblins{ENDCOLOR} treat me with a {COLOR=#66FF00}warm welcome{ENDCOLOR} with everyone waving and bowing to me. These {COLOR=RED}hobgoblins{ENDCOLOR} are way more civilized and smart from those {COLOR=RED}hobgoblins{ENDCOLOR} in other places. I could not ask for more. My {COLOR=RED}hobgoblin companion{ENDCOLOR} asked me to join their dinner. They guided me to their meal hall where every single {COLOR=RED}hobgoblin{ENDCOLOR} eats together. The doors of the hall opened and I was met with the {BOUNCY}{COLOR=RED}Hobgoblin King{ENDCOLOR}{ENDBOUNCY}. The hall was then {SHAKE}silent{ENDSHAKE} as the king stood and walked in front of me.",
+        "texture": "scenarios/day2/main_arc/goblin_city_interior.png",
         "next": "d2_line19"
       },
       {
         "id": "d2_line19",
         "type": "line",
         "text": "\nHe was towering and intimidating. His cape is what you would expect a royal would have. {COLOR=RED}Grand, big, and red{ENDCOLOR}. His staff was studded with {COLOR=#FFDB51}gold{ENDCOLOR}. Which, in hobgoblin culture, meant high status.",
-        "texture": null,
+        "texture": "scenarios/day2/bandit_arc/goblin_king.png",
         "next": "d2_line20"
       },
       {
@@ -822,7 +1107,7 @@
       {
         "id": "d2_line24",
         "type": "line",
-        "text": "\n\"My king. I am here with a purpose.\" I pleaded. \"A nearby kingdom sends me to study this forest - which I believe is your dominion. This kingdom wants to put you in its border or demolish this forest. I want your blessing and opinions on what I should do.\"",
+        "text": "\n\"My {COLOR=RED}king{ENDCOLOR}. I am here with a purpose.\" I pleaded. \"A nearby kingdom sends me to study this {COLOR=RED}forest{ENDCOLOR} - which I believe is your dominion. This {COLOR=RED}kingdom{ENDCOLOR} wants to put you in its border or demolish this {COLOR=RED}forest{ENDCOLOR}. I want your {BOUNCY}blessing{ENDBOUNCY} and opinions on what I should do.\"",
         "texture": null,
         "next": "d2_line25"
       },
@@ -837,7 +1122,7 @@
         "id": "d2_leave_arc_line2",
         "type": "line",
         "text": "\nThe night falls in all its glory. The {WAVE}smell of the city{ENDWAVE} reminds you of a hearty meal back at home. However, it seems like you weren't the only one attracted by the {COLOR=RED}hobgoblins' dinner{ENDCOLOR}. A pack of {COLOR=RED}{SHAKE}Wyverns{ENDSHAKE}{ENDCOLOR} including their alpha approached you - {SHAKE}snarling, drooling, and aggressive{ENDSHAKE}. {COLOR=#FFDB51}Should I?{ENDCOLOR}",
-        "texture": null,
+        "texture": "scenarios/day2/leave_arc/wyvern.png",
         "next": "d2_leave_arc_wyvern_encounter_choice"
       },
       {
@@ -1000,7 +1285,7 @@
       {
         "id": "d2_dating_sim_line5",
         "type": "line",
-        "text": "\n\"I've heard enough. Do as you wish, little shaman.\"",
+        "text": "\n\"I've heard enough. {WAVE}Do as you wish{ENDWAVE}, little {COLOR=RED}shaman{ENDCOLOR}.\"",
         "texture": null,
         "next": null
       },
@@ -1013,5 +1298,10 @@
         "next": null
       }
     ]
+  },
+  "day3": {
+    "entryNode": "d3_intro",
+    "achievements": [],
+    "nodes": []
   }
 }

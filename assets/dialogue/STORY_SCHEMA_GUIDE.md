@@ -46,7 +46,8 @@ A decision point for the player.
 Triggers an external gameplay sequence.
 - `screenKey`: The unique key of the screen to launch (e.g., `"maze_minigame"`, `"bandit_battle_minigame"`).
 - `playerTurn`: (Optional parameter) A Boolean dictating Minigame initiative. `true` sets Player (20), `false` sets Enemy (20). If omitted/null, it performs a normal D20 random check.
-- `next`: The ID of the node to resume from upon minigame completion.
+- `next`: The ID of the node to resume from upon minigame completion (Success Path).
+- `failNext`: (Optional) The ID of the node to resume from if the player loses the minigame. If omitted, losing a minigame triggers a standard Game Over screen.
 
 ### 4. Automatic Roll Node (`type: "automatic_roll"`)
 An automatic, background D20 check for branching logic.
@@ -101,7 +102,8 @@ The system uses [TextraTypist](https://github.com/tommyettinger/textra) tags for
   "type": "minigame",
   "screenKey": "bandit_battle_minigame",
   "playerTurn": false,
-  "next": "d2_ambush_defeated"
+  "next": "d2_ambush_defeated",
+  "failNext": "d2_captured_by_bandits"
 }
 ```
 
