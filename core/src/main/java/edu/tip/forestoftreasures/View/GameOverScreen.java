@@ -32,6 +32,19 @@ public class GameOverScreen implements Screen {
 
   @Override
   public void show() {
+    // Safety check: stop any gameplay music that might be leaking
+    String[] musicTracks = {
+      "audio/bgm/days/Day1 Music.mp3",
+      "audio/bgm/days/Day2 Music.mp3",
+      "audio/bgm/days/Day3 music.mp3",
+      "audio/sfx/Battle_Screen_Music.mp3"
+    };
+    for (String track : musicTracks) {
+      if (game.assets.isLoaded(track)) {
+        game.assets.get(track, com.badlogic.gdx.audio.Music.class).stop();
+      }
+    }
+
     stage = new Stage(new ScreenViewport());
     Gdx.input.setInputProcessor(stage);
 

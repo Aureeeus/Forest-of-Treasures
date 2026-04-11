@@ -369,11 +369,17 @@ public class DayScreen implements Screen {
   @Override
   public void pause() {
     // Handle game pause here.
+    if (controller != null) {
+      controller.pause();
+    }
   }
 
   @Override
   public void resume() {
     // Handle game resume here.
+    if (controller != null) {
+      controller.resume();
+    }
   }
 
   @Override

@@ -96,11 +96,15 @@ public class GameLauncher extends Game {
         assets.load("icons/Achievements/Achievement_Blessing_of_the_Sprite.png", Texture.class);
         assets.load("icons/Achievements/Achievement Gruesome Farewell.png", Texture.class);
         assets.load("icons/Achievements/Achievement Java and the Striped Socks.png", Texture.class);
+        assets.load("icons/Achievements/Achievement So Close Yet So Far.png", Texture.class);
 
         // --- Bg Music ---
         assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
         assets.load("audio/bgm/end_credits_bg_music.mp3", Music.class);
         assets.load("audio/sfx/Battle_Screen_Music.mp3", Music.class);
+        assets.load("audio/bgm/days/Day1 Music.mp3", Music.class);
+        assets.load("audio/bgm/days/Day2 Music.mp3", Music.class);
+        assets.load("audio/bgm/days/Day3 music.mp3", Music.class);
 
         // --- Sound Effects ---
         assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);

@@ -136,16 +136,24 @@ public class EntityBattleScreen implements Screen {
   }
 
   @Override
-  public void pause() {}
+  public void pause() {
+    if (battleMusic != null && battleMusic.isPlaying()) {
+      battleMusic.pause();
+    }
+  }
 
   @Override
-  public void resume() {}
+  public void resume() {
+    if (battleMusic != null && !battleMusic.isPlaying()) {
+      battleMusic.play();
+    }
+  }
 
   @Override
   public void hide() {
     Gdx.input.setInputProcessor(null);
-    if (battleMusic != null) {
-      battleMusic.stop(); // Ensured to restart from the beginning next time
+    if (battleMusic != null && battleMusic.isPlaying()) {
+      battleMusic.stop();
     }
   }
 

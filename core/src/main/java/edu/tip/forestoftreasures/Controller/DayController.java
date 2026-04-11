@@ -8,6 +8,7 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -63,6 +64,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   private List<Achievement> achievements; // loaded from JSON
 
   private boolean pendingOverflowTrim = false;
+  private Music dayMusic;
 
   // --- Choice UI state ---
   private int selectedRow = 0;
@@ -139,6 +141,24 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     this.storyRoot = day.rootNode();
     this.achievements = day.achievements();
+
+    if (dayMusic != null) {
+      dayMusic.stop();
+    }
+    String musicPath = "audio/bgm/days/Day" + currentDay + " Music.mp3";
+    if (currentDay == 3) {
+      musicPath = "audio/bgm/days/Day3 music.mp3";
+    }
+    try {
+      dayMusic = game.assets.get(musicPath, Music.class);
+      if (dayMusic != null) {
+        dayMusic.setLooping(true);
+        dayMusic.setVolume(game.settingsConfig.getGameSettings().bgMusicVolume());
+        dayMusic.play();
+      }
+    } catch (Exception e) {
+      Gdx.app.error("DayController", "Could not play day music for day " + currentDay, e);
+    }
 
     // Add static centered Day label
     TextraLabel dayLabel = new TextraLabel("[#FFDB51][[DAY " + currentDay + "][]", dialogueFont);
@@ -284,6 +304,23 @@ public class DayController implements DialogueRunner.DisplayHandler {
       return;
     }
 
+    boolean isBattleMinigame = switch (node.screenKey) {
+      case "bandit_battle_minigame", 
+           "cavern_creature_battle_minigame", 
+           "centipede_battle_minigame", 
+           "leviathan_battle_minigame",
+           "wyvern_battle_minigame",
+           "knights_battle_minigame",
+           "knight_captain_battle_minigame",
+           "goblin_king_battle_minigame",
+           "3knights_battle_minigame" -> true;
+      default -> false;
+    };
+
+    if (isBattleMinigame && dayMusic != null) {
+      dayMusic.pause();
+    }
+
     game.setScreen(resolveMinigameScreen(node));
   }
 
@@ -302,6 +339,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   @Override
   public void forceGameEnd() {
     Gdx.app.log("DayController", "Game ending triggered. Transitioning to credits.");
+    if (dayMusic != null) dayMusic.stop();
     game.setScreen(new CreditsScreen(game));
   }
 
@@ -318,6 +356,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
       Player.STARTING_CHA
     );
     screen.updatePlayerStats();
+    if (dayMusic != null) dayMusic.stop();
     game.setScreen(new GameOverScreen(game));
   }
 
@@ -333,6 +372,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
       case 3 -> loadAndStartDay("day" + currentDay);
       default -> {
         Gdx.app.log("DayController", "End of Game! Day: " + currentDay);
+        if (dayMusic != null) dayMusic.stop();
         game.setScreen(new CreditsScreen(game));
       }
     }
@@ -372,6 +412,11 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
       if (isBattleMinigame) {
         screen.updatePlayerStats();
+      }
+
+      if (dayMusic != null && !dayMusic.isPlaying()) {
+        dayMusic.setVolume(game.settingsConfig.getGameSettings().bgMusicVolume());
+        dayMusic.play();
       }
 
       runner.onMinigameFinished(success); // resume dialogue graph with result
@@ -656,6 +701,24 @@ public class DayController implements DialogueRunner.DisplayHandler {
   }
 
   /**
+   * Pauses the current day background music.
+   */
+  public void pause() {
+    if (dayMusic != null && dayMusic.isPlaying()) {
+      dayMusic.pause();
+    }
+  }
+
+  /**
+   * Resumes the current day background music.
+   */
+  public void resume() {
+    if (dayMusic != null && !dayMusic.isPlaying()) {
+      dayMusic.play();
+    }
+  }
+
+  /**
    * Disposes of all font resources held by this controller.
    *
    * Must be called from DayScreen.dispose() to prevent memory leaks.
@@ -665,5 +728,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
   public void dispose() {
     dialogueFont.dispose();
     selectChoiceFont.dispose();
+    if (dayMusic != null) {
+      dayMusic.stop();
+    }
   }
 }

@@ -247,10 +247,16 @@ public class mazeBossScreen implements Screen {
 
   @Override
   public void pause() {
+    if (mazeMusic != null && mazeMusic.isPlaying()) {
+      mazeMusic.pause();
+    }
   }
 
   @Override
   public void resume() {
+    if (mazeMusic != null && !mazeMusic.isPlaying()) {
+      mazeMusic.play();
+    }
   }
 
   @Override

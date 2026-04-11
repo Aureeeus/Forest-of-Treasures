@@ -33,7 +33,7 @@ public class AchievementsScreen implements Screen {
     // Constants
     // -----------------------------------------------------------------------
 
-    private static final int ACHIEVEMENT_COUNT = 15;
+    private static final int ACHIEVEMENT_COUNT = 16;
 
     /** Pixel size of the achievement icon box. */
     private static final float ICON_SIZE = 100f;
@@ -60,7 +60,8 @@ public class AchievementsScreen implements Screen {
             "icons/Achievements/Achievement Wait for it.png",
             "icons/Achievements/Achievement_Blessing_of_the_Sprite.png",
             "icons/Achievements/Achievement Gruesome Farewell.png",
-            "icons/Achievements/Achievement Java and the Striped Socks.png"
+            "icons/Achievements/Achievement Java and the Striped Socks.png",
+            "icons/Achievements/Achievement So Close Yet So Far.png"
     };
 
     private static final String[] ACHIEVEMENT_TITLES = {
@@ -78,7 +79,8 @@ public class AchievementsScreen implements Screen {
             "Wait for it...",
             "Blessing of the Sprite",
             "Gruesome Farewell",
-            "Java and the Striped Socks"
+            "Java and the Striped Socks",
+            "So Close Yet So Far"
     };
 
     private static final String[] ACHIEVEMENT_DESCRIPTIONS = {
@@ -96,7 +98,8 @@ public class AchievementsScreen implements Screen {
             "Talk Less! Smile More!",
             "Receive a magical blessing from the forest sprites.",
             "Meet a terrible and gruesome end.",
-            "Now, getting ladies is a piece of cake."
+            "Now, getting ladies is a piece of cake.",
+            "Defeated after almost reaching the goal."
     };
 
     // -----------------------------------------------------------------------
