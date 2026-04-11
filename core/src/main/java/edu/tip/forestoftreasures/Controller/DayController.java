@@ -37,6 +37,7 @@ import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.GameOverScreen;
+import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.mazeBossScreen;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DialogueUtils;
@@ -607,7 +608,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
     screen.getSettingsIcon().addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {
-        Gdx.app.log("DayController", "Settings clicked!");
+        screen.showSettingsDialog();
+        addPopUpListeners();
       }
 
       @Override
@@ -633,6 +635,51 @@ public class DayController implements DialogueRunner.DisplayHandler {
       public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
         if (pointer == -1)
           settingsIcon.setColor(Color.WHITE);
+        super.exit(event, x, y, pointer, toActor);
+      }
+    });
+  }
+
+  /**
+   * Adds listeners to the dynamically created buttons in the settings pop-up.
+   */
+  private void addPopUpListeners() {
+    TextraLabel resumeBtn = screen.getResumeButton();
+    TextraLabel menuBtn = screen.getReturnToMenuButton();
+
+    if (resumeBtn != null) {
+      wirePopUpButton(resumeBtn, () -> {
+        screen.closeSettingsDialog();
+      });
+    }
+
+    if (menuBtn != null) {
+      wirePopUpButton(menuBtn, () -> {
+        if (dayMusic != null) dayMusic.stop();
+        game.setScreen(new MainMenuScreen(game));
+      });
+    }
+  }
+
+  /**
+   * Helper to add hover and click feedback to pop-up text buttons.
+   */
+  private void wirePopUpButton(TextraLabel label, Runnable action) {
+    label.addListener(new ClickListener() {
+      @Override
+      public void clicked(InputEvent event, float x, float y) {
+        action.run();
+      }
+
+      @Override
+      public void enter(InputEvent event, float x, float y, int pointer, Actor fromActor) {
+        if (pointer == -1) label.setColor(Color.valueOf("#FFDB51"));
+        super.enter(event, x, y, pointer, fromActor);
+      }
+
+      @Override
+      public void exit(InputEvent event, float x, float y, int pointer, Actor toActor) {
+        if (pointer == -1) label.setColor(Color.WHITE);
         super.exit(event, x, y, pointer, toActor);
       }
     });

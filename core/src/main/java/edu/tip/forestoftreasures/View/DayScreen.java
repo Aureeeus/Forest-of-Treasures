@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.Value;
@@ -56,6 +57,12 @@ public class DayScreen implements Screen {
   private Table topDialogueContentTable;
   private Table bottomDialogueContentTable;
   private DayController controller;
+
+  // Settings Pop-up UI Components
+  private Table settingsDialog;
+  private Table dimOverlay;
+  private TextraLabel returnToMenuButton;
+  private TextraLabel resumeButton;
 
   // Player stat labels (refreshable after battle)
   private TextraLabel hpLabel;
@@ -360,6 +367,14 @@ public class DayScreen implements Screen {
     // Resize your screen here. The parameters represent the new window size.
     stage.getViewport().update(width, height, true);
 
+    // Re-center settings dialog if open
+    if (settingsDialog != null) {
+      settingsDialog.setPosition(
+        (stage.getWidth() - settingsDialog.getWidth()) / 2f,
+        (stage.getHeight() - settingsDialog.getHeight()) / 2f
+      );
+    }
+
     // Re-queue the overflow trim since viewport update invalidates all layouts
     if (controller != null) {
       controller.setPendingOverflowTrim(true);
@@ -417,6 +432,71 @@ public class DayScreen implements Screen {
 
   public Player getPlayer() {
     return player;
+  }
+
+  /**
+   * Creates and displays a modal settings pop-up window.
+   */
+  public void showSettingsDialog() {
+    if (settingsDialog != null) return;
+
+    // 1. Create dim overlay to focus on the dialog
+    dimOverlay = new Table();
+    dimOverlay.setFillParent(true);
+    dimOverlay.setBackground(DrawableFactory.getColoredDrawable(new Color(0, 0, 0, 0.7f)));
+    dimOverlay.setTouchable(Touchable.enabled); // Blocks input to layers below
+    stage.addActor(dimOverlay);
+
+    // 2. Create the dialog container
+    settingsDialog = new Table();
+    settingsDialog.setBackground(DrawableFactory.getColoredDrawable(leftBorderColor));
+    settingsDialog.pad(5f);
+
+    Table contentTable = new Table();
+    contentTable.setBackground(DrawableFactory.getColoredDrawable(leftContentColor));
+    contentTable.pad(40f);
+    settingsDialog.add(contentTable).grow();
+
+    // 3. Add Title
+    TextraLabel titleLabel = new TextraLabel("[#FFDB51]SETTINGS[]", playerStatsTitleFont);
+    contentTable.add(titleLabel).padBottom(40f).row();
+
+    // 4. Add Buttons
+    returnToMenuButton = new TextraLabel("RETURN TO MAIN MENU", playerStatsTextFont);
+    resumeButton = new TextraLabel("RESUME GAME", playerStatsTextFont);
+
+    contentTable.add(resumeButton).padBottom(20f).row();
+    contentTable.add(returnToMenuButton).row();
+
+    // 5. Position dialog in center
+    settingsDialog.setSize(500f, 350f);
+    settingsDialog.setPosition(
+      (stage.getWidth() - settingsDialog.getWidth()) / 2f,
+      (stage.getHeight() - settingsDialog.getHeight()) / 2f
+    );
+    stage.addActor(settingsDialog);
+  }
+
+  /**
+   * Removes the settings pop-up and its overlay from the stage.
+   */
+  public void closeSettingsDialog() {
+    if (settingsDialog != null) {
+      settingsDialog.remove();
+      settingsDialog = null;
+    }
+    if (dimOverlay != null) {
+      dimOverlay.remove();
+      dimOverlay = null;
+    }
+  }
+
+  public TextraLabel getReturnToMenuButton() {
+    return returnToMenuButton;
+  }
+
+  public TextraLabel getResumeButton() {
+    return resumeButton;
   }
 
   /**

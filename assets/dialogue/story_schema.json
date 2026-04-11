@@ -5,7 +5,9 @@
       {
         "id": "Blessing of the Sprite",
         "description": "You welcomed the sprite and received its blessing.",
-        "requiredChoiceSequence": [1]
+        "requiredChoiceSequence": [
+          1
+        ]
       },
       {
         "id": "First Blood",
@@ -108,7 +110,7 @@
       {
         "id": "d1_line4",
         "type": "line",
-        "text": "\nAs I ventured further, all of a sudden, {SHAKE}I felt a tree branch stop me in my tracks{ENDSHAKE}. I thought I stumbled on a branch, but I couldn't lift my foot as the branch completely wrapped around my foot. I looked back and saw a tree with a pattern of a face. {COLOR=#FFDB51}Is this what they call a {COLOR=RED}Treant{ENDCOLOR}?{ENDCOLOR}{WAIT=1}",
+        "text": "\nAs I ventured further, all of a sudden, {SHAKE}I felt a tree branch stop me in my tracks{ENDSHAKE}. I thought I stumbled on a branch, but I couldn't lift my foot as the branch completely wrapped around my foot. I looked back and saw a tree with a pattern of a face. {COLOR=#FFDB51}Is this what they call a {COLOR=RED}Treant{ENDCOLOR}?{ENDCOLOR}{WAIT=1} A maze appears before you {WAIT=3}",
         "texture": "scenarios/day1/forest_treant.png",
         "next": "d1_maze_minigame"
       },
@@ -134,22 +136,39 @@
       {
         "id": "Greedy Water Boy",
         "description": "Better safe than sorry, I suppose...",
-        "requiredChoiceSequence": [0]
+        "requiredChoiceSequence": [
+          0
+        ]
       },
       {
         "id": "Wait for it...",
         "description": "Talk Less! Smile More!",
-        "requiredChoiceSequence": [-1, 0, 1]
+        "requiredChoiceSequence": [
+          -1,
+          0,
+          1
+        ]
       },
       {
         "id": "Into the Unknown",
         "description": "Take a leap of faith into unexplored territories.",
-        "requiredChoiceSequence": [-1, 0, -1, 1, 1]
+        "requiredChoiceSequence": [
+          -1,
+          0,
+          -1,
+          1,
+          1
+        ]
       },
       {
         "id": "Peace Talks",
         "description": "Resolve a conflict without drawing your weapon.",
-        "requiredChoiceSequence": [-1, 0, -1, 0]
+        "requiredChoiceSequence": [
+          -1,
+          0,
+          -1,
+          0
+        ]
       },
       {
         "id": "Gruesome Farewell",
@@ -399,7 +418,8 @@
         "type": "minigame",
         "screenKey": "leviathan_battle_minigame",
         "next": "d2_cavern_line6"
-      },      {
+      },
+      {
         "id": "d2_cavern_line6",
         "type": "line",
         "text": "\nThe cavern floor was hard to traverse; some rocks were unstable to walk on. I make sure that I check for stability before standing on a platform or else I meet my end. The {COLOR=RED}Leviathan{ENDCOLOR} screeches once more, the {SHAKE}whole cavern shakes{ENDSHAKE}, and I luckily dodge the stalagmites that fall. However, unlike me, another {COLOR=RED}territorial Leviathan{ENDCOLOR} was unlucky. The second Leviathan engaged in combat with the first one, causing {COLOR=RED}fireballs{ENDCOLOR} to rain from the sky. Each fireball that hits the terrain unleashes a minor earthquake, enough to crack the platforms beneath me.",
@@ -540,7 +560,7 @@
         "texture": null,
         "triggerGameEnd": true,
         "next": null
-      }, 
+      },
       {
         "id": "d2_line4",
         "type": "line",
