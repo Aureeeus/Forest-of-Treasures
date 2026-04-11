@@ -43,16 +43,16 @@ public class mazeBossScreen implements Screen {
   private final float TREANT_DIALOG_INTERVAL = 8f;
 
   // Ten separate dialog strings (editable)
-  public String treantText1 = "I have caught you!";
-  public String treantText2 = "There is only one way out of this maze";
-  public String treantText3 = "Vile Tresspaser. This will be your grave!";
-  public String treantText4 = "Witness the power of the forest!";
-  public String treantText5 = "this is the end for you, trespasser!";
-  public String treantText6 = "Say your prayers, trespasser!";
-  public String treantText7 = "You abuse Nature's hospitality";
-  public String treantText8 = "We have been kind to you";
-  public String treantText9 = "You have no respect for the forest!";
-  public String treantText10 = "Dirty Defiler!";
+  public String treantText1 = " \n I have caught you!";
+  public String treantText2 = "\nThere is only one way out of this maze";
+  public String treantText3 = "\nVile Tresspaser. This will be your grave!";
+  public String treantText4 = "\nWitness the power of the forest!";
+  public String treantText5 = "\nThis is the end for you, trespasser!";
+  public String treantText6 = "\nSay your prayers, trespasser!";
+  public String treantText7 = "\nYou abuse Nature's hospitality";
+  public String treantText8 = "\nWe have been kind to you";
+  public String treantText9 = "\nYou have no respect for the forest!";
+  public String treantText10 = "\nDirty Defiler!";
 
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
