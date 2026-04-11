@@ -95,6 +95,7 @@ public class GameLauncher extends Game {
         assets.load("icons/Achievements/Achievement Treasure of Riches.png", Texture.class);
         assets.load("icons/Achievements/Achievement_Blessing_of_the_Sprite.png", Texture.class);
         assets.load("icons/Achievements/Achievement Gruesome Farewell.png", Texture.class);
+        assets.load("icons/Achievements/Achievement Java and the Striped Socks.png", Texture.class);
 
         // --- Bg Music ---
         assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
@@ -139,7 +140,7 @@ public class GameLauncher extends Game {
         
         // --- Day 2 UI ---
         assets.load("scenarios/day2/main_arc/stream.png", Texture.class);
-        assets.load("scenarios/day2/main_arc/bushes.png", Texture.class);
+        assets.load("scenarios/day2/main_arc/bush_choice.png", Texture.class);
         assets.load("scenarios/day2/main_arc/goblin_settlement.png", Texture.class);
         assets.load("scenarios/day2/main_arc/goblin_being_harassed.png", Texture.class);
         assets.load("scenarios/day2/main_arc/goblin_city_gate.png", Texture.class);

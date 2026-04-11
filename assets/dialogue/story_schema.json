@@ -147,6 +147,11 @@
         "requiredChoiceSequence": [-1, 0, -1, 1, 1]
       },
       {
+        "id": "Peace Talks",
+        "description": "Resolve a conflict without drawing your weapon.",
+        "requiredChoiceSequence": [-1, 0, -1, 0]
+      },
+      {
         "id": "Gruesome Farewell",
         "description": "Meet a terrible and gruesome end."
       },
@@ -161,6 +166,10 @@
       {
         "id": "The Treasure I Never Had",
         "description": "You fought hard, Mage."
+      },
+      {
+        "id": "Java and the Striped Socks",
+        "description": "Now, getting ladies is a piece of cake."
       }
     ],
     "nodes": [
@@ -212,7 +221,7 @@
         "id": "d2_line3",
         "type": "line",
         "text": "\nAs the adventure pushed through, the {WAVE}trees became much taller and wider{ENDWAVE}. The forest looked dimmer, so I started etching lines on trees to mark the places I've been to. The bushes start thickening and growing higher. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
-        "texture": "scenarios/day2/main_arc/bushes.png",
+        "texture": "scenarios/day2/main_arc/bush_choice.png",
         "next": "d2_bush_choice"
       },
       {
@@ -822,6 +831,7 @@
         "type": "line",
         "text": "\n\"I've heard enough. {WAVE}Do as you wish{ENDWAVE}, little {COLOR=RED}shaman{ENDCOLOR}.\"",
         "texture": null,
+        "obtainableAchievement": "Java and the Striped Socks",
         "next": "d2_bandit_arc_line11"
       },
       {
@@ -1287,6 +1297,7 @@
         "type": "line",
         "text": "\n\"I've heard enough. {WAVE}Do as you wish{ENDWAVE}, little {COLOR=RED}shaman{ENDCOLOR}.\"",
         "texture": null,
+        "obtainableAchievement": "Java and the Striped Socks",
         "next": null
       },
       {
