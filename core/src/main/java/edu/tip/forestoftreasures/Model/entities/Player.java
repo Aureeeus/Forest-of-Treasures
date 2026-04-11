@@ -33,7 +33,7 @@ public class Player extends Entity {
   private float charisma;
 
   private BlessingTier blessingTier = BlessingTier.NONE;
-  private int knightBattlesCompleted = 0;
+  private int multiBattlesCompleted = 0;
 
   // Player movesets
   private final String skill1 = "Cry of Misery";
@@ -91,7 +91,7 @@ public class Player extends Entity {
     this.charisma = charisma;
     this.initiative = 0;
     this.blessingTier = BlessingTier.NONE;
-    this.knightBattlesCompleted = 0;
+    this.multiBattlesCompleted = 0;
     clearStatusEffect();
   }
 
@@ -126,29 +126,29 @@ public class Player extends Entity {
     return blessingTier;
   }
 
-  public int getKnightBattlesCompleted() {
-    return knightBattlesCompleted;
+  public int getMultiBattlesCompleted() {
+    return multiBattlesCompleted;
   }
 
-  public void resetKnightCounter() {
-    this.knightBattlesCompleted = 0;
+  public void resetMultiBattleCounter() {
+    this.multiBattlesCompleted = 0;
   }
 
   /**
-   * Called after completing a knight battle. Increments the internal counter
-   * and restores full HP based on the active blessing tier.
+   * Called after completing a battle in a multi-stage encounter. Increments the 
+   * internal counter and restores full HP based on the active blessing tier.
    *
-   * HIGH tier heals after every knight fight.
-   * LOW tier heals only on every 3rd knight fight.
+   * HIGH tier heals after every fight.
+   * LOW tier heals only on every 3rd fight.
    *
    * @return {@code true} if HP was restored this battle
    */
-  public boolean onKnightBattleCompleted() {
-    knightBattlesCompleted++;
+  public boolean onMultiBattleCompleted() {
+    multiBattlesCompleted++;
 
     boolean shouldHeal = switch (blessingTier) {
       case HIGH -> true;
-      case LOW  -> knightBattlesCompleted % 3 == 0;
+      case LOW  -> multiBattlesCompleted % 3 == 0;
       case NONE -> false;
     };
 

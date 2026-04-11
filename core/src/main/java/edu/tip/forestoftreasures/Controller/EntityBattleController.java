@@ -25,6 +25,7 @@ import edu.tip.forestoftreasures.Model.entities.Wyvern;
 import edu.tip.forestoftreasures.Model.entities.Knight;
 import edu.tip.forestoftreasures.Model.entities.KnightCaptain;
 import edu.tip.forestoftreasures.Model.entities.GoblinKing;
+import edu.tip.forestoftreasures.Model.entities.OldMan;
 import edu.tip.forestoftreasures.Model.entities.Entity;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.mechanics.AttackResult;
@@ -65,7 +66,7 @@ public class EntityBattleController {
   private static final int BLESSING_THRESHOLD = 15;
   private String blessingFlavorText;
 
-  private int maxKnights = 1; // Default for standard battles
+  private int maxEnemy = 1; // Default for standard battles
 
   // Enemy data
   private Entity enemy;
@@ -77,8 +78,8 @@ public class EntityBattleController {
   private static final int SKILL_COUNT = 3;
 
   // Status effect tracking
-  private int enemySleepCounter = 0;
-  private static final int MAX_SLEEP_TURNS = 2;
+  private int enemyStatusCounter = 0;
+  private static final int STATUS_THRESHOLD = 2;
   private boolean enemyAppliedStatusThisTurn = false; // Tracking flag for immediate ticks in the current round
 
   // UI references from screen
@@ -125,14 +126,30 @@ public class EntityBattleController {
 
     resolveEnemy(node.screenKey, node.playerTurn);
 
-    // Dynamic knight sequence setup
+    // Dynamic sequence setup
     if ("knights_battle_minigame".equals(screenKey)) {
-      this.maxKnights = 10;
-      player.resetKnightCounter();
-      rollForBlessing();
+      this.maxEnemy = 10;
+      player.resetMultiBattleCounter();
+      if (node.healBlessing != null && node.healBlessing) {
+        applyAbsoluteBlessing();
+      } else {
+        rollForBlessing();
+      }
     } else if ("3knights_battle_minigame".equals(screenKey)) {
-      this.maxKnights = 3;
-      player.resetKnightCounter();
+      this.maxEnemy = 3;
+      player.resetMultiBattleCounter();
+      if (node.healBlessing != null && node.healBlessing) {
+        applyAbsoluteBlessing();
+      }
+    } else if ("5bandits_battle_minigame".equals(screenKey)) {
+        this.maxEnemy = 5;
+        player.resetMultiBattleCounter();
+        if (node.healBlessing != null && node.healBlessing) {
+          applyAbsoluteBlessing();
+        }
+    } else if (node.healBlessing != null && node.healBlessing) {
+      // Allow absolute blessing for other battle types if explicitly set
+      applyAbsoluteBlessing();
     }
 
     // Arrow icon from sprite sheet
@@ -165,6 +182,15 @@ public class EntityBattleController {
       blessingRoll, tierColor, tierLabel);
   }
 
+  /**
+   * Applies the absolute blessing mechanic, bypassing the dice roll.
+   * Sets the tier to HIGH (heal every battle) and sets the appropriate flavor text.
+   */
+  private void applyAbsoluteBlessing() {
+    player.setBlessingTier(Player.BlessingTier.HIGH);
+    blessingFlavorText = "\n{COLOR=#66FF00}A Divine Blessing washes over you. You will heal every battle.{ENDCOLOR}";
+  }
+
   // ---------------------------------------------------------------------------
   // ENEMY RESOLUTION
   // ---------------------------------------------------------------------------
@@ -180,7 +206,7 @@ public class EntityBattleController {
     float initiative = calculateEnemyInitiative(playerTurn);
 
     switch (screenKey) {
-      case "bandit_battle_minigame" -> {
+      case "bandit_battle_minigame", "5bandits_battle_minigame" -> {
         Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
         Sound banditAttackSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
 
@@ -234,6 +260,13 @@ public class EntityBattleController {
 
         this.enemy = new GoblinKing(initiative, goblinKingTexture, goblinKingAttackSound);
         this.enemyName = "Goblin King";
+      }
+      case "old_man_battle_minigame" -> {
+        Texture oldManTexture = game.assets.get("scenarios/day3/old_man.png", Texture.class);
+        Sound oldManAttackSound = game.assets.get("audio/sfx/enemies/old_man_attack.mp3", Sound.class);
+
+        this.enemy = new OldMan(initiative, oldManTexture, oldManAttackSound);
+        this.enemyName = "Old Man";
       }
       default -> throw new RuntimeException(
         "[EntityBattleController] Unknown battle screenKey: '" + screenKey + "'"
@@ -341,6 +374,16 @@ public class EntityBattleController {
         if (result.applied()) {
           game.assets.get("audio/sfx/Intense Aura.wav", Sound.class).play(sfxVolume);
           
+          // Old Man instant-defeat: Sleep ends the battle immediately
+          if ("old_man_battle_minigame".equals(screenKey) && result.statusEffect() == StatusEffect.SLEEP) {
+            screen.endEnemyHpBatch();
+            state = BattleState.BATTLE_END;
+            addDialogueLine(flavorText, () -> {
+              addDialogueLine("\n{COLOR=#66FF00}The Old Man collapses into a deep slumber! You seize the moment and escape!{ENDCOLOR}{WAIT=1}", this::endBattle);
+            });
+            return;
+          }
+
           // If we just applied a NEW status (and it wasn't already ticking via the aggressive merge above)
           StatusEffect effect = result.statusEffect();
           if (!enemyAppliedStatusThisTurn && (effect == StatusEffect.POISON || effect == StatusEffect.BURN)) {
@@ -370,12 +413,17 @@ public class EntityBattleController {
    */
   private void onPlayerTurnEnded() {
     if (!enemy.isAlive()) {
-      if ("knights_battle_minigame".equals(screenKey) || "3knights_battle_minigame".equals(screenKey)) {
-        player.onKnightBattleCompleted();
+      boolean isMultiBattle = "knights_battle_minigame".equals(screenKey) || 
+                              "3knights_battle_minigame".equals(screenKey) || 
+                              "5bandits_battle_minigame".equals(screenKey) ||
+                              (node.healBlessing != null && node.healBlessing);
+
+      if (isMultiBattle) {
+        player.onMultiBattleCompleted();
         screen.updatePlayerHealth(); // Refresh with any blessing heal
         
-        if (player.getKnightBattlesCompleted() < maxKnights) {
-          setupNextKnight();
+        if (player.getMultiBattlesCompleted() < maxEnemy) {
+          setupNextEnemy();
           return;
         }
       }
@@ -388,17 +436,25 @@ public class EntityBattleController {
   }
 
   /**
-   * Sets up the next knight in the 10-battle sequence without disposing the screen.
+   * Sets up the next enemy in a multi-battle sequence without disposing the screen.
    * Re-instantiates the enemy, rolls initiative, and refreshes the UI.
    */
-  private void setupNextKnight() {
+  private void setupNextEnemy() {
     state = BattleState.ANIMATING_DIALOGUE;
     
-    // Create the next Knight
-    float knightInitiative = calculateEnemyInitiative(null);
-    Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
-    Sound knightSlashSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
-    this.enemy = new Knight(knightInitiative, knightTexture, knightSlashSound);
+    // Determine enemy type for instantiation
+    float enemyInitiative = calculateEnemyInitiative(null);
+    if ("knights_battle_minigame".equals(screenKey) || "3knights_battle_minigame".equals(screenKey)) {
+      Texture knightTexture = game.assets.get("scenarios/day2/cavern_arc/knights.png", Texture.class);
+      Sound knightSlashSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
+      this.enemy = new Knight(enemyInitiative, knightTexture, knightSlashSound);
+      this.enemyName = "Knight";
+    } else if ("5bandits_battle_minigame".equals(screenKey)) {
+        Texture banditTexture = game.assets.get("scenarios/day1/hobgoblin_perpetrator.png", Texture.class);
+        Sound banditAttackSound = game.assets.get("audio/sfx/enemies/bandit_attack.mp3", Sound.class);
+        this.enemy = new Bandit(enemyInitiative, banditTexture, banditAttackSound);
+        this.enemyName = "Bandit";
+    }
     
     // Re-roll player initiative for the new battle
     player.setInitiative(Dice.roll());
@@ -407,7 +463,7 @@ public class EntityBattleController {
     screen.refreshEnemyStats();
     screen.refreshPlayerStats();
     
-    addDialogueLine("\n{COLOR=GREEN}The Knight is defeated!{ENDCOLOR} {WAVE}Another Knight steps forward to challenge you!{ENDWAVE}\n", () -> {
+    addDialogueLine("\n{COLOR=GREEN}The " + enemyName + " is defeated!{ENDCOLOR} {WAVE}Another " + enemyName + " steps forward to challenge you!{ENDWAVE}\n", () -> {
         addDialogueLine(getInitiativeFlavorText(), this::beginFirstTurn);
     });
   }
@@ -438,17 +494,14 @@ public class EntityBattleController {
       
       enemyAppliedStatusThisTurn = false; // Reset flag after processing turn start logic
 
-      if (currentStatus == StatusEffect.SLEEP) {
-        enemySleepCounter++;
-        if (enemySleepCounter >= MAX_SLEEP_TURNS) {
-          enemy.clearStatusEffect();
-          enemySleepCounter = 0;
-        }
-      } else {
-        enemySleepCounter = 0;
+      // Increment counter for ANY status effect
+      enemyStatusCounter++;
+      if (enemyStatusCounter >= STATUS_THRESHOLD) {
+        enemy.clearStatusEffect();
+        enemyStatusCounter = 0;
       }
     } else {
-      enemySleepCounter = 0;
+      enemyStatusCounter = 0;
     }
     
     if (enemy.isAlive()) {
@@ -498,6 +551,11 @@ public class EntityBattleController {
           goblinKing.playAttackSound(sfxVolume);
 
           AttackResult result = goblinKing.attackWithFlavor(player);
+          flavorText = result.flavorText();
+        } else if (enemy instanceof OldMan oldMan) {
+          oldMan.playAttackSound(sfxVolume);
+
+          AttackResult result = oldMan.attackWithFlavor(player);
           flavorText = result.flavorText();
         } else {
           // Fallback for other potential enemies

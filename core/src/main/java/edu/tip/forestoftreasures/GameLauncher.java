@@ -104,7 +104,7 @@ public class GameLauncher extends Game {
         assets.load("audio/sfx/Battle_Screen_Music.mp3", Music.class);
         assets.load("audio/bgm/days/Day1 Music.mp3", Music.class);
         assets.load("audio/bgm/days/Day2 Music.mp3", Music.class);
-        assets.load("audio/bgm/days/Day3 music.mp3", Music.class);
+        assets.load("audio/bgm/days/Day3 Music.mp3", Music.class);
 
         // --- Sound Effects ---
         assets.load("audio/sfx/main_menu_start_sound.wav", Sound.class);
@@ -120,6 +120,7 @@ public class GameLauncher extends Game {
         assets.load("audio/sfx/enemies/leviathan_attack.mp3", Sound.class);
         assets.load("audio/sfx/enemies/wyvern_attack.mp3", Sound.class);
         assets.load("audio/sfx/enemies/goblin_king_attack.mp3", Sound.class);
+        assets.load("audio/sfx/enemies/old_man_attack.mp3", Sound.class);
 
         // --- Particle Effects ---
         assets.load("particles/autumn_leaf.p", ParticleEffect.class);
@@ -165,6 +166,9 @@ public class GameLauncher extends Game {
         assets.load("scenarios/day2/bandit_arc/bandit_city_gate.png", Texture.class);
         assets.load("scenarios/day2/bandit_arc/bandit_goblin_collab.png", Texture.class);
         assets.load("scenarios/day2/bandit_arc/battle_scene.png", Texture.class);
+        
+        // --- Day 3 UI ---
+        assets.load("scenarios/day3/old_man.png", Texture.class);
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
@@ -202,5 +206,3 @@ public class GameLauncher extends Game {
         UIFactory.dispose();
     }
 }
-
-// * TODO: Ask Manalo about the stats and pictures of hobgoblin king as well as its attack lines and also the ferocious battle bullshit. Java and Striped socks achievement also.

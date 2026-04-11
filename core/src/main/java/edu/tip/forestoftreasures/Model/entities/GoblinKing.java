@@ -53,11 +53,11 @@ public class GoblinKing extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "The king's staff wooshes right beside you, it would've been lethal if it hit, but it didn't {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "An enraged strike sent a wave of pure concussive blast towards you. The staff was left unharmed but you are not. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "A cold golden staff was enough to crush a bone or two. The King spared no mercy on that strike, but it wasn't lethal... yet. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A clean hit! The King's attack was strong enough to dislocate your shoulder. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} You feel your skull crack like twigs and your organs scream in pain. You absorbed the King's wrath in all its glory. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "The king's staff {WAVE}wooshes right beside you{ENDWAVE}, it would've been lethal if it hit, but it didn't {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "An enraged strike sent a {SHAKE}wave of pure concussive blast{ENDSHAKE} towards you. The staff was left unharmed but you are not. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "A cold golden staff was enough to {SHAKE}crush a bone or two{ENDSHAKE}. The King spared no mercy on that strike, but it wasn't lethal... yet. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A clean hit! The King's attack was strong enough to {SHAKE}dislocate your shoulder{ENDSHAKE}. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} You feel your {SHAKE}skull crack like twigs{ENDSHAKE} and your {SICK}organs scream in pain{ENDSICK}. You absorbed the King's wrath in all its glory. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

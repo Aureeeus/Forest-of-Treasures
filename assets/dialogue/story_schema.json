@@ -189,6 +189,10 @@
       {
         "id": "Java and the Striped Socks",
         "description": "Now, getting ladies is a piece of cake."
+      },
+      {
+        "id": "The Treasure of Life",
+        "description": "Maybe life is the treasure all along."
       }
     ],
     "nodes": [
@@ -559,6 +563,7 @@
         "text": "\nWhether I succeed or don't, I shall return to this {COLOR=RED}forest{ENDCOLOR} and guard it.{WAIT=2}",
         "texture": null,
         "triggerGameEnd": true,
+        "obtainableAchievement": "The Treasure of Life",
         "next": null
       },
       {
@@ -1331,8 +1336,190 @@
     ]
   },
   "day3": {
-    "entryNode": "d3_intro",
+    "entryNode": "d3_line1",
     "achievements": [],
-    "nodes": []
+    "nodes": [
+      {
+        "id": "d3_line1",
+        "type": "line",
+        "text": "\n{WAVE}The sun rises{ENDWAVE}, and my body has recovered completely. The food probably had something, but whatever it was, I'm glad I ended up here. {WAIT=1}Without wasting any time, I sent out a {COLOR=RED}message bird{ENDCOLOR} to the capital of my findings. I have notified them that I'd be going back to Drakeswood and have the {COLOR=RED}Hobgoblin King's{ENDCOLOR} proposal. I believe that the {COLOR=RED}hobgoblin city{ENDCOLOR} is enough for me to conclude that this {WAVE}forest shouldn't be destroyed{ENDWAVE}, nor should the {COLOR=RED}forest's creatures{ENDCOLOR} be transported somewhere.{WAIT=1}",
+        "texture": null,
+        "next": "d3_line2"
+      },
+      {
+        "id": "d3_line2",
+        "type": "line",
+        "text": "\nI go back to the gate where I went in. I have to let the capital know the specifics of the {COLOR=RED}King's{ENDCOLOR} request. I walk down the main street and see the {COLOR=RED}hobgoblins{ENDCOLOR} greeting me goodbye; it {WAVE}tugs my heart{ENDWAVE}. To help these creatures preserve their home gives me a {COLOR=#66FF00}sense of purpose{ENDCOLOR}. {WAIT=1}At the end of the street, the gates tower over me all over again. The door {SHAKE}creaks and opens inward{ENDSHAKE}. I leave the city with tears in my eyes. I wave goodbye to the {COLOR=RED}citizens{ENDCOLOR} and the {COLOR=RED}King{ENDCOLOR} at the other end of the street. I leave the city finally, and the {SHAKE}gates behind me shut{ENDSHAKE}. A couple of meters out of the city, I entered the forest again.{WAIT=1}",
+        "texture": null,
+        "next": "d3_line3"
+      },
+      {
+        "id": "d3_line3",
+        "type": "line",
+        "text": "\nI hear {SHAKE}leaves rustle{ENDSHAKE} around me. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "texture": null,
+        "next": "d3_leaves_rustling_choice"
+      },
+      {
+        "id": "d3_leaves_rustling_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "CHECK FOR PRESENCE",
+            "next": "d3_leaves_rustling_cfp_line1"
+          },
+          {
+            "label": "SHOOT THE DIRECTION FROM WHICH SOUND CAME",
+            "next": "d3_leaves_rustling_sdtwsc_line1"
+          }
+        ]
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line1",
+        "type": "line",
+        "text": "\n{COLOR=#FFDB51}\"Who's there?\"{ENDCOLOR}",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line2"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line2",
+        "type": "line",
+        "text": "\n{COLOR=RED}Bandits{ENDCOLOR} show themself to you. It seems like every {COLOR=RED}bandit{ENDCOLOR} is {SHAKE}agitated{ENDSHAKE} and prepare to launch an attack at any given time.{WAIT=1}",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line3"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line3",
+        "type": "line",
+        "text": "\n{WAVE}\"If you're coming back to the kingdom to attack, we have no reason to engage.\"{ENDWAVE}",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line4"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line4",
+        "type": "line",
+        "text": "\n{COLOR=#FFDB51}\"To attack? Why?\"{ENDCOLOR} I asked.",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line5"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line5",
+        "type": "line",
+        "text": "\n\"You play innocent, {COLOR=RED}mage{ENDCOLOR}.\"",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line6"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line6",
+        "type": "line",
+        "text": "\n{COLOR=#66FF00}You cast a passive healing spell.{ENDCOLOR} {RAINBOW}Magic fills your body.{ENDRAINBOW}",
+        "texture": null,
+        "next": "d3_leaves_rustling_cfp_line7"
+      },
+      {
+        "id": "d3_leaves_rustling_cfp_line7",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}bandits{ENDCOLOR} attack you {SHAKE}relentlessly{ENDSHAKE}.{WAIT=1}",
+        "texture": null,
+        "next": "d3_5bandits_battle_minigame"
+      },
+      {
+        "id": "d3_5bandits_battle_minigame",
+        "type": "minigame",
+        "screenKey": "5bandits_battle_minigame",
+        "healBlessing": true,
+        "next": "d3_line4"
+      },
+      {
+        "id": "d3_leaves_rustling_sdtwsc_line1",
+        "type": "line",
+        "text": "\n{COLOR=RED}Bandits{ENDCOLOR} {SHAKE}jump at me{ENDSHAKE}, swinging their daggers.",
+        "texture": null,
+        "next": "d3_leaves_rustling_sdtwsc_line2"
+      },
+      {
+        "id": "d3_leaves_rustling_sdtwsc_line2",
+        "type": "line",
+        "text": "\n\"Hear us out, {COLOR=RED}mage{ENDCOLOR}.\"",
+        "texture": null,
+        "next": "d3_leaves_rustling_sdtwsc_line3"
+      },
+      {
+        "id": "d3_leaves_rustling_sdtwsc_line3",
+        "type": "line",
+        "text": "\n{SHAKE}A fight unravels.{ENDSHAKE}{WAIT=1}",
+        "texture": null,
+        "next": "d3_5bandits_battle_minigame_no_heal"
+      },
+      {
+        "id": "d3_5bandits_battle_minigame_no_heal",
+        "type": "minigame",
+        "screenKey": "5bandits_battle_minigame",
+        "next": "d3_line4"
+      },
+      {
+        "id": "d3_line4",
+        "type": "line",
+        "text": "\nAs the dust clears, I see the {COLOR=RED}bandits{ENDCOLOR} clearly wiped out. I can't help but feel a {COLOR=#66FF00}little proud{ENDCOLOR} that I stopped something from brewing. {WAIT=1}I travelled the path I took, and to my surprise, the terrain changed. From a lush rainforest with crawling vines, muddy puddles, and a firm dust track, to an {RAINBOW}enchanted, mystical forest{ENDRAINBOW} with pinkish highlights. {WAIT=1}I'm skeptical. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "texture": null,
+        "next": "d3_city_gate_choice"
+      },
+      {
+        "id": "d3_city_gate_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "TURN BACK",
+            "next": "d3_turn_back_line1"
+          },
+          {
+            "label": "KEEP WALKING",
+            "next": "d3_line5"
+          }
+        ]
+      },
+      {
+        "id": "d3_turn_back_line1",
+        "type": "line",
+        "text": "\n{SHAKE}As you turn back, the city gate turned into a cliff.{ENDSHAKE} All of a sudden, there are no places to go. {COLOR=RED}I fall into the edge of the cave and die.{ENDCOLOR}{WAIT=2}",
+        "texture": null,
+        "triggerGameEnd": true,
+        "next": null
+      },
+      {
+        "id": "d3_line5",
+        "type": "line",
+        "text": "\nI cast detect magic, but it {COLOR=RED}fails{ENDCOLOR}. {WAIT=1}I blindly treaded the path with my weapon in hand, ready for everything. I continued walking further, and as I went, the {RAINBOW}forest became more and more bizarre{ENDRAINBOW}. The {WAVE}clouds flew faster{ENDWAVE}, the {SHAKE}leaves rustled{ENDSHAKE}, the {SHAKE}branches snapped{ENDSHAKE}, {SHAKE}thunderbolts roared{ENDSHAKE}, before I was met with an unfamiliar figure. {WAIT=1}A figure of an {COLOR=RED}old man{ENDCOLOR} covered with a black cloak.",
+        "texture": null,
+        "next": "d3_line6"
+      },
+      {
+        "id": "d3_line6",
+        "type": "line",
+        "text": "\n{WAVE}\"To leave from whence you came is a task impossible in this domain.\"{ENDWAVE}, he whispered.",
+        "texture": null,
+        "next": "d3_line7"
+      },
+      {
+        "id": "d3_line7",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}old man{ENDCOLOR} is {SHAKE}unbeatable{ENDSHAKE} unless you cast a spell to {COLOR=#66FF00}stun him and escape{ENDCOLOR}.",
+        "texture": null,
+        "next": "d3_old_man_battle_minigame"
+      },
+      {
+        "id": "d3_old_man_battle_minigame",
+        "type": "minigame",
+        "screenKey": "old_man_battle_minigame",
+        "next": "d3_line8"
+      },
+      {
+        "id": "d3_line8",
+        "type": "line",
+        "text": "\nAfter the {SHAKE}gruesome battle{ENDSHAKE}, I finally {COLOR=#66FF00}escaped the forest{ENDCOLOR}. {WAIT=1}The forest that took me two days to cover miraculously took me only a day to trace back. A {COLOR=RED}white stallion{ENDCOLOR} with Drakeswood's sigil waited for me at the edge of the forest. I rode it and went straight to my employer.{WAIT=2}",
+        "texture": null,
+        "next": null
+      }
+    ]
   }
 }

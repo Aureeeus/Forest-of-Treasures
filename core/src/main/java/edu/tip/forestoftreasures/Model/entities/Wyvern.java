@@ -53,11 +53,11 @@ public class Wyvern extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "The wyvern dives astray, its shadow passing as talons clutch empty air. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "A shallow rake. Its claws scrape your wards with a harsh, grating screech. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "It snaps mid-flight—fangs nick you, venom tingling at the wound. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A savage plunge! Talons sink deep, tearing through cloth and flesh alike. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} It crashes upon you in fury—fangs clamp down as venom floods your veins! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "The wyvern {WAVE}dives astray{ENDWAVE}, its shadow passing as talons clutch empty air. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A shallow rake. Its claws {SHAKE}scrape your wards{ENDSHAKE} with a harsh, grating screech. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "It {SHAKE}snaps mid-flight{ENDSHAKE}—fangs nick you, venom tingling at the wound. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A {SHAKE}savage plunge{ENDSHAKE}! Talons sink deep, tearing through cloth and flesh alike. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} It {SHAKE}crashes upon you{ENDSHAKE} in fury—fangs clamp down as {SICK}venom floods your veins{ENDSICK}! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

@@ -64,11 +64,11 @@ public class Centipede extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "The centipede coils too wide, its mandibles snapping uselessly at shadows. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "A grazing bite. Chitin scrapes your wards with a dry, clicking hiss. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "With a sudden skitter, it nips your flesh-venom prickling beneath the skin. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A vicious strike! Its fangs pierce deep, ichor and poison seeping into your veins. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} It rears and drives both fangs in-venom floods you as its legs writhe in frenzy! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "The centipede {WAVE}coils too wide{ENDWAVE}, its mandibles {SHAKE}snapping uselessly{ENDSHAKE} at shadows. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A grazing bite. Chitin scrapes your wards with a dry, {SICK}clicking hiss{ENDSICK}. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "With a sudden skitter, it {SICK}nips your flesh{ENDSICK}-venom prickling beneath the skin. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A vicious strike! Its fangs {SHAKE}pierce deep{ENDSHAKE}, ichor and {SICK}poison seeping{ENDSICK} into your veins. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} It rears and drives both fangs in-{SICK}venom floods{ENDSICK} you as its legs {SHAKE}writhe in frenzy{ENDSHAKE}! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

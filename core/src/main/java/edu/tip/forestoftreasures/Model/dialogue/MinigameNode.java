@@ -14,6 +14,12 @@ public class MinigameNode extends DialogueNode {
    */
   public final Boolean playerTurn;
   
+  /** 
+   * Optional manual override for the blessing mechanic. 
+   * If true, player receives HIGH blessing (heals every battle) without a roll. 
+   */
+  public final Boolean healBlessing;
+  
    /** The node to transition to after the player passes the minigame. */
   private DialogueNode next;
 
@@ -22,14 +28,16 @@ public class MinigameNode extends DialogueNode {
 
 
   /**
-   * Constructs a MinigameNode with the given screen key and turn override.
+   * Constructs a MinigameNode with the given configuration.
    *
-   * @param screenKey Identifier string for the minigame screen to launch.
-   * @param playerTurn Nullable boolean to force who gets the first move.
+   * @param screenKey    Identifier string for the minigame screen to launch.
+   * @param playerTurn   Nullable boolean to force who gets the first move.
+   * @param healBlessing Nullable boolean to force the blessing tier to HIGH.
    */
-  public MinigameNode(String screenKey, Boolean playerTurn) {
+  public MinigameNode(String screenKey, Boolean playerTurn, Boolean healBlessing) {
     this.screenKey = screenKey;
     this.playerTurn = playerTurn;
+    this.healBlessing = healBlessing;
   }
 
   /**

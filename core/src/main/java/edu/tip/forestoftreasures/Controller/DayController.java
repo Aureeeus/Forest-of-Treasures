@@ -147,9 +147,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
       dayMusic.stop();
     }
     String musicPath = "audio/bgm/days/Day" + currentDay + " Music.mp3";
-    if (currentDay == 3) {
-      musicPath = "audio/bgm/days/Day3 music.mp3";
-    }
+    
     try {
       dayMusic = game.assets.get(musicPath, Music.class);
       if (dayMusic != null) {
@@ -314,7 +312,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "knights_battle_minigame",
            "knight_captain_battle_minigame",
            "goblin_king_battle_minigame",
-           "3knights_battle_minigame" -> true;
+           "3knights_battle_minigame",
+           "5bandits_battle_minigame" -> true;
       default -> false;
     };
 
@@ -403,7 +402,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "knights_battle_minigame",
            "knight_captain_battle_minigame",
            "goblin_king_battle_minigame",
-           "3knights_battle_minigame" -> true;
+           "3knights_battle_minigame",
+           "old_man_battle_minigame",
+           "5bandits_battle_minigame" -> true;
       default -> false;
     };
 
@@ -451,7 +452,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
            "knights_battle_minigame",
            "knight_captain_battle_minigame",
            "goblin_king_battle_minigame",
-           "3knights_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
+           "3knights_battle_minigame",
+           "old_man_battle_minigame",
+           "5bandits_battle_minigame" -> new EntityBattleScreen(game, node, screen.getPlayer(), onComplete);
       default -> throw new RuntimeException(
           "[DayController] Unknown minigame screenKey: '" + node.screenKey + "'");
     };

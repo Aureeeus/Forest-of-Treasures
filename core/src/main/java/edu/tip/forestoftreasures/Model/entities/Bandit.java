@@ -64,11 +64,11 @@ public class Bandit extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "The Bandit overextends with a clumsy swing! Their blade bites only empty air. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "A glancing blow. The Bandit's rusted dagger scrapes against your wards. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "\"Keep still, scholar!\" The Bandit lunges, drawing a thin line of red across your arm. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A precise strike! The Bandit finds a gap in your robes and sinks their blade deep. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} \"Found your heart!\" The Bandit delivers a brutal, bone-shattering puncture! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "The Bandit overextends with a {SHAKE}clumsy swing{ENDSHAKE}! Their blade bites only empty air. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A glancing blow. The Bandit's rusted dagger {WAVE}scrapes against your wards{ENDWAVE}. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "\"Keep still, scholar!\" The Bandit {SHAKE}lunges{ENDSHAKE}, drawing a thin line of red across your arm. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A precise strike! The Bandit finds a gap in your robes and {WAVE}sinks their blade deep{ENDWAVE}. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} \"Found your heart!\" The Bandit delivers a brutal, {SHAKE}bone-shattering puncture{ENDSHAKE}! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

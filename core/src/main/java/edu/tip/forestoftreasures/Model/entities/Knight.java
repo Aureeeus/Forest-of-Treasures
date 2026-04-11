@@ -48,11 +48,11 @@ public class Knight extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "The knight's blade catches on a thicket of thorns, his swing losing all momentum in the tangled brush. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "A clumsy haft-strike. The Knight's gauntlet rings against bone, leaving only a shallow bruise behind. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "Steel bites through bark and hide alike, the Knight's heavy blow drawing a spray of dark, mossy blood. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A disciplined thrust! The blade pierces through the center, the weight of the Knight's armor driving the point home. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} With a guttural shout, the Knight cleaves downward—a ruinous arc of cold steel that shatters spirit and flesh. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "The knight's blade catches on a thicket of thorns, his swing {WAVE}losing all momentum{ENDWAVE} in the tangled brush. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A clumsy haft-strike. The Knight's {SHAKE}gauntlet rings against bone{ENDSHAKE}, leaving only a shallow bruise behind. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "{SHAKE}Steel bites through bark{ENDSHAKE} and hide alike, the Knight's heavy blow drawing a spray of dark, mossy blood. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A disciplined thrust! The blade pierces through the center, the weight of the Knight's armor {SHAKE}driving the point home{ENDSHAKE}. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} With a guttural shout, the Knight {SHAKE}cleaves downward{ENDSHAKE}—a ruinous arc of cold steel that {SHAKE}shatters spirit and flesh{ENDSHAKE}. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

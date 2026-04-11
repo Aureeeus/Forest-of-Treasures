@@ -46,6 +46,7 @@ A decision point for the player.
 Triggers an external gameplay sequence.
 - `screenKey`: The unique key of the screen to launch (e.g., `"maze_minigame"`, `"bandit_battle_minigame"`).
 - `playerTurn`: (Optional parameter) A Boolean dictating Minigame initiative. `true` sets Player (20), `false` sets Enemy (20). If omitted/null, it performs a normal D20 random check.
+- `healBlessing`: (Optional parameter) A Boolean to enable the "Divine Blessing" mechanic for battle minigames. If `true`, resets the player's HP after every battle in a multi-battle sequence without a D20 roll.
 - `next`: The ID of the node to resume from upon minigame completion (Success Path).
 - `failNext`: (Optional) The ID of the node to resume from if the player loses the minigame. If omitted, losing a minigame triggers a standard Game Over screen.
 

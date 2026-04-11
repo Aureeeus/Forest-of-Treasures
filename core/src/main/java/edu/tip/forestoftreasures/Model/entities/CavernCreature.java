@@ -77,11 +77,11 @@ public class CavernCreature extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "\u201cOAAAAARRRGGHHHHH!\u201d The creature shrieks as it lunges at you, but it misses {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "The creature, probably blinded by the darkness, grazes your clothes {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "The creature's fangs sink in, but are lightly deflected by your robes {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "With a deadly swing, the creature\u2019s spines carved deep into your skin {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} The creature\u2019s weight crushes your bones. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "\u201cOAAAAARRRGGHHHHH!\u201d The creature shrieks as it {SHAKE}lunges{ENDSHAKE} at you, but it misses {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "The creature, probably blinded by the darkness, {WAVE}grazes your clothes{ENDWAVE} {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "The creature's fangs {SICK}sink in{ENDSICK}, but are lightly deflected by your robes {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "With a deadly swing, the creature\u2019s spines {SHAKE}carved deep{ENDSHAKE} into your skin {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} The creature\u2019s weight {SHAKE}crushes your bones{ENDSHAKE}. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

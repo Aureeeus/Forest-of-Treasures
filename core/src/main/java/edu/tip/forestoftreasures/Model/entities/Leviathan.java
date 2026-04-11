@@ -64,11 +64,11 @@ public class Leviathan extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "An ember emerged from its throat. The attack fails {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "The fireball barely hit, but it was enough to set you on fire {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "A blaze enveloped your surroundings and was able to incinerate your skin {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "The flamethrower hits! You are being seared alive, but you extinguished the flames in time {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} The Inferno blazes you. You are being burned alive. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "An {WAVE}ember emerged{ENDWAVE} from its throat. The attack fails {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "The fireball barely hit, but it was enough to {SHAKE}set you on fire{ENDSHAKE} {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "A {SHAKE}blaze enveloped{ENDSHAKE} your surroundings and was able to incinerate your skin {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "The flamethrower hits! You are being {SHAKE}seared alive{ENDSHAKE}, but you extinguished the flames in time {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} The {SHAKE}Inferno blazes{ENDSHAKE} you. You are being {SICK}burned alive{ENDSICK}. {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);

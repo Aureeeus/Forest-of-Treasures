@@ -211,7 +211,13 @@ public class DialogueLoader {
     if (nodeJson.has("playerTurn")) {
       playerTurn = nodeJson.getBoolean("playerTurn");
     }
-    return new MinigameNode(screenKey, playerTurn);
+
+    Boolean healBlessing = null;
+    if (nodeJson.has("healBlessing")) {
+      healBlessing = nodeJson.getBoolean("healBlessing");
+    }
+
+    return new MinigameNode(screenKey, playerTurn, healBlessing);
   }
 
   // ---------------------------------------------------------------------------
