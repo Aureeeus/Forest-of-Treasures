@@ -44,7 +44,7 @@ import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.EntityBattleScreen;
 import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
-import edu.tip.forestoftreasures.View.mazeBossScreen;
+import edu.tip.forestoftreasures.View.MazeBossScreen;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.Model.SaveData;
 import edu.tip.forestoftreasures.utils.DialogueUtils;
@@ -535,7 +535,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     return switch (node.screenKey) {
       // Add new minigame screens here as cases
-      case "maze_minigame" -> new mazeBossScreen(game, node, onComplete);
+      case "maze_minigame" -> new MazeBossScreen(game, node, onComplete);
       // Both battle minigame variants use the EntityBattleScreen with specific routing via screenKey
       case "bandit_battle_minigame", 
            "cavern_creature_battle_minigame", 

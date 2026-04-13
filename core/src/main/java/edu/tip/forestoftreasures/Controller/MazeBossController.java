@@ -14,7 +14,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class mazeBossController {
+public class MazeBossController {
   public Vector2 playerPosition;
   public Vector2 enemyPosition;
   public boolean enemyActive = false;
@@ -54,7 +54,7 @@ public class mazeBossController {
   private boolean[][] walkable;
   private boolean walkableBuilt = false;
 
-  public mazeBossController() {
+  public MazeBossController() {
     // Start position (Adjust as needed)
     playerPosition = new Vector2(40, 700);
     enemyPosition = new Vector2();

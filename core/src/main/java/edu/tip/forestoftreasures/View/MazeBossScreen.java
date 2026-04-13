@@ -21,16 +21,16 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.Align;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.Controller.mazeBossController;
+import edu.tip.forestoftreasures.Controller.MazeBossController;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 import java.util.function.Consumer;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 
-public class mazeBossScreen implements Screen {
+public class MazeBossScreen implements Screen {
   private Stage stage;
   private final GameLauncher game;
-  private mazeBossController controller;
+  private MazeBossController controller;
   private SpriteBatch batch;
   private Texture playerUpTexture;
   private Texture playerDownTexture;
@@ -65,11 +65,11 @@ public class mazeBossScreen implements Screen {
   private final Consumer<Boolean> onComplete;
   private final MinigameNode node;
 
-  public mazeBossScreen(GameLauncher game, MinigameNode node, Consumer<Boolean> onComplete) {
+  public MazeBossScreen(GameLauncher game, MinigameNode node, Consumer<Boolean> onComplete) {
     this.game = game;
     this.node = node;
     this.onComplete = onComplete;
-    this.controller = new mazeBossController();
+    this.controller = new MazeBossController();
   }
 
   @Override
