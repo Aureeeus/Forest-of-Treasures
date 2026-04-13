@@ -19,8 +19,13 @@ import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.AchievementsController;
+import edu.tip.forestoftreasures.Model.SaveData;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.SaveManager;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Achievements screen showing a scrollable list of 12 achievement entries.
@@ -113,6 +118,7 @@ public class AchievementsScreen implements Screen {
 
     private ImageButton exitButton;
     private ScrollPane scrollPane;
+    private Table listTable;
 
     private Font headerFont;
     private Font rowTitleFont;
@@ -180,16 +186,12 @@ public class AchievementsScreen implements Screen {
      * and adds it to the root table so it fills the remaining space.
      */
     private void addScrollableAchievements(Table root) {
-        Table listTable = new Table();
+        listTable = new Table();
         listTable.top();
         listTable.padTop(4f);
 
         rowTitleFont = FontFactory.generateFont("fonts/PressStart2P-Regular.ttf", 28, Color.valueOf("#d4a96a"));
         rowDescFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 30, Color.valueOf("#ccc5b0"));
-
-        for (int i = 1; i <= ACHIEVEMENT_COUNT; i++) {
-            listTable.add(buildAchievementRow(i)).growX().padBottom(ROW_SPACING).row();
-        }
 
         ScrollPane.ScrollPaneStyle spStyle = new ScrollPane.ScrollPaneStyle();
         final Drawable baseBg = DrawableFactory.getColoredDrawable(new Color(0.2f, 0.2f, 0.2f, 0.5f));
@@ -244,7 +246,7 @@ public class AchievementsScreen implements Screen {
      * @param index 1-based index used to label the placeholder achievement.
      * @return A {@link Table} representing the styled achievement box.
      */
-    private Table buildAchievementRow(int index) {
+    private Table buildAchievementRow(int index, Set<String> unlocked) {
 
         // Outer table acts as a visible border via its background color + padding
         Table borderTable = new Table();
@@ -256,8 +258,15 @@ public class AchievementsScreen implements Screen {
         inner.setBackground(DrawableFactory.getColoredDrawable(BOX_BG_COLOR));
         inner.pad(14f);
 
-        // Map the index to one of the 15 icons we declared
-        String path = ACHIEVEMENT_ICON_PATHS[(index - 1) % ACHIEVEMENT_ICON_PATHS.length];
+        String titleKey = ACHIEVEMENT_TITLES[(index - 1) % ACHIEVEMENT_TITLES.length];
+        boolean isUnlocked = unlocked.contains(titleKey);
+
+        String path;
+        if (isUnlocked) {
+            path = ACHIEVEMENT_ICON_PATHS[(index - 1) % ACHIEVEMENT_ICON_PATHS.length];
+        } else {
+            path = "icons/Achievements/Locked Achievement.png";
+        }
         Texture iconTex = game.assets.get(path, Texture.class);
         Image iconPlaceholder = new Image(iconTex);
 
@@ -269,11 +278,15 @@ public class AchievementsScreen implements Screen {
         textColumn.center().left();
         textColumn.defaults().left().padBottom(6f);
 
-        String title = ACHIEVEMENT_TITLES[(index - 1) % ACHIEVEMENT_TITLES.length];
-        String desc = ACHIEVEMENT_DESCRIPTIONS[(index - 1) % ACHIEVEMENT_DESCRIPTIONS.length];
+        String title = isUnlocked ? titleKey : scrambleText(titleKey);
+        String descStr = ACHIEVEMENT_DESCRIPTIONS[(index - 1) % ACHIEVEMENT_DESCRIPTIONS.length];
+        String desc = isUnlocked ? descStr : scrambleText(descStr);
 
         TextraLabel nameLabel = new TextraLabel(title, rowTitleFont);
+        if (!isUnlocked) nameLabel.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
+
         TextraLabel descLabel = new TextraLabel(desc, rowDescFont);
+        if (!isUnlocked) descLabel.setColor(new Color(0.5f, 0.5f, 0.5f, 0.5f));
         descLabel.setWrap(true);
 
         textColumn.add(nameLabel).growX().padTop(15f).row();
@@ -290,6 +303,20 @@ public class AchievementsScreen implements Screen {
         return borderTable;
     }
 
+    private String scrambleText(String text) {
+        StringBuilder sb = new StringBuilder();
+        String gibberish = "?#!$%*&@";
+        for (int i = 0; i < text.length(); i++) {
+            char c = text.charAt(i);
+            if (Character.isWhitespace(c)) {
+                sb.append(c);
+            } else {
+                sb.append(gibberish.charAt((int)(Math.random() * gibberish.length())));
+            }
+        }
+        return sb.toString();
+    }
+
     // -----------------------------------------------------------------------
     // Screen lifecycle
     // -----------------------------------------------------------------------
@@ -297,6 +324,24 @@ public class AchievementsScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
+        
+        Set<String> unlocked = new HashSet<>();
+        try {
+            if (SaveManager.hasSaveFile()) {
+                SaveData save = SaveManager.load();
+                if (save != null && save.getUnlockedAchievements() != null) {
+                    unlocked = save.getUnlockedAchievements();
+                }
+            }
+        } catch (Exception e) {
+            Gdx.app.error("AchievementsScreen", "Failed to parse unlocked achievements from save file.", e);
+        }
+
+        listTable.clearChildren();
+        for (int i = 1; i <= ACHIEVEMENT_COUNT; i++) {
+            listTable.add(buildAchievementRow(i, unlocked)).growX().padBottom(ROW_SPACING).row();
+        }
+
         if (scrollPane != null) {
             stage.setScrollFocus(scrollPane);
         }

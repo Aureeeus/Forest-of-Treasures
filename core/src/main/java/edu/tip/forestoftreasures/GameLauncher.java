@@ -8,9 +8,9 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import edu.tip.forestoftreasures.Model.entities.Player;
 
 import edu.tip.forestoftreasures.Model.SettingsConfiguration;
+import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.View.AchievementsScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
@@ -99,6 +99,7 @@ public class GameLauncher extends Game {
         assets.load("icons/Achievements/Achievement Gruesome Farewell.png", Texture.class);
         assets.load("icons/Achievements/Achievement Java and the Striped Socks.png", Texture.class);
         assets.load("icons/Achievements/Achievement So Close Yet So Far.png", Texture.class);
+        assets.load("icons/Achievements/Locked Achievement.png", Texture.class);
 
         // --- Bg Music ---
         assets.load("audio/bgm/main_menu_bg_music.mp3", Music.class);
