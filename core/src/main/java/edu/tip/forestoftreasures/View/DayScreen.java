@@ -20,6 +20,7 @@ import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.DayController;
+import edu.tip.forestoftreasures.Model.SaveData;
 import edu.tip.forestoftreasures.Model.entities.Player;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
@@ -58,11 +59,15 @@ public class DayScreen implements Screen {
   private Table bottomDialogueContentTable;
   private DayController controller;
 
+  // Save/Load state passed from MainMenuController
+  private SaveData pendingSaveData;
+
   // Settings Pop-up UI Components
   private Table settingsDialog;
   private Table dimOverlay;
   private TextraLabel returnToMenuButton;
   private TextraLabel resumeButton;
+  private TextraLabel saveGameButton;
 
   // Player stat labels (refreshable after battle)
   private TextraLabel hpLabel;
@@ -435,6 +440,26 @@ public class DayScreen implements Screen {
   }
 
   /**
+   * Sets pending save data to be consumed by the DayController on initialization.
+   * Called by MainMenuController before transitioning to this screen.
+   */
+  public void setPendingSaveData(SaveData saveData) {
+    this.pendingSaveData = saveData;
+  }
+
+  /**
+   * Returns and clears any pending save data. The DayController calls this
+   * once during initialization to check if it should resume from a saved position.
+   *
+   * @return The pending SaveData, or null if this is a fresh game.
+   */
+  public SaveData consumePendingSaveData() {
+    SaveData data = this.pendingSaveData;
+    this.pendingSaveData = null;
+    return data;
+  }
+
+  /**
    * Creates and displays a modal settings pop-up window.
    */
   public void showSettingsDialog() {
@@ -464,12 +489,14 @@ public class DayScreen implements Screen {
     // 4. Add Buttons
     returnToMenuButton = new TextraLabel("RETURN TO MAIN MENU", playerStatsTextFont);
     resumeButton = new TextraLabel("RESUME GAME", playerStatsTextFont);
+    saveGameButton = new TextraLabel("SAVE GAME", playerStatsTextFont);
 
     contentTable.add(resumeButton).padBottom(20f).row();
+    contentTable.add(saveGameButton).padBottom(20f).row();
     contentTable.add(returnToMenuButton).row();
 
     // 5. Position dialog in center
-    settingsDialog.setSize(500f, 350f);
+    settingsDialog.setSize(500f, 400f);
     settingsDialog.setPosition(
       (stage.getWidth() - settingsDialog.getWidth()) / 2f,
       (stage.getHeight() - settingsDialog.getHeight()) / 2f
@@ -497,6 +524,10 @@ public class DayScreen implements Screen {
 
   public TextraLabel getResumeButton() {
     return resumeButton;
+  }
+
+  public TextraLabel getSaveGameButton() {
+    return saveGameButton;
   }
 
   /**

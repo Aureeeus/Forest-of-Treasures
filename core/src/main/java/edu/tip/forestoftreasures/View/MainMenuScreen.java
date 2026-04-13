@@ -16,6 +16,7 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.MainMenuController;
+import edu.tip.forestoftreasures.utils.SaveManager;
 
 /**
  * First screen of the application. Displayed after the application is created.
@@ -36,8 +37,8 @@ public class MainMenuScreen implements Screen {
   private SpriteBatch batch;
   
   private TextButton startButton;
+  private TextButton continueButton;
   private TextButton achievementsButton;
-  private TextButton creditsButton;
   private TextButton settingsButton;
   private TextButton quitButton;
 
@@ -72,12 +73,13 @@ public class MainMenuScreen implements Screen {
     table.add(startButton);
     table.row();
 
-    achievementsButton = new TextButton("ACHIEVEMENTS", skin, "main-menu-text-button");
-    table.add(achievementsButton);
+    continueButton = new TextButton("CONTINUE", skin, "main-menu-text-button");
+    refreshContinueButton();
+    table.add(continueButton);
     table.row();
 
-    creditsButton = new TextButton("CREDITS", skin, "main-menu-text-button");
-    table.add(creditsButton);
+    achievementsButton = new TextButton("ACHIEVEMENTS", skin, "main-menu-text-button");
+    table.add(achievementsButton);
     table.row();
 
     settingsButton = new TextButton("SETTINGS", skin, "main-menu-text-button");
@@ -112,6 +114,8 @@ public class MainMenuScreen implements Screen {
     if (controller != null) {
       controller.syncSettings();
     }
+
+    refreshContinueButton();
 
     if (!backgroundMusic.isPlaying()) {
       backgroundMusic.play();
@@ -190,16 +194,31 @@ public class MainMenuScreen implements Screen {
     return achievementsButton;
   }
 
-  public TextButton getCreditsButton() {
-    return creditsButton;
-  }
-
   public TextButton getSettingsButton() {
     return settingsButton;
   }
 
   public TextButton getQuitButton() {
     return quitButton;
+  }
+
+  public TextButton getContinueButton() {
+    return continueButton;
+  }
+
+  /**
+   * Updates the CONTINUE button's enabled state and visual appearance
+   * based on whether a save file exists. Should be called when the
+   * screen is shown in case a save was created since it was last displayed.
+   */
+  public void refreshContinueButton() {
+    boolean hasSave = SaveManager.hasSaveFile();
+    continueButton.setDisabled(!hasSave);
+    if (hasSave) {
+      continueButton.getColor().a = 1f;
+    } else {
+      continueButton.getColor().a = 0.4f;
+    }
   }
 
 

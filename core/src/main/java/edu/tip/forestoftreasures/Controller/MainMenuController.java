@@ -6,9 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 
 import edu.tip.forestoftreasures.GameLauncher;
-import edu.tip.forestoftreasures.View.CreditsScreen;
+import edu.tip.forestoftreasures.Model.SaveData;
+import edu.tip.forestoftreasures.View.DayScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
+import edu.tip.forestoftreasures.utils.SaveCrypto;
+import edu.tip.forestoftreasures.utils.SaveManager;
 
 
 public class MainMenuController {
@@ -66,15 +69,6 @@ public class MainMenuController {
       }
     });
 
-    screen.getCreditsButton().addListener(new ChangeListener() {
-      @Override
-      public void changed(ChangeEvent event, Actor actor) {
-        selectSound.play(sfxVolume);
-        screen.stopMusic();
-        game.setScreen(new CreditsScreen(game));
-      }
-    });
-
     screen.getSettingsButton().addListener(new ChangeListener() {
       @Override
       public void changed(ChangeEvent event, Actor actor) {
@@ -91,7 +85,49 @@ public class MainMenuController {
       }
     });
 
+    screen.getContinueButton().addListener(new ChangeListener() {
+      @Override
+      public void changed(ChangeEvent event, Actor actor) {
+        if (screen.getContinueButton().isDisabled()) return;
+        startSound.play(sfxVolume);
+        handleContinue();
+      }
+    });
+  }
 
+  /**
+   * Loads the saved game data and transitions to the DayScreen,
+   * restoring player stats from the save file. The DayController
+   * will detect the pending save data and resume from the saved node.
+   */
+  private void handleContinue() {
+    try {
+      SaveData saveData = SaveManager.load();
+      if (saveData == null) {
+        Gdx.app.error("MainMenuController", "No save data found.");
+        return;
+      }
+
+      // Restore player stats from save data
+      game.getPlayer().resetStats(
+        saveData.getHp(),
+        saveData.getStrength(),
+        saveData.getIntelligence(),
+        saveData.getDexterity(),
+        saveData.getCharisma()
+      );
+
+      screen.stopMusic();
+
+      // Pass save data to DayScreen so DayController can resume from saved node
+      DayScreen dayScreen = new DayScreen(game);
+      dayScreen.setPendingSaveData(saveData);
+      game.setScreen(dayScreen);
+    } catch (SaveCrypto.SaveTamperedException e) {
+      Gdx.app.error("MainMenuController", "Save file has been tampered with!", e);
+      SaveManager.deleteSave();
+      screen.refreshContinueButton();
+    }
   }
 
   /**

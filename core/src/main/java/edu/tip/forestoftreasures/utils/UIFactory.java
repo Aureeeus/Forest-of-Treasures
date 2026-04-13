@@ -6,13 +6,20 @@ import java.util.Map;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Interpolation;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.scenes.scene2d.ui.Container;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Slider;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Scaling;
+import com.github.tommyettinger.textra.Font;
+import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 
@@ -165,6 +172,39 @@ public final class UIFactory {
     Texture sheet = game.assets.get("icons/dialogue_ui_sheet.png", Texture.class);
     TextureRegion region = new TextureRegion(sheet, 448, 384, 64, 64);
     return new Image(region);
+  }
+
+  /**
+   * Displays a toast notification at the bottom-left of the stage.
+   * The message fades in with an ease-in animation and auto-dismisses
+   * after a short duration.
+   *
+   * @param stage   The stage to add the toast to.
+   * @param message The text message to display.
+   * @param font    The font to render the message with.
+   */
+  public static void showToast(Stage stage, String message, Font font) {
+    Table toastTable = new Table();
+    toastTable.setBackground(DrawableFactory.getColoredDrawable(new Color(0.1f, 0.1f, 0.1f, 0.85f)));
+    toastTable.pad(12f, 20f, 12f, 20f);
+
+    TextraLabel label = new TextraLabel(message, font);
+    label.setAlignment(Align.left);
+    toastTable.add(label);
+
+    toastTable.pack();
+    toastTable.setPosition(20f, 20f);
+
+    // Start fully transparent, ease-in to full opacity, hold, then fade out and remove
+    toastTable.getColor().a = 0f;
+    toastTable.addAction(Actions.sequence(
+      Actions.fadeIn(0.5f, Interpolation.sineIn),
+      Actions.delay(2.5f),
+      Actions.fadeOut(0.5f, Interpolation.sineOut),
+      Actions.removeActor()
+    ));
+
+    stage.addActor(toastTable);
   }
 
   /**

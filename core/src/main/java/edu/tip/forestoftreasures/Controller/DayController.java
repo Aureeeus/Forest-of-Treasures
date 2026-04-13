@@ -1,7 +1,11 @@
 package edu.tip.forestoftreasures.Controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -26,6 +30,7 @@ import com.github.tommyettinger.textra.TypingLabel;
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Model.Achievement;
 import edu.tip.forestoftreasures.Model.AchievementVerifier;
+import edu.tip.forestoftreasures.Model.PlayerPathTracker;
 import edu.tip.forestoftreasures.Model.dialogue.ChoiceNode;
 import edu.tip.forestoftreasures.Model.dialogue.DialogueLoader;
 import edu.tip.forestoftreasures.Model.dialogue.DialogueLoader.DayData;
@@ -41,7 +46,9 @@ import edu.tip.forestoftreasures.View.GameOverScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.mazeBossScreen;
 import edu.tip.forestoftreasures.Model.entities.Player;
+import edu.tip.forestoftreasures.Model.SaveData;
 import edu.tip.forestoftreasures.utils.DialogueUtils;
+import edu.tip.forestoftreasures.utils.SaveManager;
 import edu.tip.forestoftreasures.utils.UIFactory;
 
 public class DayController implements DialogueRunner.DisplayHandler {
@@ -68,6 +75,12 @@ public class DayController implements DialogueRunner.DisplayHandler {
   private boolean pendingOverflowTrim = false;
   private Music dayMusic;
   private Sound selectSound;
+
+  // --- Save/Load state ---
+  private Map<String, DialogueNode> nodeMap;
+  private final Set<String> unlockedAchievements = new HashSet<>();
+  private String lastScenarioTexturePath;
+  private boolean isRestoringState = false;
 
   // --- Choice UI state ---
   private int selectedRow = 0;
@@ -120,7 +133,71 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.achievementVerifier = new AchievementVerifier();
 
     addListeners();
-    loadAndStartDay("day" + currentDay);
+
+    // Check for pending save data to resume from
+    SaveData saveData = screen.consumePendingSaveData();
+    if (saveData != null) {
+      resumeFromSaveData(saveData);
+    } else {
+      loadAndStartDay("day" + currentDay);
+    }
+  }
+
+  /**
+   * Resumes the game from a previously saved state. Loads the correct day's
+   * dialogue graph, restores the saved node position, and populates the
+   * unlocked achievements set from the save data.
+   */
+  private void resumeFromSaveData(SaveData saveData) {
+    this.currentDay = saveData.getCurrentDay();
+    this.unlockedAchievements.addAll(saveData.getUnlockedAchievements());
+
+    DayData day = DialogueLoader.load(STORY_FILE, "day" + currentDay);
+    this.storyRoot = day.rootNode();
+    this.achievements = day.achievements();
+    this.nodeMap = day.nodeMap();
+
+    // Start day music
+    if (dayMusic != null) {
+      dayMusic.stop();
+    }
+    String musicPath = "audio/bgm/days/Day" + currentDay + " Music.mp3";
+    try {
+      dayMusic = game.assets.get(musicPath, Music.class);
+      if (dayMusic != null) {
+        dayMusic.setLooping(true);
+        dayMusic.setVolume(game.settingsConfig.getGameSettings().bgMusicVolume());
+        dayMusic.play();
+      }
+    } catch (Exception e) {
+      Gdx.app.error("DayController", "Could not play day music for day " + currentDay, e);
+    }
+
+    // Add Day label
+    TextraLabel dayLabel = new TextraLabel("[#FFDB51][[DAY " + currentDay + "][]", dialogueFont);
+    dayLabel.setName("dayLabel");
+    dayLabel.setAlignment(Align.center);
+    textDialogueTable.add(dayLabel).growX().center().padBottom(10f).row();
+
+    // Resolve the saved node from the node map and resume
+    DialogueNode savedNode = nodeMap.get(saveData.getCurrentNodeId());
+
+    // Restore the last displayed scenario image before resuming dialogue
+    if (saveData.getLastScenarioTexturePath() != null) {
+      lastScenarioTexturePath = saveData.getLastScenarioTexturePath();
+      Texture savedTexture = game.assets.get(lastScenarioTexturePath, Texture.class);
+      showImageScenario(savedTexture);
+    }
+
+    if (savedNode != null) {
+      isRestoringState = true;
+      runner.resumeFrom(savedNode);
+      isRestoringState = false;
+    } else {
+      Gdx.app.error("DayController", "Could not find saved node: " + saveData.getCurrentNodeId()
+          + ". Starting from beginning.");
+      runner.start(storyRoot);
+    }
   }
 
   /**
@@ -146,6 +223,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     this.storyRoot = day.rootNode();
     this.achievements = day.achievements();
+    this.nodeMap = day.nodeMap();
 
     if (dayMusic != null) {
       dayMusic.stop();
@@ -186,6 +264,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
   public void showLine(LineNode node) {
     // Resolve texture path → Texture via AssetManager (already pre-loaded)
     if (node.texturePath != null) {
+      lastScenarioTexturePath = node.texturePath;
       Texture texture = game.assets.get(node.texturePath, Texture.class);
       showImageScenario(texture);
     }
@@ -198,7 +277,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
       typingLabel.setTextSpeed(0.08f / 0.85f);
     }
 
-    if (node.damage > 0) {
+    if (node.damage > 0 && !isRestoringState) {
       screen.getPlayer().takeDamage((float) node.damage);
       screen.updatePlayerStats();
 
@@ -278,6 +357,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     activeManualRollNode = node;
 
     if (node.texturePath != null) {
+      lastScenarioTexturePath = node.texturePath;
       Texture texture = game.assets.get(node.texturePath, Texture.class);
       showImageScenario(texture);
     }
@@ -560,10 +640,10 @@ public class DayController implements DialogueRunner.DisplayHandler {
     for (Achievement achievement : achievements) {
       // Automatic detection: Only check achievements that HAVE a sequence
       if (!achievement.requiredChoiceSequence.isEmpty()) {
-        // Exact Match Logic: Path length MUST match sequence length
         if (runner.getPlayerPath().size() == achievement.requiredChoiceSequence.size()) {
           if (achievementVerifier.verify(achievement, runner.getPlayerPath(), storyRoot)) {
-            Gdx.app.log("DayController", "Achievement unlocked: [" 
+            unlockedAchievements.add(achievement.id);
+            Gdx.app.log("DayController", "Achievement unlocked: ["
                 + achievement.id + "] " + achievement.description);
           }
         }
@@ -579,6 +659,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
    */
   @Override
   public void onAchievementObtainable(String achievementId) {
+    if (isRestoringState) return;
+
     Achievement target = achievements.stream()
         .filter(a -> a.id.equals(achievementId))
         .findFirst()
@@ -590,9 +672,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
       return;
     }
 
-    // Manual detection: Only check achievements that DO NOT have a sequence (Reach-Only)
     if (target.requiredChoiceSequence.isEmpty()) {
       if (achievementVerifier.verify(target, runner.getPlayerPath(), storyRoot)) {
+        unlockedAchievements.add(target.id);
         Gdx.app.log("DayController", "Achievement unlocked: [" + target.id + "] " + target.description);
       }
     }
@@ -600,6 +682,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   @Override
   public void onCharismaIncreased(int amount) {
+    if (isRestoringState) return;
     screen.getPlayer().increaseCharisma(amount);
     screen.updatePlayerStats();
   }
@@ -677,6 +760,41 @@ public class DayController implements DialogueRunner.DisplayHandler {
         game.setScreen(new MainMenuScreen(game));
       });
     }
+
+    TextraLabel saveBtn = screen.getSaveGameButton();
+    if (saveBtn != null) {
+      wirePopUpButton(saveBtn, this::performSave);
+    }
+  }
+
+  /**
+   * Builds save data from current game state and persists it through
+   * the encrypted save pipeline. Shows a toast notification on success.
+   */
+  private void performSave() {
+    List<Integer> choicePath = runner.getPlayerPath().stream()
+      .map(PlayerPathTracker.PlayerDecision::choiceIndex)
+      .collect(Collectors.toList());
+
+    Player player = screen.getPlayer();
+    SaveData data = new SaveData(
+      player.getHp(),
+      player.getStrength(),
+      player.getIntelligence(),
+      player.getDexterity(),
+      player.getCharisma(),
+      unlockedAchievements,
+      currentDay,
+      runner.getCurrentNodeId(),
+      lastScenarioTexturePath,
+      choicePath
+    );
+
+    boolean success = SaveManager.save(data);
+    screen.closeSettingsDialog();
+
+    String message = success ? "[#66FF00]Game Saved!" : "[#FF0000]Save Failed!";
+    UIFactory.showToast(screen.getStage(), message, selectChoiceFont);
   }
 
   /**
