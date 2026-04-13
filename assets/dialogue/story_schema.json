@@ -23,7 +23,7 @@
         "id": "d1_line1",
         "type": "line",
         "text": "{WAVE}The forest seems normal.{ENDWAVE} {COLOR=RED}Goblins, bugs, and fairies{ENDCOLOR} roam the forest. Nothing out of the ordinary. The forest is still lit by the sun - probably because it's high noon and the trees, so far, are normal.{WAIT=1}",
-        "texture": "scenarios/day1/forest_intro.png",
+        "texture": "scenarios/day1/river_stream.png",
         "next": "d1_line2"
       },
       {
@@ -52,14 +52,14 @@
         "id": "d1_sprite_choice_line1",
         "type": "line",
         "text": "\nThe {COLOR=RED}sprite{ENDCOLOR} left. Seemingly {WAVE}unagitated{ENDWAVE} by my skeptical attitude towards it.",
-        "texture": "scenarios/day1/deep_in_forest.png",
+        "texture": null,
         "next": "d1_line3"
       },
       {
         "id": "d1_sprite_choice_line2",
         "type": "line",
         "text": "\n{COLOR=#66FF00}I checked my stats with an appraisal to find out that my Mana regenerates by 1-20% after each battle.{ENDCOLOR}",
-        "texture": "scenarios/day1/deep_in_forest.png",
+        "texture": null,
         "increaseCharisma": 1,
         "next": "d1_line3"
       },
@@ -1337,13 +1337,27 @@
   },
   "day3": {
     "entryNode": "d3_line1",
-    "achievements": [],
+    "achievements": [
+      {
+        "id": "So Close Yet So Far",
+        "description": "Defeated after almost reaching the goal.",
+        "requiredChoiceSequence": [0]
+      },
+      {
+        "id": "The Treasure of Riches",
+        "description": "Gather an unimaginable amount of gold coins."
+      },
+      {
+        "id": "The Treasure of Aggression",
+        "description": "Is this really a treasure..?"
+      }
+    ],
     "nodes": [
       {
         "id": "d3_line1",
         "type": "line",
-        "text": "\n{WAVE}The sun rises{ENDWAVE}, and my body has recovered completely. The food probably had something, but whatever it was, I'm glad I ended up here. {WAIT=1}Without wasting any time, I sent out a {COLOR=RED}message bird{ENDCOLOR} to the capital of my findings. I have notified them that I'd be going back to Drakeswood and have the {COLOR=RED}Hobgoblin King's{ENDCOLOR} proposal. I believe that the {COLOR=RED}hobgoblin city{ENDCOLOR} is enough for me to conclude that this {WAVE}forest shouldn't be destroyed{ENDWAVE}, nor should the {COLOR=RED}forest's creatures{ENDCOLOR} be transported somewhere.{WAIT=1}",
-        "texture": null,
+        "text": "\n{WAVE}The sun rises{ENDWAVE}, and my body has recovered completely. The food probably had something, but whatever it was, I'm glad I ended up here. {WAIT=1}Without wasting any time, I sent out a {COLOR=RED}message bird{ENDCOLOR} to the capital of my findings. I have notified them that I'd be going back to {COLOR=RED}Drakeswood{ENDCOLOR} and have the {COLOR=RED}Hobgoblin King's{ENDCOLOR} proposal. I believe that the {COLOR=RED}hobgoblin city{ENDCOLOR} is enough for me to conclude that this {WAVE}forest shouldn't be destroyed{ENDWAVE}, nor should the {COLOR=RED}forest's creatures{ENDCOLOR} be transported somewhere.{WAIT=1}",
+        "texture": "scenarios/day3/forest.png",
         "next": "d3_line2"
       },
       {
@@ -1385,7 +1399,7 @@
         "id": "d3_leaves_rustling_cfp_line2",
         "type": "line",
         "text": "\n{COLOR=RED}Bandits{ENDCOLOR} show themself to you. It seems like every {COLOR=RED}bandit{ENDCOLOR} is {SHAKE}agitated{ENDSHAKE} and prepare to launch an attack at any given time.{WAIT=1}",
-        "texture": null,
+        "texture": "scenarios/day3/bandit_encounter.png",
         "next": "d3_leaves_rustling_cfp_line3"
       },
       {
@@ -1482,7 +1496,7 @@
         "id": "d3_turn_back_line1",
         "type": "line",
         "text": "\n{SHAKE}As you turn back, the city gate turned into a cliff.{ENDSHAKE} All of a sudden, there are no places to go. {COLOR=RED}I fall into the edge of the cave and die.{ENDCOLOR}{WAIT=2}",
-        "texture": null,
+        "texture": "scenarios/day3/cliff.png",
         "triggerGameEnd": true,
         "next": null
       },
@@ -1490,14 +1504,14 @@
         "id": "d3_line5",
         "type": "line",
         "text": "\nI cast detect magic, but it {COLOR=RED}fails{ENDCOLOR}. {WAIT=1}I blindly treaded the path with my weapon in hand, ready for everything. I continued walking further, and as I went, the {RAINBOW}forest became more and more bizarre{ENDRAINBOW}. The {WAVE}clouds flew faster{ENDWAVE}, the {SHAKE}leaves rustled{ENDSHAKE}, the {SHAKE}branches snapped{ENDSHAKE}, {SHAKE}thunderbolts roared{ENDSHAKE}, before I was met with an unfamiliar figure. {WAIT=1}A figure of an {COLOR=RED}old man{ENDCOLOR} covered with a black cloak.",
-        "texture": null,
+        "texture": "scenarios/day3/forest.png",
         "next": "d3_line6"
       },
       {
         "id": "d3_line6",
         "type": "line",
         "text": "\n{WAVE}\"To leave from whence you came is a task impossible in this domain.\"{ENDWAVE}, he whispered.",
-        "texture": null,
+        "texture": "scenarios/day3/old_man.png",
         "next": "d3_line7"
       },
       {
@@ -1511,13 +1525,55 @@
         "id": "d3_old_man_battle_minigame",
         "type": "minigame",
         "screenKey": "old_man_battle_minigame",
-        "next": "d3_line8"
+        "next": "d3_observation_roll"
+      },
+      {
+        "id": "d3_observation_roll",
+        "type": "manual_roll",
+        "text": "\nAfter the {SHAKE}gruesome battle{ENDSHAKE}, I finally {COLOR=#66FF00}escaped the forest{ENDCOLOR}. {WAIT=1}The forest that took me two days to cover miraculously took me only a day to trace back. A {COLOR=RED}white stallion{ENDCOLOR} with {COLOR=RED}Drakeswood's sigil{ENDCOLOR} waited for me at the edge of the forest. I rode it and went straight to my employer.",
+        "texture": "scenarios/day3/edge_of_the_forest.png",
+        "label": "TAKE A SECOND TO OBSERVE",
+        "threshold": 15,
+        "successNext": "d3_line8",
+        "failNext": "d3_observation_fail_line1"
       },
       {
         "id": "d3_line8",
         "type": "line",
-        "text": "\nAfter the {SHAKE}gruesome battle{ENDSHAKE}, I finally {COLOR=#66FF00}escaped the forest{ENDCOLOR}. {WAIT=1}The forest that took me two days to cover miraculously took me only a day to trace back. A {COLOR=RED}white stallion{ENDCOLOR} with Drakeswood's sigil waited for me at the edge of the forest. I rode it and went straight to my employer.{WAIT=2}",
-        "texture": null,
+        "text": "\nThe {COLOR=RED}Kingsman{ENDCOLOR} emitted a {SHAKE}sinister aura{ENDSHAKE}. {COLOR=#FFDB51}What should I do?{ENDCOLOR}",
+        "texture": "scenarios/day3/kingsman.png",
+        "next": "d3_kingsman_choice"
+      },
+      {
+        "id": "d3_kingsman_choice",
+        "type": "choice",
+        "choices": [
+          {
+            "label": "ATTACK THE KINGSMAN",
+            "next": "d3_kingsman_attacked_line1"
+          },
+          {
+            "label": "REASON WITH HIM",
+            "next": "d3_observation_fail_line1"
+          }
+        ]
+      },
+      {
+        "id": "d3_kingsman_attacked_line1",
+        "type": "line",
+        "text": "\nYour attack hits. You take the money and make a run for it. {COLOR=RED}You are now a fugitive.{ENDCOLOR} You have lost your credibility as a {WAVE}location research mage{ENDWAVE}. Your life as a fugitive begins, but this story has reached its end.",
+        "texture": "scenarios/day3/kingsman_angry.png",
+        "obtainableAchievement": "The Treasure of Aggression",
+        "triggerGameEnd": true,
+        "next": null
+      },
+      {
+        "id": "d3_observation_fail_line1",
+        "type": "line",
+        "text": "\nThe {COLOR=RED}Kingsman{ENDCOLOR} brushes it off and hands you your reward. You left completely believing their words. You are {WAVE}escorted away from the kingdom{ENDWAVE}. Away from the forest you formerly ventured.",
+        "texture": "scenarios/day3/kingsman.png",
+        "obtainableAchievement": "The Treasure of Riches",
+        "triggerGameEnd": true,
         "next": null
       }
     ]

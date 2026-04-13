@@ -40,7 +40,7 @@ public class MainMenuScreen implements Screen {
   private TextButton creditsButton;
   private TextButton settingsButton;
   private TextButton quitButton;
-  private TextButton testButton;
+
 
   private float musicVolume;
 
@@ -88,9 +88,7 @@ public class MainMenuScreen implements Screen {
     table.add(quitButton);
     table.row();
 
-    testButton = new TextButton("maze testing", skin, "main-menu-text-button");
-    table.add(testButton);
-    table.row();
+
 
     // Copy the managed particle effect so the AssetManager original stays reusable
     leafEffect = new ParticleEffect(game.assets.get("particles/autumn_leaf.p", ParticleEffect.class));
@@ -204,9 +202,7 @@ public class MainMenuScreen implements Screen {
     return quitButton;
   }
 
-  public TextButton getTestButton() {
-    return testButton;
-  }
+
 
   /**
    * Stops the background music if it is currently playing.

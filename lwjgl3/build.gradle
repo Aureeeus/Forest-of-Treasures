@@ -41,6 +41,9 @@ dependencies {
   implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
   implementation project(':core')
 
+  // Sherpa-ONNX native JNI library (Windows x64)
+  implementation files("${project.rootDir}/libs/sherpa-onnx-native-lib-win-x64-v1.12.10.jar")
+
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-backend-lwjgl3:$graalHelperVersion"
       implementation "io.github.berstanio:gdx-svmhelper-extension-freetype:$graalHelperVersion"

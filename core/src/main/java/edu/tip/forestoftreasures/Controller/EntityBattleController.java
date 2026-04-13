@@ -720,6 +720,9 @@ public class EntityBattleController {
     TypingLabel typingLabel = new TypingLabel(text, dialogueFont);
     DialogueUtils.configureTypingLabel(typingLabel, game, onComplete);
 
+    // Narrate the battle text asynchronously (no-op if Read Aloud is disabled)
+    game.speechManager.say(text);
+
     textDialogueTable.add(typingLabel)
       .growX()
       .bottom()

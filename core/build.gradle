@@ -7,6 +7,9 @@ dependencies {
   api "com.github.tommyettinger:regexodus:$regExodusVersion"
   api "com.github.tommyettinger:textratypist:$textratypistVersion"
 
+  // --- TTS (Sherpa-ONNX / Piper VITS) ---
+  api fileTree(dir: "${project.rootDir}/libs", include: ["sherpa-onnx-*.jar"])
+
   if(enableGraalNative == 'true') {
     implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
   }

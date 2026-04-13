@@ -72,6 +72,7 @@ public class SettingsController {
       public void changed(ChangeEvent event, Actor actor) {
         float volume = ambienceVolumeSlider.getValue();
         game.settingsConfig.updateAmbienceVol(volume);
+        game.speechManager.updateVolume();
       }
     });
 
@@ -82,6 +83,11 @@ public class SettingsController {
       public void changed(ChangeEvent event, Actor actor) {
         boolean isChecked = readAloudButton.isChecked();
         game.settingsConfig.updateReadAloud(isChecked);
+        
+        // If the user disables read aloud, stop any ongoing narration immediately
+        if (!isChecked) {
+          game.speechManager.stop();
+        }
       }
     });
 

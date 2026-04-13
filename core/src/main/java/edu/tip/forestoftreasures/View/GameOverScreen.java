@@ -57,6 +57,9 @@ public class GameOverScreen implements Screen {
     String dialogue = "{COLOR=#FF0000}YOU DIED!!!{CLEARCOLOR}\nYour journey ends here. The forest claims another soul once again.";
     typingLabel = new TypingLabel(dialogue, textraFont);
     typingLabel.setWrap(true);
+    
+    // Narrate the game over dialogue asynchronously (no-op if Read Aloud is disabled)
+    game.speechManager.say(dialogue);
 
     String instructions = "[#FFD700]{FADE}PRESS SPACE TO RETURN TO MENU{ENDFADE}[%]";
     instructionLabel = new TextraLabel(instructions, textraFont);

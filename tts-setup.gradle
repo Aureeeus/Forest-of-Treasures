@@ -1,0 +1,92 @@
+/**
+ * Gradle task configuration for downloading Sherpa-ONNX TTS model files.
+ * Apply this file from the root build.gradle or run the task directly.
+ *
+ * Usage: ./gradlew downloadTtsModel
+ */
+
+tasks.register('downloadTtsModel') {
+    group = 'setup'
+    description = 'Downloads Piper VITS model (en_US-amy-low) and espeak-ng-data for Sherpa-ONNX TTS.'
+
+    def assetsDir = file("${project.rootDir}/assets/tts-models")
+    def modelDir = file("${assetsDir}/vits-piper-en_US-amy-low")
+    def espeakDir = file("${assetsDir}/espeak-ng-data")
+
+    // Model download URLs (from official Sherpa-ONNX releases)
+    def modelUrl = 'https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.10/vits-piper-en_US-amy-low.tar.bz2'
+    def espeakUrl = 'https://github.com/k2-fsa/sherpa-onnx/releases/download/v1.12.10/espeak-ng-data.tar.bz2'
+
+    doLast {
+        // Download and extract model
+        if (!modelDir.exists()) {
+            println "Downloading Piper VITS model (en_US-amy-low)..."
+            def modelArchive = file("${assetsDir}/vits-piper-en_US-amy-low.tar.bz2")
+            assetsDir.mkdirs()
+            ant.get(src: modelUrl, dest: modelArchive)
+            exec {
+                workingDir assetsDir
+                commandLine 'tar', '-xjf', modelArchive.name
+            }
+            modelArchive.delete()
+            println "Model extracted to: ${modelDir}"
+        } else {
+            println "Model already exists at: ${modelDir}"
+        }
+
+        // Download and extract espeak-ng-data
+        if (!espeakDir.exists()) {
+            println "Downloading espeak-ng-data..."
+            def espeakArchive = file("${assetsDir}/espeak-ng-data.tar.bz2")
+            assetsDir.mkdirs()
+            ant.get(src: espeakUrl, dest: espeakArchive)
+            exec {
+                workingDir assetsDir
+                commandLine 'tar', '-xjf', espeakArchive.name
+            }
+            espeakArchive.delete()
+            println "espeak-ng-data extracted to: ${espeakDir}"
+        } else {
+            println "espeak-ng-data already exists at: ${espeakDir}"
+        }
+
+        // Clean up: ONLY keep English files in espeak-ng-data
+        println "Pruning espeak-ng-data to English-only..."
+        def allowedFiles = ['phondata', 'phonindex', 'phontab', 'en_dict', 'intonations', 'voices', 'lang']
+        espeakDir.listFiles().each { file ->
+            if (!allowedFiles.contains(file.name)) {
+                file.deleteDir()
+                file.delete()
+            }
+        }
+
+        // Deep prune lang directory
+        def langDir = file("${espeakDir}/lang")
+        if (langDir.exists()) {
+            langDir.listFiles().each { family ->
+                if (family.isDirectory()) {
+                    if (family.name == 'gmw') {
+                        family.listFiles().each { lang ->
+                            if (!lang.name.startsWith('en')) {
+                                lang.delete()
+                            }
+                        }
+                    } else {
+                        family.deleteDir()
+                    }
+                }
+            }
+        }
+
+        // Remove redundant espeak-ng-data inside model folder to save space
+        def redundantEspeak = file("${modelDir}/espeak-ng-data")
+        if (redundantEspeak.exists()) {
+            println "Removing redundant espeak-ng-data from model folder..."
+            redundantEspeak.deleteDir()
+        }
+
+        println "TTS Setup Complete. Minimal English footprint achieved."
+        println "  Model:  ${modelDir}"
+        println "  Espeak: ${espeakDir}"
+    }
+}

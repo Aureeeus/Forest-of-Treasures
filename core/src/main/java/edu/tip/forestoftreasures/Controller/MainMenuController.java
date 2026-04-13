@@ -9,7 +9,7 @@ import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.View.CreditsScreen;
 import edu.tip.forestoftreasures.View.IntroductionGameScreen;
 import edu.tip.forestoftreasures.View.MainMenuScreen;
-import edu.tip.forestoftreasures.View.mazeBossScreen;
+
 
 public class MainMenuController {
   private final GameLauncher game;
@@ -91,14 +91,7 @@ public class MainMenuController {
       }
     });
 
-    screen.getTestButton().addListener(new ChangeListener() {
-      @Override
-      public void changed(ChangeEvent event, Actor actor) {
-        selectSound.play(sfxVolume);
-        screen.stopMusic();
-        game.setScreen(new mazeBossScreen(game, null, null));
-      }
-    });
+
   }
 
   /**

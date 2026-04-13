@@ -3,7 +3,6 @@ package edu.tip.forestoftreasures.View;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -18,16 +17,18 @@ import com.github.tommyettinger.textra.Font;
 import com.github.tommyettinger.textra.TextraLabel;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.Align;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.mazeBossController;
+import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 import java.util.function.Consumer;
 import edu.tip.forestoftreasures.Model.dialogue.MinigameNode;
 
 public class mazeBossScreen implements Screen {
   private Stage stage;
-  private Table table;
   private final GameLauncher game;
   private mazeBossController controller;
   private SpriteBatch batch;
@@ -43,16 +44,16 @@ public class mazeBossScreen implements Screen {
   private final float TREANT_DIALOG_INTERVAL = 8f;
 
   // Ten separate dialog strings (editable)
-  public String treantText1 = " \n I have caught you!";
-  public String treantText2 = "\nThere is only one way out of this maze";
-  public String treantText3 = "\nVile Tresspaser. This will be your grave!";
-  public String treantText4 = "\nWitness the power of the forest!";
-  public String treantText5 = "\nThis is the end for you, trespasser!";
-  public String treantText6 = "\nSay your prayers, trespasser!";
-  public String treantText7 = "\nYou abuse Nature's hospitality";
-  public String treantText8 = "\nWe have been kind to you";
-  public String treantText9 = "\nYou have no respect for the forest!";
-  public String treantText10 = "\nDirty Defiler!";
+  public String treantText1 = "I have caught you!";
+  public String treantText2 = "There is only one way out of this maze!";
+  public String treantText3 = "Vile Tresspaser. This will be your grave!";
+  public String treantText4 = "Witness the power of the forest!";
+  public String treantText5 = "This is the end for you, trespasser!";
+  public String treantText6 = "Say your prayers, trespasser!";
+  public String treantText7 = "You abuse Nature's hospitality";
+  public String treantText8 = "We have been kind to you";
+  public String treantText9 = "You have no respect for the forest!";
+  public String treantText10 = "Dirty Defiler!";
 
   private TiledMap mazeMap;
   private OrthogonalTiledMapRenderer mapRenderer;
@@ -60,8 +61,6 @@ public class mazeBossScreen implements Screen {
   private ShapeRenderer shapeRenderer;
 
   private Music mazeMusic;
-  private Sound enterSound;
-  private boolean hasPlayedEnter = false;
 
   private final Consumer<Boolean> onComplete;
   private final MinigameNode node;
@@ -77,8 +76,6 @@ public class mazeBossScreen implements Screen {
   public void show() {
     // Prepare your screen here.
     stage = new Stage(new FitViewport(1920, 1080));
-
-    enterSound = game.assets.get("audio/sfx/maze_enter.mp3", Sound.class);
 
     batch = new SpriteBatch();
     // directional player textures
@@ -98,11 +95,30 @@ public class mazeBossScreen implements Screen {
     // prepare treant label using the same textra font as IntroductionGameScreen
     textraFont = FontFactory.generateFont("fonts/DotGothic16-Regular.ttf", 24, Color.WHITE);
     treantLabel = new TextraLabel(treantText1, textraFont);
-    // position label to the right of the treant image (adjusted after scaling)
-    treantLabel.setPosition(500, 860);
-    treantLabel.setWrap(true);
-    treantLabel.setWidth(300);
-    stage.addActor(treantLabel);
+    treantLabel.setAlignment(Align.center);
+    
+    // Narrate the initial treant dialogue (no-op if Read Aloud is disabled)
+    game.speechManager.say(treantText1);
+
+    // 1. Dialogue Bubble Table
+    Table treantDialogTable = new Table();
+    treantDialogTable.setBackground(DrawableFactory.getColoredDrawable(new Color(0, 0, 0, 0.7f)));
+    treantLabel.setWrap(true); // Enable wrapping on the label
+    treantDialogTable.add(treantLabel).width(450f).pad(25f).center();
+    treantDialogTable.pack();
+
+    // 2. Treant Image Actor
+    Image treantImage = new Image(treantTexture);
+
+    // 3. Main Unified Table (Groups Image + Dialogue)
+    Table mainTreantTable = new Table();
+    mainTreantTable.add(treantDialogTable).padRight(20f).center();
+    mainTreantTable.add(treantImage).size(327f);
+    mainTreantTable.pack();
+
+    // position unified table where the sprite was previously drawn
+    mainTreantTable.setPosition(330, 790, Align.bottomLeft);
+    stage.addActor(mainTreantTable);
     shapeRenderer = new ShapeRenderer();
 
     mazeMap = new TmxMapLoader().load("Maps/testmap.tmx");
@@ -189,8 +205,7 @@ public class mazeBossScreen implements Screen {
       batch.setColor(Color.WHITE);
     }
 
-    // Treant placeholder above maze (50% larger than previous size, nudged left)
-    batch.draw(treantTexture, 420, 790, 327, 327);
+    // Treant placeholder above maze (Rendering handled by mainTreantTable in stage.draw())
     batch.end();
 
     // Draw UI/Stage (Buttons like FIGHT, ACT, etc.)
@@ -236,6 +251,8 @@ public class mazeBossScreen implements Screen {
           break;
       }
       treantLabel.setText(t);
+      // Narrate the random treant dialogue (no-op if Read Aloud is disabled)
+      game.speechManager.say(t);
     }
   }
 

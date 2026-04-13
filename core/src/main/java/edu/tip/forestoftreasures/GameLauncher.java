@@ -16,6 +16,7 @@ import edu.tip.forestoftreasures.View.MainMenuScreen;
 import edu.tip.forestoftreasures.View.SettingsScreen;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.SpeechManager;
 import edu.tip.forestoftreasures.utils.UIFactory;
 
 /**
@@ -25,6 +26,7 @@ import edu.tip.forestoftreasures.utils.UIFactory;
 public class GameLauncher extends Game {
     public AssetManager assets;
     public SettingsConfiguration settingsConfig;
+    public SpeechManager speechManager;
     private Player player;
 
     // Cached Screens
@@ -135,9 +137,8 @@ public class GameLauncher extends Game {
         assets.load("images/ui/wood_grabber_pressed.png", Texture.class);
 
         // --- Day 1 UI ---
-        assets.load("scenarios/day1/forest_intro.png", Texture.class);
+        assets.load("scenarios/day1/river_stream.png", Texture.class);
         assets.load("scenarios/day1/forest_sprite.png", Texture.class);
-        assets.load("scenarios/day1/deep_in_forest.png", Texture.class);
         assets.load("scenarios/day1/hobgoblin_hurt.png", Texture.class);
         assets.load("scenarios/day1/forest_treant.png", Texture.class);
         assets.load("scenarios/day1/day1_end.png", Texture.class);
@@ -169,9 +170,17 @@ public class GameLauncher extends Game {
         
         // --- Day 3 UI ---
         assets.load("scenarios/day3/old_man.png", Texture.class);
+        assets.load("scenarios/day3/forest.png", Texture.class);
+        assets.load("scenarios/day3/edge_of_the_forest.png", Texture.class);
+        assets.load("scenarios/day3/kingsman.png", Texture.class);
+        assets.load("scenarios/day3/kingsman_angry.png", Texture.class);
+        assets.load("scenarios/day3/cliff.png", Texture.class);
+        assets.load("scenarios/day3/bandit_encounter.png", Texture.class);
+
         assets.finishLoading();
 
         settingsConfig = new SettingsConfiguration();
+        speechManager = new SpeechManager(settingsConfig, "tts-models/vits-piper-en_US-amy-low");
         
         // Initialize persistent player with default stats
         player = new Player(
@@ -199,6 +208,9 @@ public class GameLauncher extends Game {
             settingsScreen.dispose();
         if (achievementsScreen != null)
             achievementsScreen.dispose();
+
+        if (speechManager != null)
+            speechManager.dispose();
 
         assets.dispose();
         DrawableFactory.dispose();

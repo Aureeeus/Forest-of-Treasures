@@ -9,6 +9,7 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
@@ -66,6 +67,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
   private boolean pendingOverflowTrim = false;
   private Music dayMusic;
+  private Sound selectSound;
 
   // --- Choice UI state ---
   private int selectedRow = 0;
@@ -104,6 +106,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.textDialogueTable = screen.getTextDialogueTable();
     this.dialogueWidgetTable = screen.getDialogueWidgetTable();
     this.settingsIcon = screen.getSettingsIcon();
+
+    this.selectSound = game.assets.get("audio/sfx/select_sound.wav", Sound.class);
 
     this.selectChoiceIcon = UIFactory.getSelectionArrowIcon(game);
     this.dialogueFont = new Font(Gdx.files.internal("fonts/DotGothic16-Dialogue.fnt"));
@@ -188,6 +192,12 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
 
+    if (game.settingsConfig.getGameSettings().isReadAloudEnabled()) {
+      // Matches the precise underlying audio heuristic character duration (0.08f / 0.85f)
+      // guaranteeing perfect lock-step word/char synchronization on screen vs spoken.
+      typingLabel.setTextSpeed(0.08f / 0.85f);
+    }
+
     if (node.damage > 0) {
       screen.getPlayer().takeDamage((float) node.damage);
       screen.updatePlayerStats();
@@ -201,6 +211,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
     }
 
     DialogueUtils.configureTypingLabel(typingLabel, game, runner::onLineFinished);
+
+    // Narrate the line asynchronously (no-op if Read Aloud is disabled)
+    game.speechManager.say(node.text);
 
     textDialogueTable.add(typingLabel)
         .growX()
@@ -611,6 +624,8 @@ public class DayController implements DialogueRunner.DisplayHandler {
     screen.getSettingsIcon().addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {
+        float sfxVolume = game.settingsConfig.getGameSettings().sfxVolume();
+        selectSound.play(sfxVolume);
         screen.showSettingsDialog();
         addPopUpListeners();
       }
@@ -671,6 +686,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     label.addListener(new ClickListener() {
       @Override
       public void clicked(InputEvent event, float x, float y) {
+        selectSound.play(game.settingsConfig.getGameSettings().sfxVolume());
         action.run();
       }
 
