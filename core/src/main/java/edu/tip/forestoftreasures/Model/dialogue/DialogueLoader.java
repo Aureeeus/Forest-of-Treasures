@@ -1,6 +1,7 @@
 package edu.tip.forestoftreasures.Model.dialogue;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class DialogueLoader {
    * @param rootNode     The entry node of the day's dialogue graph.
    * @param achievements All achievement definitions declared for this day.
    */
-  public record DayData(DialogueNode rootNode, List<Achievement> achievements) {}
+  public record DayData(DialogueNode rootNode, List<Achievement> achievements, Map<String, DialogueNode> nodeMap) {}
 
   // --- Static Variables ---
   private static final String TAG = "DialogueLoader";
@@ -83,7 +84,7 @@ public class DialogueLoader {
     Gdx.app.log(TAG, "Loaded Day '" + dayKey + "' with "
         + nodeMap.size() + " nodes and " + achievements.size() + " achievements.");
 
-    return new DayData(rootNode, achievements);
+    return new DayData(rootNode, achievements, Collections.unmodifiableMap(nodeMap));
   }
 
 
@@ -119,6 +120,7 @@ public class DialogueLoader {
         );
       };
 
+      node.setId(id);
       nodeMap.put(id, node);
     }
 

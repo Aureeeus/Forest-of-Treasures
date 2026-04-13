@@ -115,6 +115,27 @@ public class DialogueRunner {
   }
 
   /**
+   * Resumes the dialogue graph from a previously saved node without
+   * resetting the path tracker. Used when loading a saved game.
+   *
+   * @param node The node to resume from.
+   */
+  public void resumeFrom(DialogueNode node) {
+    this.current = node;
+    step();
+  }
+
+  /**
+   * Returns the JSON id of the current dialogue node, or null if
+   * the dialogue has ended.
+   *
+   * @return The current node's id string, or null.
+   */
+  public String getCurrentNodeId() {
+    return current != null ? current.getId() : null;
+  }
+
+  /**
    * Inspects the current node and dispatches it to the appropriate display method.
    *
    * Core routing logic:

@@ -2,6 +2,17 @@ package edu.tip.forestoftreasures.Model.dialogue;
 
 public abstract class DialogueNode {
 
+  /** Unique identifier from JSON, used for save/load position tracking. */
+  protected String id;
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
+
   /**
    * Returns the next node to transition to after this node is done.
    *
