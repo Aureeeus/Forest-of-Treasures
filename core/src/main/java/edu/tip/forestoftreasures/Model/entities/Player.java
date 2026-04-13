@@ -185,11 +185,11 @@ public class Player extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "Your throat tightens; the Cry dies in your chest. They scoff at your silence. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "A faint wail escapes your lips. They flinch, but their resolve holds. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "Your shriek echoes through the gloom, rattling the bones of those nearby! {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "A soul-piercing scream erupts! The darkness itself recoils from your agony. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} A catastrophic rift of sorrow shatters the minds of them! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "Your {SHAKE}throat tightens{ENDSHAKE}; the Cry {WAVE}dies in your chest{ENDWAVE}. They scoff at your silence. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "A {WAVE}faint wail{ENDWAVE} escapes your lips. They {SHAKE}flinch{ENDSHAKE}, but their resolve holds. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "Your {SHAKE}shriek echoes{ENDSHAKE} through the gloom, {SHAKE}rattling the bones{ENDSHAKE} of those nearby! {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "A {SHAKE}soul-piercing scream{ENDSHAKE} erupts! The darkness itself {SHAKE}recoils{ENDSHAKE} from your agony. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} A {SHAKE}catastrophic rift of sorrow{ENDSHAKE} {SICK}shatters the minds{ENDSICK} of them! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);
@@ -210,11 +210,11 @@ public class Player extends Entity {
     target.takeDamage(damage);
 
     String flavorText = switch (tier) {
-      case MISS          -> "Your voice cracks. They laughed at your feeble attempt at control. {COLOR=RED}[[0%]{ENDCOLOR}";
-      case HALF          -> "They dazed for a moment, but shakes off the rhythm with a growl. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
-      case THREE_QUARTER -> "Your song weaves around their mind, dulling their senses. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
-      case FULL          -> "Their eyes go vacant. They begin to sway to your dark melody. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
-      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} They fall to their knees, a puppet to your every word! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
+      case MISS          -> "Your {SHAKE}voice cracks{ENDSHAKE}. They laughed at your feeble attempt at control. {COLOR=RED}[[0%]{ENDCOLOR}";
+      case HALF          -> "They {WAVE}dazed for a moment{ENDWAVE}, but shakes off the rhythm with a growl. {COLOR=#AEE2FF}[[50%]{ENDCOLOR}";
+      case THREE_QUARTER -> "Your {WAVE}song weaves{ENDWAVE} around their mind, {WAVE}dulling their senses{ENDWAVE}. {COLOR=#15A3C7}[[75%]{ENDCOLOR}";
+      case FULL          -> "Their eyes go vacant. They begin to {WAVE}sway to your dark melody{ENDWAVE}. {COLOR=#66FF00}[[100%]{ENDCOLOR}";
+      case CRITICAL      -> "{COLOR=#FFDB51}CRITICAL!{ENDCOLOR} They fall to their knees, a {WAVE}puppet to your every word{ENDWAVE}! {COLOR=#FFDB51}[[200%]{ENDCOLOR}";
     };
 
     return new AttackResult(roll, tier, damage, flavorText);
@@ -257,13 +257,13 @@ public class Player extends Entity {
 
     String flavorText = switch (effect) {
       case BURN -> success
-        ? "The atmosphere combusts! They scream as invisible embers sear their flesh. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        ? "The {SHAKE}atmosphere combusts{ENDSHAKE}! They scream as invisible {COLOR=RED}embers{ENDCOLOR} {SHAKE}sear their flesh{ENDSHAKE}. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
         : "A flickering spark dies against their skin. The air remains cold. {COLOR=RED}[[Failed]{ENDCOLOR}";
       case POISON -> success
-        ? "A thick, violet rot chokes the air. They stagger, veins turning black with bile. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        ? "A {WAVE}thick, violet rot{ENDWAVE} chokes the air. They stagger, veins {WAVE}turning black{ENDWAVE} with {COLOR=RED}bile{ENDCOLOR}. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
         : "A thin, sickly vapor rises but dissipates before they can inhale. {COLOR=RED}[[Failed]{ENDCOLOR}";
       case SLEEP -> success
-        ? "The weight of a thousand nights falls upon them. They collapse into a hollow trance. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
+        ? "The {WAVE}weight of a thousand nights{ENDWAVE} falls upon them. They collapse into a {WAVE}hollow trance{ENDWAVE}. {COLOR=#66FF00}[[Success]{ENDCOLOR}"
         : "They blink against a momentary drowsiness, but their eyes snap back open. {COLOR=RED}[[Failed]{ENDCOLOR}";
     };
 
