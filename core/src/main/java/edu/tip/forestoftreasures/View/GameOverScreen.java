@@ -16,6 +16,7 @@ import com.github.tommyettinger.textra.TypingLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.utils.FontFactory;
+import edu.tip.forestoftreasures.utils.SaveManager;
 
 public class GameOverScreen implements Screen {
   private Stage stage;
@@ -32,6 +33,9 @@ public class GameOverScreen implements Screen {
 
   @Override
   public void show() {
+    // Delete save progress on death to prevent checkpoint exploitation
+    SaveManager.deleteSave();
+
     // Safety check: stop any gameplay music that might be leaking
     String[] musicTracks = {
       "audio/bgm/days/Day1 Music.mp3",

@@ -327,12 +327,7 @@ public class AchievementsScreen implements Screen {
         
         Set<String> unlocked = new HashSet<>();
         try {
-            if (SaveManager.hasSaveFile()) {
-                SaveData save = SaveManager.load();
-                if (save != null && save.getUnlockedAchievements() != null) {
-                    unlocked = save.getUnlockedAchievements();
-                }
-            }
+            unlocked = SaveManager.loadAchievements();
         } catch (Exception e) {
             Gdx.app.error("AchievementsScreen", "Failed to parse unlocked achievements from save file.", e);
         }
