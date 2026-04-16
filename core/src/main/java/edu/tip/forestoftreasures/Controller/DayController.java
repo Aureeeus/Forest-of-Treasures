@@ -132,6 +132,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
     this.runner = new DialogueRunner(this);
     this.achievementVerifier = new AchievementVerifier();
 
+    // Load centralized achievements first
+    this.unlockedAchievements.addAll(SaveManager.loadAchievements());
+
     addListeners();
 
     // Check for pending save data to resume from
@@ -146,11 +149,13 @@ public class DayController implements DialogueRunner.DisplayHandler {
   /**
    * Resumes the game from a previously saved state. Loads the correct day's
    * dialogue graph, restores the saved node position, and populates the
-   * unlocked achievements set from the save data.
+   * unlocked achievements set from the save data, merging with centralized.
    */
   private void resumeFromSaveData(SaveData saveData) {
     this.currentDay = saveData.getCurrentDay();
+    // Merge achievements from save slot into centralized tracked set
     this.unlockedAchievements.addAll(saveData.getUnlockedAchievements());
+    SaveManager.saveAchievements(this.unlockedAchievements);
 
     DayData day = DialogueLoader.load(STORY_FILE, "day" + currentDay);
     this.storyRoot = day.rootNode();
@@ -248,6 +253,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
     textDialogueTable.add(dayLabel).growX().center().padBottom(10f).row();
 
     runner.start(storyRoot);
+
+    // Auto-save whenever a new day starts
+    performAutoSave();
   }
 
   /**
@@ -652,6 +660,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
         if (runner.getPlayerPath().size() == achievement.requiredChoiceSequence.size()) {
           if (achievementVerifier.verify(achievement, runner.getPlayerPath(), storyRoot)) {
             unlockedAchievements.add(achievement.id);
+            SaveManager.saveAchievements(unlockedAchievements);
             Gdx.app.log("DayController", "Achievement unlocked: ["
                 + achievement.id + "] " + achievement.description);
           }
@@ -684,6 +693,7 @@ public class DayController implements DialogueRunner.DisplayHandler {
     if (target.requiredChoiceSequence.isEmpty()) {
       if (achievementVerifier.verify(target, runner.getPlayerPath(), storyRoot)) {
         unlockedAchievements.add(target.id);
+        SaveManager.saveAchievements(unlockedAchievements);
         Gdx.app.log("DayController", "Achievement unlocked: [" + target.id + "] " + target.description);
       }
     }
@@ -804,6 +814,35 @@ public class DayController implements DialogueRunner.DisplayHandler {
 
     String message = success ? "[#66FF00]Game Saved!" : "[#FF0000]Save Failed!";
     UIFactory.showToast(screen.getStage(), message, selectChoiceFont);
+  }
+
+  /**
+   * Automatically persists the game state without a modal dialog.
+   * Shows a subtle toast notification on success.
+   */
+  private void performAutoSave() {
+    List<Integer> choicePath = runner.getPlayerPath().stream()
+      .map(PlayerPathTracker.PlayerDecision::choiceIndex)
+      .collect(Collectors.toList());
+
+    Player player = screen.getPlayer();
+    SaveData data = new SaveData(
+      player.getHp(),
+      player.getStrength(),
+      player.getIntelligence(),
+      player.getDexterity(),
+      player.getCharisma(),
+      unlockedAchievements,
+      currentDay,
+      runner.getCurrentNodeId(),
+      lastScenarioTexturePath,
+      choicePath
+    );
+
+    boolean success = SaveManager.save(data);
+    if (success) {
+      UIFactory.showToast(screen.getStage(), "[#66FF00]Auto-saved", selectChoiceFont);
+    }
   }
 
   /**
