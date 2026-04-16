@@ -19,7 +19,6 @@ import com.github.tommyettinger.textra.TextraLabel;
 
 import edu.tip.forestoftreasures.GameLauncher;
 import edu.tip.forestoftreasures.Controller.AchievementsController;
-import edu.tip.forestoftreasures.Model.SaveData;
 import edu.tip.forestoftreasures.utils.DrawableFactory;
 import edu.tip.forestoftreasures.utils.FontFactory;
 import edu.tip.forestoftreasures.utils.SaveManager;
