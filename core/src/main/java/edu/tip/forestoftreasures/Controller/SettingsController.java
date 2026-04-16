@@ -88,6 +88,8 @@ public class SettingsController {
         if (!isChecked) {
           game.speechManager.stop();
         }
+        
+        syncMutuallyExclusiveSettings();
       }
     });
 
@@ -98,7 +100,44 @@ public class SettingsController {
       public void changed(ChangeEvent event, Actor actor) {
         boolean isChecked = skipDialogueButton.isChecked();
         game.settingsConfig.updateSkipDialogue(isChecked);
+        
+        syncMutuallyExclusiveSettings();
       }
     });
+
+    // Initialize synchronization on startup
+    syncMutuallyExclusiveSettings();
+  }
+
+  /**
+   * Enforces mutual exclusivity between "Read Aloud" and "Skip Dialogue".
+   * Enabling one will force the other to false and disable its interaction.
+   */
+  private void syncMutuallyExclusiveSettings() {
+    Button readAloud = screen.getReadAloudButton();
+    Button skipDialogue = screen.getSkipDialogueButton();
+
+    // If Read Aloud is enabled, Skip Dialogue must be disabled and Off
+    if (readAloud.isChecked()) {
+      if (skipDialogue.isChecked()) {
+        skipDialogue.setChecked(false);
+        game.settingsConfig.updateSkipDialogue(false);
+      }
+      skipDialogue.setDisabled(true);
+    } else {
+      skipDialogue.setDisabled(false);
+    }
+
+    // If Skip Dialogue is enabled, Read Aloud must be disabled and Off
+    if (skipDialogue.isChecked()) {
+      if (readAloud.isChecked()) {
+        readAloud.setChecked(false);
+        game.settingsConfig.updateReadAloud(false);
+        game.speechManager.stop();
+      }
+      readAloud.setDisabled(true);
+    } else {
+      readAloud.setDisabled(false);
+    }
   }
 }
