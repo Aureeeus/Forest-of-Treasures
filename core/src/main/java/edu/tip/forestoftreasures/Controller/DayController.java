@@ -272,9 +272,9 @@ public class DayController implements DialogueRunner.DisplayHandler {
     TypingLabel typingLabel = new TypingLabel(node.text, dialogueFont);
 
     if (game.settingsConfig.getGameSettings().isReadAloudEnabled()) {
-      // Matches the precise underlying audio heuristic character duration (0.08f / 0.85f)
+      // Matches the precise underlying audio heuristic character duration (0.08f / 1.1f)
       // guaranteeing perfect lock-step word/char synchronization on screen vs spoken.
-      typingLabel.setTextSpeed(0.08f / 0.85f);
+      typingLabel.setTextSpeed(0.08f / 1.1f);
     }
 
     if (node.damage > 0 && !isRestoringState) {
@@ -289,7 +289,16 @@ public class DayController implements DialogueRunner.DisplayHandler {
       }
     }
 
-    DialogueUtils.configureTypingLabel(typingLabel, game, runner::onLineFinished);
+    DialogueUtils.configureTypingLabel(typingLabel, game, new Runnable() {
+      @Override
+      public void run() {
+        if (game.speechManager.isSpeaking()) {
+          Gdx.app.postRunnable(this);
+        } else {
+          runner.onLineFinished();
+        }
+      }
+    });
 
     // Narrate the line asynchronously (no-op if Read Aloud is disabled)
     game.speechManager.say(node.text);

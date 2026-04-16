@@ -48,8 +48,8 @@ public class SpeechManager {
     /** Maximum number of cached speech buffers before the oldest is evicted. */
     private static final int MAX_CACHE_ENTRIES = 32;
 
-    /** Default speech speed factor (1.0 = normal). 0.85f provides natural pacing (no rapping). */
-    private static final float DEFAULT_SPEED = 0.85f;
+    /** Default speech speed factor (1.1 = slightly faster). Provides natural but agile pacing. */
+    private static final float DEFAULT_SPEED = 1.1f;
 
     /** Default speaker ID for single-speaker models. */
     private static final int DEFAULT_SPEAKER_ID = 0;
@@ -106,6 +106,7 @@ public class SpeechManager {
     private int sampleRate;
     private final AtomicBoolean engineInitialized = new AtomicBoolean(false);
     private final AtomicBoolean engineFailed = new AtomicBoolean(false);
+    private final AtomicBoolean processingRequest = new AtomicBoolean(false);
 
     // Audio output line (opened once engine is initialized)
     private SourceDataLine audioLine;
@@ -190,6 +191,22 @@ public class SpeechManager {
      */
     public void say(String rawText) {
         speak(rawText, true);
+    }
+
+    /**
+     * Checks if the TTS engine is currently synthesizing or playing audio.
+     *
+     * @return true if there are queued requests, an active synthesis,
+     *         or audio still draining from the buffer.
+     */
+    public boolean isSpeaking() {
+        // We are "speaking" if:
+        // 1. There are pending requests in the queue
+        // 2. The worker thread is actively processing a request
+        // 3. The audio hardware line still has data in its buffer
+        return !requestQueue.isEmpty() 
+            || processingRequest.get() 
+            || (audioLine != null && audioLine.isOpen() && (audioLine.getBufferSize() - audioLine.available() > 0));
     }
 
     /**
@@ -278,10 +295,13 @@ public class SpeechManager {
             }
 
             try {
+                processingRequest.set(true);
                 processRequest(request);
             } catch (Exception e) {
                 Gdx.app.error(TAG, "Failed to process speech request: \""
                     + truncate(request.text()) + "\"", e);
+            } finally {
+                processingRequest.set(false);
             }
         }
     }

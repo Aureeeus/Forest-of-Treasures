@@ -718,7 +718,20 @@ public class EntityBattleController {
     if (textDialogueTable == null) return;
 
     TypingLabel typingLabel = new TypingLabel(text, dialogueFont);
-    DialogueUtils.configureTypingLabel(typingLabel, game, onComplete);
+    if (game.settingsConfig.getGameSettings().isReadAloudEnabled()) {
+      typingLabel.setTextSpeed(0.08f / 1.1f);
+    }
+
+    DialogueUtils.configureTypingLabel(typingLabel, game, new Runnable() {
+      @Override
+      public void run() {
+        if (game.speechManager.isSpeaking()) {
+          Gdx.app.postRunnable(this);
+        } else if (onComplete != null) {
+          onComplete.run();
+        }
+      }
+    });
 
     // Narrate the battle text asynchronously (no-op if Read Aloud is disabled)
     game.speechManager.say(text);

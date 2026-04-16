@@ -106,6 +106,9 @@ public class MainMenuScreen implements Screen {
   public void show() {
     Gdx.input.setInputProcessor(stage);
     
+    // Kill any ongoing TTS speech immediately upon returning to the menu
+    game.speechManager.stop();
+
     // Synchronize settings upon returning to this screen
     musicVolume = game.settingsConfig.getGameSettings().bgMusicVolume();
     if (backgroundMusic != null) {

@@ -45,6 +45,10 @@ public class IntroductionGameScreen implements Screen {
     String dialogue = "I have been an unemployed location research mage for some time now until a budding kingdom hired me. I've received a letter asking me to explore this forest 5 kilometers out of their west gate, as they plan to expand their capital. Local rumors have told me that this forest is teeming with life and treasures. I don't know if it was the adventure that enticed me or the treasure, {COLOR=#FFD700}but I digress.{CLEARCOLOR} After preparing 2 weeks' worth of food and materials, I've set out on a journey to this forest. Drakeswood gave me a mana transmitter and a map to help me navigate through this forest.";
     typingLabel = new TypingLabel(dialogue, textraFont);
     typingLabel.setWrap(true);
+
+    if (game.settingsConfig.getGameSettings().isReadAloudEnabled()) {
+      typingLabel.setTextSpeed(0.08f / 1.1f);
+    }
     
     // Narrate the intro dialogue asynchronously (no-op if Read Aloud is disabled)
     game.speechManager.say(dialogue);
@@ -54,14 +58,22 @@ public class IntroductionGameScreen implements Screen {
     instructionLabel.setWrap(true);
     instructionLabel.setVisible(false);
 
-    // Add listener to show instructions after typing is done
+    // Add listener to show instructions after typing and speech are done
     typingLabel.setTypingListener(new TypingAdapter() {
       @Override
       public void end() {
-        instructionLabel.setVisible(true);
-        instructionLabel.addAction(Actions.forever(Actions.sequence(
-            Actions.fadeOut(.5f),
-            Actions.fadeIn(.5f))));
+        showInstructionsIfSpeechFinished();
+      }
+
+      private void showInstructionsIfSpeechFinished() {
+        if (game.speechManager.isSpeaking()) {
+          Gdx.app.postRunnable(this::showInstructionsIfSpeechFinished);
+        } else {
+          instructionLabel.setVisible(true);
+          instructionLabel.addAction(Actions.forever(Actions.sequence(
+              Actions.fadeOut(.5f),
+              Actions.fadeIn(.5f))));
+        }
       }
     });
 

@@ -57,6 +57,10 @@ public class GameOverScreen implements Screen {
     String dialogue = "{COLOR=#FF0000}YOU DIED!!!{CLEARCOLOR}\nYour journey ends here. The forest claims another soul once again.";
     typingLabel = new TypingLabel(dialogue, textraFont);
     typingLabel.setWrap(true);
+
+    if (game.settingsConfig.getGameSettings().isReadAloudEnabled()) {
+      typingLabel.setTextSpeed(0.08f / 1.1f);
+    }
     
     // Narrate the game over dialogue asynchronously (no-op if Read Aloud is disabled)
     game.speechManager.say(dialogue);
@@ -69,10 +73,18 @@ public class GameOverScreen implements Screen {
     typingLabel.setTypingListener(new TypingAdapter() {
       @Override
       public void end() {
-        instructionLabel.setVisible(true);
-        instructionLabel.addAction(Actions.forever(Actions.sequence(
-            Actions.fadeOut(.5f),
-            Actions.fadeIn(.5f))));
+        showInstructionsIfSpeechFinished();
+      }
+
+      private void showInstructionsIfSpeechFinished() {
+        if (game.speechManager.isSpeaking()) {
+          Gdx.app.postRunnable(this::showInstructionsIfSpeechFinished);
+        } else {
+          instructionLabel.setVisible(true);
+          instructionLabel.addAction(Actions.forever(Actions.sequence(
+              Actions.fadeOut(.5f),
+              Actions.fadeIn(.5f))));
+        }
       }
     });
 

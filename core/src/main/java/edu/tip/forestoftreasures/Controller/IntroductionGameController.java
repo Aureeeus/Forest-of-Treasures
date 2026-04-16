@@ -45,6 +45,7 @@ public class IntroductionGameController {
       public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
         if (!typingLabel.hasEnded()) {
           typingLabel.skipToTheEnd();
+          game.speechManager.stop();
         }
 
         return true;
@@ -55,6 +56,7 @@ public class IntroductionGameController {
         if (keycode == Input.Keys.SPACE) {
           if (!typingLabel.hasEnded()) {
             typingLabel.skipToTheEnd();
+            game.speechManager.stop();
           } else {
             game.getPlayer().resetStats(
               Player.STARTING_HP, 
