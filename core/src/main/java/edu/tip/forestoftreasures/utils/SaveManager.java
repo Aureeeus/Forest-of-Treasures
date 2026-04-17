@@ -13,8 +13,26 @@ import edu.tip.forestoftreasures.Model.SaveData;
  */
 public final class SaveManager {
   private static final String TAG = "SaveManager";
-  private static final String SAVE_PATH = "../saves/game_save.dat";
-  private static final String ACHIEVEMENTS_PATH = "../saves/achievements.dat";
+  private static final String SAVE_DIRECTORY = getSaveDirectory();
+  private static final String SAVE_PATH = SAVE_DIRECTORY + "game_save.dat";
+  private static final String ACHIEVEMENTS_PATH = SAVE_DIRECTORY + "achievements.dat";
+
+  private static String getSaveDirectory() {
+    String OS = System.getProperty("os.name").toUpperCase();
+    String path;
+    if (OS.contains("WIN")) {
+      String appData = System.getenv("APPDATA");
+      if (appData == null || appData.isEmpty()) {
+        appData = System.getProperty("user.home") + "/AppData/Roaming";
+      }
+      path = appData + "/ForestOfTreasures/saves/";
+    } else if (OS.contains("MAC")) {
+      path = System.getProperty("user.home") + "/Library/Application Support/ForestOfTreasures/saves/";
+    } else {
+      path = System.getProperty("user.home") + "/.forestoftreasures/saves/";
+    }
+    return path;
+  }
 
   private static final Json json = new Json();
 
@@ -34,7 +52,10 @@ public final class SaveManager {
       String jsonString = json.toJson(data);
       String encrypted = SaveCrypto.encrypt(jsonString);
 
-      FileHandle file = Gdx.files.local(SAVE_PATH);
+      FileHandle file = Gdx.files.absolute(SAVE_PATH);
+      if (!file.parent().exists()) {
+        file.parent().mkdirs();
+      }
       file.writeString(encrypted, false);
 
       Gdx.app.log(TAG, "Game saved successfully.");
@@ -54,7 +75,7 @@ public final class SaveManager {
    */
   public static SaveData load() {
     try {
-      FileHandle file = Gdx.files.local(SAVE_PATH);
+      FileHandle file = Gdx.files.absolute(SAVE_PATH);
       if (!file.exists()) {
         Gdx.app.log(TAG, "No save file found.");
         return null;
@@ -81,7 +102,7 @@ public final class SaveManager {
    * @return true if a save file is present.
    */
   public static boolean hasSaveFile() {
-    return Gdx.files.local(SAVE_PATH).exists();
+    return Gdx.files.absolute(SAVE_PATH).exists();
   }
 
   /**
@@ -95,7 +116,10 @@ public final class SaveManager {
       String jsonString = json.toJson(unlockedAchievements, java.util.HashSet.class, String.class);
       String encrypted = SaveCrypto.encrypt(jsonString);
 
-      FileHandle file = Gdx.files.local(ACHIEVEMENTS_PATH);
+      FileHandle file = Gdx.files.absolute(ACHIEVEMENTS_PATH);
+      if (!file.parent().exists()) {
+        file.parent().mkdirs();
+      }
       file.writeString(encrypted, false);
 
       Gdx.app.log(TAG, "Achievements saved successfully.");
@@ -114,7 +138,7 @@ public final class SaveManager {
   @SuppressWarnings("unchecked")
   public static java.util.Set<String> loadAchievements() {
     try {
-      FileHandle file = Gdx.files.local(ACHIEVEMENTS_PATH);
+      FileHandle file = Gdx.files.absolute(ACHIEVEMENTS_PATH);
       if (!file.exists()) {
         Gdx.app.log(TAG, "No achievements file found.");
         return new java.util.HashSet<>();
@@ -139,14 +163,14 @@ public final class SaveManager {
    * Checks whether a global achievements file exists.
    */
   public static boolean hasAchievementsFile() {
-    return Gdx.files.local(ACHIEVEMENTS_PATH).exists();
+    return Gdx.files.absolute(ACHIEVEMENTS_PATH).exists();
   }
 
   /**
    * Deletes the save file from disk.
    */
   public static void deleteSave() {
-    FileHandle file = Gdx.files.local(SAVE_PATH);
+    FileHandle file = Gdx.files.absolute(SAVE_PATH);
     if (file.exists()) {
       file.delete();
       Gdx.app.log(TAG, "Save file deleted.");
