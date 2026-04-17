@@ -7,8 +7,20 @@ import edu.tip.forestoftreasures.GameLauncher;
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
     public static void main(String[] args) {
-        if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
-        createApplication();
+        try {
+            if (StartupHelper.startNewJvmIfRequired()) return;
+            createApplication();
+        } catch (Throwable t) {
+            t.printStackTrace();
+            try {
+                java.nio.file.Files.write(
+                    java.nio.file.Paths.get("crash-log.txt"),
+                    (t.toString() + "\n" + java.util.Arrays.toString(t.getStackTrace())).getBytes()
+                );
+            } catch (Exception ignored) {
+            }
+            System.exit(1);
+        }
     }
 
     private static Lwjgl3Application createApplication() {
