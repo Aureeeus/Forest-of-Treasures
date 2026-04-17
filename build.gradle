@@ -93,3 +93,43 @@ eclipse.project.name = 'Forest Of Treasures' + '-parent'
 
 // TTS model download helper task
 apply from: 'tts-setup.gradle'
+
+tasks.register('generateDist') {
+  group = 'distribution'
+  description = 'Packages the application, moves it to dist/, and creates a ZIP archive.'
+  dependsOn ':lwjgl3:packageWinX64'
+
+  doLast {
+    def distDir = file("${project.rootDir}/dist")
+    def standaloneDir = file("${distDir}/standalone")
+
+    if (distDir.exists()) {
+      distDir.deleteDir()
+    }
+    distDir.mkdirs()
+    standaloneDir.mkdirs()
+
+    // Copy packaged files to standalone folder
+    copy {
+      from "lwjgl3/build/construo/winX64/roast"
+      into standaloneDir
+    }
+
+    // Copy README to standalone folder
+    copy {
+      from "assets/README_DIST.txt"
+      into standaloneDir
+      rename "README_DIST.txt", "README.txt"
+    }
+
+    // Create the ZIP archive
+    ant.zip(destfile: "${distDir}/ForestOfTreasures_Windows.zip") {
+      fileset(dir: standaloneDir) {
+        include(name: "**/*")
+      }
+    }
+
+    println "Distribution generated in /dist/standalone"
+    println "ZIP archive created at /dist/ForestOfTreasures_Windows.zip"
+  }
+}
